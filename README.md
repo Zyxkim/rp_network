@@ -14,4 +14,4 @@
 
 - [Алина Торопчина](https://github.com/alina-torr)
 - [Даниэла Обущарова](https://github.com/DanielaObushcharova)
-- [Даниэла Обущарова](https://github.com/Zyxkim)
+- [Валерия Захарова](https://github.com/Zyxkim)
