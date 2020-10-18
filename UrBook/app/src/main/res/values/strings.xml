@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">UrBook</string>
+
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="confirmPassword">Confirm Password</string>
+
+    <string name="register">REGISTER</string>
+
+    <string name="textLogIn">Already have an Account? Log In</string>
+
 </resources>
