@@ -7,7 +7,10 @@
     <string name="confirmPassword">Confirm Password</string>
 
     <string name="register">REGISTER</string>
+    <string name="login">LOG IN</string>
 
     <string name="textLogIn">Already have an Account? Log In</string>
+    <string name="textRegister">New User? Create Account</string>
+    <string name="textResetPassword">Forgot Password?</string>
 
 </resources>
