@@ -115,7 +115,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:contentDescription="@null"
-        android:src="@drawable/facebookAuth"
+        android:src="@drawable/facebook_auth"
         app:layout_constraintEnd_toStartOf="@+id/googleAuth"
         app:layout_constraintTop_toBottomOf="@+id/password" />
 
@@ -126,7 +126,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="50dp"
         android:contentDescription="@null"
-        android:src="@drawable/googleAuth"
+        android:src="@drawable/google_auth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password" />
 

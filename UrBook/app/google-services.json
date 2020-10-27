@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "490808674601",
+    "firebase_url": "https://urbook-43535.firebaseio.com",
+    "project_id": "urbook-43535",
+    "storage_bucket": "urbook-43535.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490808674601:android:9b128864ccfe8af7380f38",
+        "android_client_info": {
+          "package_name": "com.adzteam.urbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "490808674601-n3gk7ie40j2edtg1fhb9g4ouod0npjvn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJk3sgxN4bMCqNVi5llJwv6j84S3aQWj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "490808674601-n3gk7ie40j2edtg1fhb9g4ouod0npjvn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
