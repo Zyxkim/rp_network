@@ -5,9 +5,11 @@
     <string name="name">Name</string>
     <string name="password">Password</string>
     <string name="confirmPassword">Confirm Password</string>
+    <string name="otp">OTP</string>
 
     <string name="register">REGISTER</string>
     <string name="login">LOG IN</string>
+    <string name="confirm">CONFIRM</string>
 
     <string name="or">OR</string>
 
@@ -15,5 +17,10 @@
     <string name="textRegister">New User? Create Account</string>
     <string name="textResetPassword">Forgot Password?</string>
     <string name="textReturnLogIn">Return to Log in</string>
+    <string name="textResendVerification">Resend Verification Code</string>
+
+    <string name="textVerification">Verification code has been sent to</string>
+
+    <string name="verificationEmail">example@gmail.com</string>
 
 </resources>
