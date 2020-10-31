@@ -14,5 +14,6 @@
     <string name="textLogIn">Already have an Account? Log In</string>
     <string name="textRegister">New User? Create Account</string>
     <string name="textResetPassword">Forgot Password?</string>
+    <string name="textReturnLogIn">Return to Log in</string>
 
 </resources>
