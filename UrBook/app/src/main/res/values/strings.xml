@@ -10,6 +10,7 @@
     <string name="register">REGISTER</string>
     <string name="login">LOG IN</string>
     <string name="confirm">CONFIRM</string>
+    <string name="resetPassword">RESET PASSWORD</string>
 
     <string name="or">OR</string>
 
@@ -20,6 +21,7 @@
     <string name="textResendVerification">Resend Verification Code</string>
 
     <string name="textVerification">Verification code has been sent to</string>
+    <string name="textNewPassword">Enter New Password</string>
 
     <string name="verificationEmail">example@gmail.com</string>
 
