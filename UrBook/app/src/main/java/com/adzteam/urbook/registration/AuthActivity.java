@@ -23,6 +23,10 @@ public class AuthActivity extends AppCompatActivity {
     public void replaceWithRegistrationFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in,
+                        R.anim.fade_out
+                )
                 .replace(R.id.activity_auth_container, new RegistrationFragment())
                 .addToBackStack(null)
                 .commit();
@@ -31,6 +35,10 @@ public class AuthActivity extends AppCompatActivity {
     public void replaceWithLoginFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in,
+                        R.anim.fade_out
+                )
                 .replace(R.id.activity_auth_container, new LoginFragment())
                 .addToBackStack(null)
                 .commit();
