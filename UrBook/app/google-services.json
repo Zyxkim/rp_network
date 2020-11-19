@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "490808674601-48vepsgpl4rr33f7il7o76euev7jb84v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.adzteam.urbook",
+            "certificate_hash": "a66fec5ebeeb9099b88785f7a6b798ed6e2a8105"
+          }
+        },
+        {
+          "client_id": "490808674601-jbeu5pgu2hgjj1gakc02v67pd426d7eg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.adzteam.urbook",
+            "certificate_hash": "65f7bed2be7ea0bf5440242bc9a51add4721e123"
+          }
+        },
+        {
           "client_id": "490808674601-n3gk7ie40j2edtg1fhb9g4ouod0npjvn.apps.googleusercontent.com",
           "client_type": 3
         }
