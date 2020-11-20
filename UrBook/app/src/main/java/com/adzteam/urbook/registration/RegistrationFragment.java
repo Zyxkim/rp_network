@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,7 +28,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegistrationFragment extends Fragment {
-    private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
     EditText mUserName, mEmail, mPassword, mConfirmPassword;
     TextInputLayout mEmailBox, mPasswordBox, mConfirmPasswordBox, mUserBox;
@@ -163,14 +158,7 @@ public class RegistrationFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Toast.makeText(getActivity(), "firebaseAuthWithGoogle:" + account.getId(), Toast.LENGTH_SHORT).show();
-                GoogleAuth.firebaseAuthWithGoogle(account.getIdToken(), mAuth, getActivity());
-            } catch (ApiException e) {
-                Toast.makeText(getActivity(), "Google sign in failed" + e, Toast.LENGTH_SHORT).show();
-            }
+            GoogleAuth.catchResult(requestCode, resultCode, data, getActivity(), mAuth);
         }
     }
 }

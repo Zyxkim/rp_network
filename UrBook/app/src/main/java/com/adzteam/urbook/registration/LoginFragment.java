@@ -1,8 +1,10 @@
 package com.adzteam.urbook.registration;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -10,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -24,11 +28,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginFragment extends Fragment {
+    private static final int RC_SIGN_IN = 9001;
 
     EditText mEmail, mPassword;
     TextInputLayout mEmailBox, mPasswordBox;
     Button mLoginBtn;
-    FirebaseAuth fAuth;
+    FirebaseAuth mAuth;
+    ImageView mGoogleSignIn;
+    GoogleSignInClient mGoogleSignInClient;
 
     private static final String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
     private final Pattern mPattern = Pattern.compile(EMAIL_PATTERN);
@@ -58,8 +65,9 @@ public class LoginFragment extends Fragment {
         TextView goRegister = view.findViewById(R.id.goRegister);
         mEmailBox = view.findViewById(R.id.email_text);
         mPasswordBox = view.findViewById(R.id.password_text);
+        mGoogleSignIn = view.findViewById(R.id.googleSignIn);
 
-        fAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +89,7 @@ public class LoginFragment extends Fragment {
                 }
 
                 if (validateEmail(email) && validatePassword(password)) {
-                    fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
@@ -95,6 +103,14 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        mGoogleSignIn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mGoogleSignInClient = GoogleAuth.signInWithGoogle(getActivity(), LoginFragment.this);
+            }
+        });
+
         goRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,5 +121,13 @@ public class LoginFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            GoogleAuth.catchResult(requestCode, resultCode, data, getActivity(), mAuth);
+        }
     }
 }
