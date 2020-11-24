@@ -1,6 +1,7 @@
-package com.adzteam.urbook.registration;
+package com.adzteam.urbook.authentification;
 
 import com.adzteam.urbook.R;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;

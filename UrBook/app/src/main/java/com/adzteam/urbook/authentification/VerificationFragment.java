@@ -1,4 +1,4 @@
-package com.adzteam.urbook.registration;
+package com.adzteam.urbook.authentification;
 
 import android.os.Bundle;
 

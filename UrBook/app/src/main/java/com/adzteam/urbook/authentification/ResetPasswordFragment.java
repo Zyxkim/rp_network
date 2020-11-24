@@ -1,4 +1,4 @@
-package com.adzteam.urbook.registration;
+package com.adzteam.urbook.authentification;
 
 import android.os.Bundle;
 
@@ -10,12 +10,7 @@ import android.view.ViewGroup;
 
 import com.adzteam.urbook.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link NewPasswordFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class NewPasswordFragment extends Fragment {
+public class ResetPasswordFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -24,7 +19,7 @@ public class NewPasswordFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public NewPasswordFragment() {
+    public ResetPasswordFragment() {
         // Required empty public constructor
     }
 
@@ -34,10 +29,10 @@ public class NewPasswordFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NewPasswordFragment.
+     * @return A new instance of fragment ResetPasswordFragment.
      */
-    public static NewPasswordFragment newInstance(String param1, String param2) {
-        NewPasswordFragment fragment = new NewPasswordFragment();
+    public static ResetPasswordFragment newInstance(String param1, String param2) {
+        ResetPasswordFragment fragment = new ResetPasswordFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -58,6 +53,6 @@ public class NewPasswordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_new_password, container, false);
+        return inflater.inflate(R.layout.fragment_reset_password, container, false);
     }
 }

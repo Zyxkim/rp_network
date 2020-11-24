@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">UrBook</string>
 
+    <string name="title_activity_general">General</string>
+
+    <string name="email_profile_text">E-mail address</string>
+    <string name="password_profile_text">Password</string>
+
+    <string name="email_profile">example@example.com</string>
+    <string name="password_profile">****</string>
+
     <string name="email">Email</string>
     <string name="name">Name</string>
     <string name="password">Password</string>
@@ -24,5 +32,17 @@
     <string name="textNewPassword">Enter New Password</string>
 
     <string name="verificationEmail">example@gmail.com</string>
+
+    <string name="title_rooms">Rooms</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="profile_name">MsReader</string>
+    <string name="profile_title">Your Profile</string>
+
+    <string name="profile_status">Current status…</string>
+
+    <string name="edit_profile">Edit profile</string>
+    <string name="logout">Exit</string>
+    <string name="content_description_logout">Exit</string>
 
 </resources>
