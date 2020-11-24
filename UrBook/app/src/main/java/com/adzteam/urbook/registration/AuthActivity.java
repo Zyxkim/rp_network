@@ -43,4 +43,16 @@ public class AuthActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
     }
+
+    public void replaceWithResetPasswordFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in,
+                        R.anim.fade_out
+                )
+                .replace(R.id.activity_auth_container, new ResetPasswordFragment())
+                .addToBackStack(null)
+                .commit();
+    }
 }

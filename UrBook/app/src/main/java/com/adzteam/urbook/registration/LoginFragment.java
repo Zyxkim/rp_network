@@ -31,6 +31,7 @@ public class LoginFragment extends Fragment {
     private static final int RC_SIGN_IN = 9001;
 
     EditText mEmail, mPassword;
+    TextView mResetPassword;
     TextInputLayout mEmailBox, mPasswordBox;
     Button mLoginBtn;
     FirebaseAuth mAuth;
@@ -61,6 +62,7 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         mEmail = view.findViewById(R.id.email);
         mPassword = view.findViewById(R.id.password);
+        mResetPassword = view.findViewById(R.id.goResetPassword);
         mLoginBtn = view.findViewById(R.id.loginBtn);
         TextView goRegister = view.findViewById(R.id.goRegister);
         mEmailBox = view.findViewById(R.id.email_text);
@@ -116,6 +118,15 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
                 if (getActivity() != null) {
                     ((AuthActivity) getActivity()).replaceWithRegistrationFragment();
+                }
+            }
+        });
+
+        mResetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() != null) {
+                    ((AuthActivity) getActivity()).replaceWithResetPasswordFragment();
                 }
             }
         });
