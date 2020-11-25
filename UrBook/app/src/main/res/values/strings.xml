@@ -7,7 +7,7 @@
     <string name="password_profile_text">Password</string>
 
     <string name="email_profile">example@example.com</string>
-    <string name="password_profile">****</string>
+    <string name="password_profile">******</string>
 
     <string name="email">Email</string>
     <string name="name">Name</string>
@@ -44,5 +44,9 @@
     <string name="edit_profile">Edit profile</string>
     <string name="logout">Exit</string>
     <string name="content_description_logout">Exit</string>
+
+    <string name="chatrooms">Rooms</string>
+    <string name="add_room">Add room</string>
+    <string name="content_description_add_room">Add room</string>
 
 </resources>
