@@ -1,13 +1,10 @@
 package com.adzteam.urbook.registration;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.adzteam.urbook.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -26,44 +23,41 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class GoogleAuth {
     private static final int RC_SIGN_IN = 9001;
 
-    public static void firebaseAuthWithGoogle(String idToken, final FirebaseAuth auth, final Activity activity) {
+    public static void firebaseAuthWithGoogle(String idToken, final FirebaseAuth auth) {
+
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        auth.signInWithCredential(credential)
-                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(activity, "logged in successfully", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = auth.getCurrentUser();
-                        } else {
-                            Toast.makeText(activity, "error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+
+        auth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    //Toast.makeText(activity, "logged in successfully", Toast.LENGTH_SHORT).show();
+                    FirebaseUser user = auth.getCurrentUser();
+                } else {
+                    //Toast.makeText(activity, "error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
-    public static GoogleSignInClient signInWithGoogle(Activity activity, Fragment fragment){
+    public static Intent signInWithGoogle(Context context){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(fragment.getString(R.string.default_web_client_id))
+                .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(activity, gso);
-
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(context, gso);
         Intent signInIntent = googleSignInClient.getSignInIntent();
-        fragment.startActivityForResult(signInIntent, RC_SIGN_IN);
-        Log.i("aaa", "smert1");
-        return googleSignInClient;
+        return signInIntent;
     }
 
-    public static void catchResult(int requestCode, int resultCode, @Nullable Intent data, Activity activity, FirebaseAuth auth) {
+    public static void catchResult(@Nullable Intent data, FirebaseAuth auth) {
         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
-            Toast.makeText(activity, "firebaseAuthWithGoogle:" + account.getId(), Toast.LENGTH_SHORT).show();
-            GoogleAuth.firebaseAuthWithGoogle(account.getIdToken(), auth, activity);
+            //Toast.makeText(activity, "firebaseAuthWithGoogle:" + account.getId(), Toast.LENGTH_SHORT).show();
+            GoogleAuth.firebaseAuthWithGoogle(account.getIdToken(), auth);
         } catch (ApiException e) {
-            Toast.makeText(activity, "Google sign in failed" + e, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(activity, "Google sign in failed" + e, Toast.LENGTH_SHORT).show();
         }
     }
-
 }

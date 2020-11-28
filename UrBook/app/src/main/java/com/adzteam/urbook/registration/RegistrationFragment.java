@@ -138,7 +138,7 @@ public class RegistrationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                mGoogleSignInClient = GoogleAuth.signInWithGoogle(getActivity(), RegistrationFragment.this);
+                //mGoogleSignInClient = GoogleAuth.signInWithGoogle(getActivity(), RegistrationFragment.this);
             }
         });
 
@@ -158,7 +158,7 @@ public class RegistrationFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            GoogleAuth.catchResult(requestCode, resultCode, data, getActivity(), mAuth);
+            //GoogleAuth.catchResult(requestCode, resultCode, data, getActivity(), mAuth);
         }
     }
 }

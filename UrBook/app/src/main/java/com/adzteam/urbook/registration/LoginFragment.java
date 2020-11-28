@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,38 +19,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LoginFragment extends Fragment {
     private static final int RC_SIGN_IN = 9001;
 
-    EditText mEmail, mPassword;
-    TextInputLayout mEmailBox, mPasswordBox;
-    Button mLoginBtn;
-    FirebaseAuth mAuth;
-    ImageView mGoogleSignIn;
-    GoogleSignInClient mGoogleSignInClient;
+    private LoginViewModel mLoginViewModel;
 
-    private static final String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    private final Pattern mPattern = Pattern.compile(EMAIL_PATTERN);
-
-    public boolean validateEmail(String email) {
-        Matcher matcher;
-        matcher = mPattern.matcher(email);
-        return matcher.matches();
-    }
-
-    public boolean validatePassword(String password) {
-        return password.length() > 5;
-    }
+    private EditText mEmail, mPassword;
+    private TextInputLayout mEmailBox, mPasswordBox;
+    private Button mLoginBtn;
+    private ImageView mGoogleSignIn;
+    private TextView mGoRegister;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -59,47 +41,32 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mLoginViewModel = new ViewModelProvider(getActivity()).get(LoginViewModel.class);
+
+        mLoginViewModel.getLoginState()
+                .observe(getViewLifecycleOwner(), new ProgressObserver());
+
+        mLoginViewModel.getGoogleSignInIntent().observe(getViewLifecycleOwner(), new IntentObserver());
+
         mEmail = view.findViewById(R.id.email);
         mPassword = view.findViewById(R.id.password);
         mLoginBtn = view.findViewById(R.id.loginBtn);
-        TextView goRegister = view.findViewById(R.id.goRegister);
+        mGoRegister = view.findViewById(R.id.goRegister);
         mEmailBox = view.findViewById(R.id.email_text);
         mPasswordBox = view.findViewById(R.id.password_text);
         mGoogleSignIn = view.findViewById(R.id.googleSignIn);
 
-        mAuth = FirebaseAuth.getInstance();
-
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Валидация
-
-                String email = mEmail.getText().toString().trim();
-                String password = mPassword.getText().toString().trim();
-
-                if (!validateEmail(email)) {
-                    mEmailBox.setError("Not a valid email address");
-                } else {
-                    mEmailBox.setErrorEnabled(false);
-                }
-                if (!validatePassword(password)) {
-                    mPasswordBox.setError("Not a valid password");
-                } else {
-                    mPasswordBox.setErrorEnabled(false);
-                }
-
-                if (validateEmail(email) && validatePassword(password)) {
-                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getActivity(), "logged in successfully", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getActivity(), "error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }
+                mLoginViewModel.loginWithEmail(mEmail.getText().toString().trim(), mPassword.getText().toString().trim());
             }
         });
 
@@ -107,11 +74,11 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                mGoogleSignInClient = GoogleAuth.signInWithGoogle(getActivity(), LoginFragment.this);
+                mLoginViewModel.loginWithGoogle();
             }
         });
 
-        goRegister.setOnClickListener(new View.OnClickListener() {
+        mGoRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (getActivity() != null) {
@@ -119,15 +86,48 @@ public class LoginFragment extends Fragment {
                 }
             }
         });
-
-        return view;
     }
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            GoogleAuth.catchResult(requestCode, resultCode, data, getActivity(), mAuth);
+            mLoginViewModel.catchGoogleResult(data);
+        }
+    }
+
+    private class ProgressObserver implements Observer<LoginViewModel.LoginState> {
+
+        @Override
+        public void onChanged(LoginViewModel.LoginState loginState) {
+            mEmailBox.setErrorEnabled(false);
+            mPasswordBox.setErrorEnabled(false);
+            if (loginState == LoginViewModel.LoginState.FAILED) {
+                Toast.makeText(getActivity(), "FAILED: ", Toast.LENGTH_SHORT).show();
+            } else if (loginState == LoginViewModel.LoginState.NOT_VALID_EMAIL) {
+                mEmailBox.setError("Not a valid email address");
+            } else if (loginState == LoginViewModel.LoginState.NOT_VALID_PASSWORD) {
+                mPasswordBox.setError("Not a valid password");
+            } else if (loginState == LoginViewModel.LoginState.NOT_VALID_EMAIL_AND_PASSWORD) {
+                mEmailBox.setError("Not a valid email address");
+                mPasswordBox.setError("Not a valid password");
+            } else if (loginState == LoginViewModel.LoginState.ERROR) {
+                Toast.makeText(getActivity(), "ERROR: ", Toast.LENGTH_SHORT).show();
+            } else if (loginState == LoginViewModel.LoginState.IN_PROGRESS) {
+                Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
+            } else if (loginState == LoginViewModel.LoginState.SUCCESS) {
+                Toast.makeText(getActivity(), "logged in successfully", Toast.LENGTH_SHORT).show();
+            } else {
+
+            }
+        }
+    }
+
+    private class IntentObserver implements Observer<Intent> {
+
+        @Override
+        public void onChanged(Intent googleSignInIntent) {
+            if (googleSignInIntent != null) startActivityForResult(googleSignInIntent, RC_SIGN_IN);
         }
     }
 }
