@@ -69,6 +69,7 @@ public class AuthRepo {
 
     public void loginWithGoogle() {
         mGoogleSignInIntent.setValue(GoogleAuth.signInWithGoogle(mContext));
+        mGoogleSignInIntent.setValue(null);
     }
 
     public void catchGoogleResult(@Nullable Intent data) {

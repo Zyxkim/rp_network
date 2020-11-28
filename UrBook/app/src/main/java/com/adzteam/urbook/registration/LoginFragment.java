@@ -27,6 +27,7 @@ public class LoginFragment extends Fragment {
     private LoginViewModel mLoginViewModel;
 
     private EditText mEmail, mPassword;
+    TextView mResetPassword;
     private TextInputLayout mEmailBox, mPasswordBox;
     private Button mLoginBtn;
     private ImageView mGoogleSignIn;
@@ -57,6 +58,7 @@ public class LoginFragment extends Fragment {
 
         mEmail = view.findViewById(R.id.email);
         mPassword = view.findViewById(R.id.password);
+        mResetPassword = view.findViewById(R.id.goResetPassword);
         mLoginBtn = view.findViewById(R.id.loginBtn);
         mGoRegister = view.findViewById(R.id.goRegister);
         mEmailBox = view.findViewById(R.id.email_text);
@@ -83,6 +85,15 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
                 if (getActivity() != null) {
                     ((AuthActivity) getActivity()).replaceWithRegistrationFragment();
+                }
+            }
+        });
+
+        mResetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() != null) {
+                    ((AuthActivity) getActivity()).replaceWithResetPasswordFragment();
                 }
             }
         });
