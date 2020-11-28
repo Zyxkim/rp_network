@@ -27,19 +27,25 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegistrationFragment extends Fragment {
     private static final int RC_SIGN_IN = 9001;
-    private static final String ERROR_MSG= "";
+    private static final String INFO= "";
     EditText mUserName, mEmail, mPassword, mConfirmPassword;
     TextInputLayout mEmailBox, mPasswordBox, mConfirmPasswordBox, mUserBox;
     Button mRegisterBtn;
     ImageView mGoogleRegisterBtn;
     FirebaseAuth mAuth;
     GoogleSignInClient mGoogleSignInClient;
+    FirebaseFirestore db;
+    String mUserId;
     boolean mIsVerified = false;
     RegistrationFragment THIS = this;
 
@@ -75,6 +81,7 @@ public class RegistrationFragment extends Fragment {
         mConfirmPasswordBox = view.findViewById(R.id.confirm_password_text);
         mUserBox = view.findViewById(R.id.name_text);
         mGoogleRegisterBtn = view.findViewById(R.id.googleAuth);
+        db = FirebaseFirestore.getInstance();
 
         TextView goLogin = view.findViewById(R.id.goLogin);
 
@@ -125,8 +132,8 @@ public class RegistrationFragment extends Fragment {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
 
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                FirebaseUser mUser = mAuth.getCurrentUser();
+                                mUser.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         if (getActivity() != null) {
@@ -136,12 +143,31 @@ public class RegistrationFragment extends Fragment {
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Log.d(ERROR_MSG, "Email wasn't sent" + e.getMessage());
+                                        Log.d(INFO, "Email wasn't sent" + e.getMessage());
                                     }
                                 });
 
                                 if (getActivity() != null) {
                                     Toast.makeText(getActivity(), "new account created", Toast.LENGTH_SHORT).show();
+                                    mUserId = mAuth.getCurrentUser().getUid();
+                                    DocumentReference documentReference = db.collection("users").document(mUserId);
+                                    Map<String, Object> user = new HashMap<>();
+                                    String username = mUserName.getText().toString().trim();
+                                    user.put("name", username);
+                                    String email = mEmail.getText().toString().trim();
+                                    user.put("email", email);
+                                    documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(INFO, "User added to database");
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.d(INFO, "User not added to database: " + e.toString());
+                                        }
+                                    });
+
                                     ((AuthActivity) getActivity()).replaceWithLoginFragment();
                                 }
                             } else {
