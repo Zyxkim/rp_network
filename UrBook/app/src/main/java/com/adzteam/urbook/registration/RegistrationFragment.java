@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +20,20 @@ import android.widget.Toast;
 import com.adzteam.urbook.R;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegistrationFragment extends Fragment {
     private static final int RC_SIGN_IN = 9001;
+    private static final String ERROR_MSG= "";
     EditText mUserName, mEmail, mPassword, mConfirmPassword;
     TextInputLayout mEmailBox, mPasswordBox, mConfirmPasswordBox, mUserBox;
     Button mRegisterBtn;
@@ -119,6 +124,22 @@ public class RegistrationFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        if (getActivity() != null) {
+                                            Toast.makeText(getActivity(), "Verification email has been sent", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(ERROR_MSG, "Email wasn't sent" + e.getMessage());
+                                    }
+                                });
+
                                 if (getActivity() != null) {
                                     Toast.makeText(getActivity(), "new account created", Toast.LENGTH_SHORT).show();
                                     ((AuthActivity) getActivity()).replaceWithLoginFragment();
