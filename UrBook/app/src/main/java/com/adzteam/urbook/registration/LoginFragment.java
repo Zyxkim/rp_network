@@ -122,8 +122,6 @@ public class LoginFragment extends Fragment {
             } else if (loginState == LoginViewModel.LoginState.NOT_VALID_EMAIL_AND_PASSWORD) {
                 mEmailBox.setError("Not a valid email address");
                 mPasswordBox.setError("Not a valid password");
-            } else if (loginState == LoginViewModel.LoginState.ERROR) {
-                Toast.makeText(getActivity(), "ERROR: ", Toast.LENGTH_SHORT).show();
             } else if (loginState == LoginViewModel.LoginState.IN_PROGRESS) {
                 Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
             } else if (loginState == LoginViewModel.LoginState.SUCCESS) {

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,43 +20,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RegistrationFragment extends Fragment {
     private static final int RC_SIGN_IN = 9001;
-    private static final String ERROR_MSG= "";
+
+    private RegistrationViewModel mRegistrationViewModel;
+
     EditText mUserName, mEmail, mPassword, mConfirmPassword;
     TextInputLayout mEmailBox, mPasswordBox, mConfirmPasswordBox, mUserBox;
     Button mRegisterBtn;
+    TextView mGoLogin;
     ImageView mGoogleRegisterBtn;
-    FirebaseAuth mAuth;
-    GoogleSignInClient mGoogleSignInClient;
-    boolean mIsVerified = false;
-    RegistrationFragment THIS = this;
-
-    private static final String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    private final Pattern mPattern = Pattern.compile(EMAIL_PATTERN);
-
-    public boolean validateEmail(String email) {
-        Matcher matcher;
-        matcher = mPattern.matcher(email);
-        return matcher.matches();
-    }
-
-    public boolean validatePassword(String password) {
-        return password.length() > 5;
-    }
 
     public RegistrationFragment() {
         // Required empty public constructor
@@ -65,6 +42,20 @@ public class RegistrationFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_registration, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mRegistrationViewModel = new ViewModelProvider(getActivity()).get(RegistrationViewModel.class);
+
+        mRegistrationViewModel.getRegistrationLiveData().observe(getViewLifecycleOwner(), new RegistrationDataObserver());
+        mRegistrationViewModel.getRegistrationState().observe(getViewLifecycleOwner(), new ProgressObserver());
+        mRegistrationViewModel.getAddUserToDatabaseState().observe(getViewLifecycleOwner(), new AddToDatabaseObserver());
+        mRegistrationViewModel.getGoogleSignInIntent().observe(getViewLifecycleOwner(), new IntentObserver());
+
         mUserName = view.findViewById(R.id.name);
         mEmail = view.findViewById(R.id.email);
         mPassword = view.findViewById(R.id.password);
@@ -75,83 +66,17 @@ public class RegistrationFragment extends Fragment {
         mConfirmPasswordBox = view.findViewById(R.id.confirm_password_text);
         mUserBox = view.findViewById(R.id.name_text);
         mGoogleRegisterBtn = view.findViewById(R.id.googleAuth);
-
-        TextView goLogin = view.findViewById(R.id.goLogin);
-
-        mAuth = FirebaseAuth.getInstance();
+        mGoLogin = view.findViewById(R.id.goLogin);
 
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //валидация данных
-
                 String email = mEmail.getText().toString().trim();
+                String username = mUserName.getText().toString().trim();
                 String password = mPassword.getText().toString().trim();
                 String confirmPassword = mConfirmPassword.getText().toString().trim();
-                String username = mUserName.getText().toString().trim();
 
-                if (username.isEmpty()) {
-                    mUserBox.setError("Enter username");
-                    mIsVerified = false;
-                } else {
-                    mUserBox.setErrorEnabled(false);
-                    mIsVerified = true;
-                }
-                if (!validateEmail(email)) {
-                    mEmailBox.setError("Not a valid email address");
-                    mIsVerified = false;
-                } else {
-                    mEmailBox.setErrorEnabled(false);
-                    mIsVerified = true;
-                }
-                if (!validatePassword(password)) {
-                    mPasswordBox.setError("Password's length must be > 5");
-                    mIsVerified = false;
-                } else {
-                    mPasswordBox.setErrorEnabled(false);
-                    mIsVerified = true;
-                    if (!password.equals(confirmPassword)) {
-                        mConfirmPasswordBox.setError("Passwords didn't match");
-                        mIsVerified = false;
-                    } else {
-                        mConfirmPasswordBox.setErrorEnabled(false);
-                        mIsVerified = true;
-                    }
-                }
-
-                if (mIsVerified) {
-                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        if (getActivity() != null) {
-                                            Toast.makeText(getActivity(), "Verification email has been sent", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(ERROR_MSG, "Email wasn't sent" + e.getMessage());
-                                    }
-                                });
-
-                                if (getActivity() != null) {
-                                    Toast.makeText(getActivity(), "new account created", Toast.LENGTH_SHORT).show();
-                                    ((AuthActivity) getActivity()).replaceWithLoginFragment();
-                                }
-                            } else {
-                                if (getActivity() != null) {
-                                    Toast.makeText(getActivity(), "error " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                    });
-                }
+                mRegistrationViewModel.registerWithEmail(email, username, password, confirmPassword);
             }
         });
 
@@ -159,11 +84,11 @@ public class RegistrationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                //mGoogleSignInClient = GoogleAuth.signInWithGoogle(getActivity(), RegistrationFragment.this);
+                mRegistrationViewModel.registerWithGoogle();
             }
         });
 
-        goLogin.setOnClickListener(new View.OnClickListener() {
+        mGoLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (getActivity() != null) {
@@ -171,7 +96,6 @@ public class RegistrationFragment extends Fragment {
                 }
             }
         });
-        return view;
     }
 
     @Override
@@ -179,7 +103,69 @@ public class RegistrationFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            //GoogleAuth.catchResult(requestCode, resultCode, data, getActivity(), mAuth);
+            mRegistrationViewModel.catchGoogleResult(data);
+        }
+    }
+
+    private class RegistrationDataObserver implements Observer<RegistrationViewModel.RegistrationData> {
+
+        @Override
+        public void onChanged(RegistrationViewModel.RegistrationData registrationData) {
+            mEmailBox.setErrorEnabled(false);
+            mUserBox.setErrorEnabled(false);
+            mPasswordBox.setErrorEnabled(false);
+            mConfirmPasswordBox.setErrorEnabled(false);
+
+            if (!registrationData.isEmailValidate()) {
+                mEmailBox.setError("Not a valid email address");
+            }
+
+            if(!registrationData.isNameValidate()) {
+                mUserBox.setError("Enter username");
+            }
+
+            if (!registrationData.isPasswordValidate()) {
+                mPasswordBox.setError("Password's length must be > 5");
+            } else if (!registrationData.isConfirmPasswordValidate()) {
+                mConfirmPasswordBox.setError("Passwords didn't match");
+            }
+        }
+    }
+
+    private class ProgressObserver implements Observer<RegistrationViewModel.RegistrationState> {
+
+        @Override
+        public void onChanged(RegistrationViewModel.RegistrationState registrationState) {
+            if (registrationState == RegistrationViewModel.RegistrationState.FAILED) {
+                Toast.makeText(getActivity(), "FAILED: ", Toast.LENGTH_SHORT).show();
+            } else if (registrationState == RegistrationViewModel.RegistrationState.IN_PROGRESS) {
+                Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
+            } else if (registrationState == RegistrationViewModel.RegistrationState.SUCCESS) {
+                Toast.makeText(getActivity(), "register successfully", Toast.LENGTH_SHORT).show();
+            } else if (registrationState == RegistrationViewModel.RegistrationState.SEND_EMAIL){
+                Toast.makeText(getActivity(), "Verification email has been sent", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class AddToDatabaseObserver implements Observer<RegistrationViewModel.AddUserToDatabaseState> {
+
+        @Override
+        public void onChanged(RegistrationViewModel.AddUserToDatabaseState addUserToDatabaseState) {
+            if (addUserToDatabaseState == RegistrationViewModel.AddUserToDatabaseState.FAILED) {
+                Toast.makeText(getActivity(), "can't add user in database", Toast.LENGTH_SHORT).show();
+            } else if (addUserToDatabaseState == RegistrationViewModel.AddUserToDatabaseState.SUCCESS) {
+                Toast.makeText(getActivity(), "add user in database", Toast.LENGTH_SHORT).show();
+                ((AuthActivity) getActivity()).replaceWithLoginFragment();
+            }
+        }
+    }
+
+    private class IntentObserver implements Observer<Intent> {
+
+        @Override
+        public void onChanged(Intent googleSignInIntent) {
+            if (googleSignInIntent != null) startActivityForResult(googleSignInIntent, RC_SIGN_IN);
         }
     }
 }
