@@ -49,4 +49,6 @@
     <string name="add_room">Add room</string>
     <string name="content_description_add_room">Add room</string>
 
+    <string name="todo">TODO</string>
+
 </resources>
