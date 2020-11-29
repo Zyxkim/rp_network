@@ -3,7 +3,10 @@ package com.adzteam.urbook.registration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,20 +34,13 @@ public class ResetPasswordFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private ResetPasswordViewModel mResetPasswordViewModel;
+
     TextInputEditText mEmail;
     MaterialButton mLogInBtn;
     FirebaseAuth mAuth;
     TextView mGoLogin;
     TextInputLayout mEmailBox;
-
-    private static final String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    private final Pattern mPattern = Pattern.compile(EMAIL_PATTERN);
-
-    public boolean validateEmail(String email) {
-        Matcher matcher;
-        matcher = mPattern.matcher(email);
-        return matcher.matches();
-    }
 
     public ResetPasswordFragment() {
         // Required empty public constructor
@@ -81,37 +77,29 @@ public class ResetPasswordFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_reset_password, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mResetPasswordViewModel = new ViewModelProvider(getActivity()).get(ResetPasswordViewModel.class);
+
         mEmail = view.findViewById(R.id.email);
         mLogInBtn = view.findViewById(R.id.loginBtn);
         mAuth = FirebaseAuth.getInstance();
         mGoLogin = view.findViewById(R.id.goRegister);
         mEmailBox = view.findViewById(R.id.email_text);
 
+        mResetPasswordViewModel.getResetPasswordState()
+                .observe(getViewLifecycleOwner(), new ProgressObserver());
+
         mLogInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String mail = mEmail.getText().toString().trim();
-                if (!validateEmail(mail)) {
-                    mEmailBox.setError("Not a valid email address");
-                } else {
-                    mEmailBox.setErrorEnabled(false);
-                }
-                if (validateEmail(mail)) {
-                    mAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(getActivity(), "Reset link sent to your email", Toast.LENGTH_SHORT).show();
-                            if (getActivity() != null) {
-                                ((AuthActivity) getActivity()).replaceWithLoginFragment();
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                mResetPasswordViewModel.resetPassword(mail);
             }
         });
 
@@ -123,7 +111,28 @@ public class ResetPasswordFragment extends Fragment {
                 }
             }
         });
+    }
 
-        return view;
+    private class ProgressObserver implements Observer<ResetPasswordViewModel.ResetPasswordState> {
+
+        @Override
+        public void onChanged(ResetPasswordViewModel.ResetPasswordState resetPasswordState) {
+            mEmailBox.setErrorEnabled(false);
+            if (resetPasswordState == ResetPasswordViewModel.ResetPasswordState.FAILED) {
+                Toast.makeText(getActivity(), "FAILED", Toast.LENGTH_SHORT).show();
+            } else if (resetPasswordState == ResetPasswordViewModel.ResetPasswordState.NOT_VALID_EMAIL) {
+                mEmailBox.setError("Not a valid email address");
+            } else if (resetPasswordState == ResetPasswordViewModel.ResetPasswordState.ERROR) {
+                Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
+            } else if (resetPasswordState == ResetPasswordViewModel.ResetPasswordState.IN_PROGRESS) {
+                Toast.makeText(getActivity(), "IN_PROGRESS", Toast.LENGTH_SHORT).show();
+            } else if (resetPasswordState == ResetPasswordViewModel.ResetPasswordState.SUCCESS) {
+                Toast.makeText(getActivity(), "SUCCESS", Toast.LENGTH_SHORT).show();
+                if (getActivity() != null) {
+                    ((AuthActivity) getActivity()).replaceWithLoginFragment();
+                }
+            } else {
+            }
+        }
     }
 }
