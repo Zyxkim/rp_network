@@ -10,6 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -30,5 +31,10 @@ public class GeneralActivity extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
+    }
+
+    public void roomClickListener() {
+        Intent intent = new Intent(this, RoomActivity.class);
+        startActivity(intent);
     }
 }

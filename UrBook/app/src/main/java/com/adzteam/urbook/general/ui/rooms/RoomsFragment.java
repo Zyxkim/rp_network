@@ -1,8 +1,10 @@
 package com.adzteam.urbook.general.ui.rooms;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.GeneralActivity;
+import com.adzteam.urbook.room.RoomActivity;
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 
 import java.util.ArrayList;
@@ -92,11 +96,15 @@ public class RoomsFragment extends Fragment {
                 .withFirstButtonListner(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mCounter++;
-                        LIST_DATA.add(new RoomsDataSource(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
-                        ADAPTER.notifyItemInserted(mCounter - 1);
-                        Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
-                        flatDialog.dismiss();
+                        if (TextUtils.isEmpty(flatDialog.getFirstTextField())) {
+                            Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mCounter++;
+                            LIST_DATA.add(new RoomsDataSource(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
+                            ADAPTER.notifyItemInserted(mCounter - 1);
+                            Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
+                            flatDialog.dismiss();
+                        }
                     }
                 })
                 .withSecondButtonListner(new View.OnClickListener() {
@@ -132,6 +140,15 @@ public class RoomsFragment extends Fragment {
         public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
             holder.TEXT_VIEW.setText(LIST_DATA_ADAPTER.get(position).NUMBER);
             holder.mRoomDescription.setText(LIST_DATA_ADAPTER.get(position).roomDescription);
+
+            holder.TEXT_VIEW.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (getActivity() instanceof GeneralActivity) {
+                        ((GeneralActivity) getActivity()).roomClickListener();
+                    }
+                }
+            });
         }
 
         @Override

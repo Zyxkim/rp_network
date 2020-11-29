@@ -46,9 +46,15 @@
     <string name="content_description_logout">Exit</string>
 
     <string name="chatrooms">Rooms</string>
+    <string name="chatroom">Room</string>
     <string name="add_room">Add room</string>
     <string name="content_description_add_room">Add room</string>
 
     <string name="todo">TODO</string>
+
+    <string name="start_typing_status">Start typing</string>
+    <string name="stop_typing_status">Stop typing</string>
+
+    <string name="home">End Chat</string>
 
 </resources>
