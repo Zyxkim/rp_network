@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.io.FileOutputStream;
+
 public class AuthActivity extends AppCompatActivity {
 
     private AuthActivityViewModel mAuthActivityViewModel;

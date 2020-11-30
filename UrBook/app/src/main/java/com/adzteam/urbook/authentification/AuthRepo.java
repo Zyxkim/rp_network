@@ -2,6 +2,8 @@ package com.adzteam.urbook.authentification;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+import android.util.Xml;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,9 +20,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.FileOutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,17 +90,50 @@ public class AuthRepo {
         return mResetPasswordProgress;
     }
 
-    public void loginWithEmail(LoginViewModel.LoginData loginData) {
+    public void loginWithEmail(final LoginViewModel.LoginData loginData) {
         mAuth.getValue().signInWithEmailAndPassword(loginData.getLogin(), loginData.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     mLoginProgress.setValue(LoginProgress.SUCCESS);
+
+                    try {
+                        FileOutputStream fos = mContext.openFileOutput("Profile.txt", mContext.MODE_PRIVATE);
+
+                        XmlSerializer serializer = Xml.newSerializer();
+                        serializer.setOutput(fos, "UTF-8");
+                        serializer.startDocument(null, Boolean.valueOf(true));
+                        serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+
+                        serializer.startTag(null, "root");
+
+                        serializer.startTag(null, "name");
+                        serializer.text("NAME");
+                        serializer.endTag(null, "name");
+
+                        serializer.startTag(null, "email");
+                        serializer.text(loginData.getLogin());
+                        serializer.endTag(null, "email");
+
+                        serializer.startTag(null, "password");
+                        serializer.text(loginData.getPassword());
+                        serializer.endTag(null, "password");
+
+                        serializer.endDocument();
+                        serializer.flush();
+
+                        fos.close();
+                    } catch (Exception e) {
+                        //Toast.makeText(this,"Error:"+ e.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
                     mLoginProgress.setValue(LoginProgress.FAILED);
                 }
             }
         });
+
+
     }
 
     public void loginWithGoogle() {
