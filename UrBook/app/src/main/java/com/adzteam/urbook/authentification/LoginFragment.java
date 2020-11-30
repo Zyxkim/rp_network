@@ -116,7 +116,7 @@ public class LoginFragment extends Fragment {
             mEmailBox.setErrorEnabled(false);
             mPasswordBox.setErrorEnabled(false);
             if (loginState == LoginViewModel.LoginState.FAILED) {
-                Toast.makeText(getActivity(), "FAILED: ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "FAILED", Toast.LENGTH_SHORT).show();
             } else if (loginState == LoginViewModel.LoginState.NOT_VALID_EMAIL) {
                 mEmailBox.setError("Not a valid email address");
             } else if (loginState == LoginViewModel.LoginState.NOT_VALID_PASSWORD) {
@@ -125,9 +125,9 @@ public class LoginFragment extends Fragment {
                 mEmailBox.setError("Not a valid email address");
                 mPasswordBox.setError("Not a valid password");
             } else if (loginState == LoginViewModel.LoginState.IN_PROGRESS) {
-                Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
             } else if (loginState == LoginViewModel.LoginState.SUCCESS) {
-                Toast.makeText(getActivity(), "logged in successfully", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "logged in successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), GeneralActivity.class);
                 startActivity(intent);
             } else {

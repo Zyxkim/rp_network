@@ -77,7 +77,22 @@ public class LoginViewModel extends AndroidViewModel {
     }
 
     public void loginWithGoogle() {
+        mLoginState.postValue(LoginState.IN_PROGRESS);
+        final LiveData<AuthRepo.LoginProgress> progressLiveData = mRepo.getLoginProgress();
+        mLoginState.addSource(progressLiveData, new Observer<AuthRepo.LoginProgress>() {
+            @Override
+            public void onChanged(AuthRepo.LoginProgress loginProgress) {
+                if (loginProgress == AuthRepo.LoginProgress.SUCCESS) {
+                    mLoginState.postValue(LoginState.SUCCESS);
+                    mLoginState.removeSource(progressLiveData);
+                } else if (loginProgress == AuthRepo.LoginProgress.FAILED) {
+                    mLoginState.postValue(LoginState.FAILED);
+                    mLoginState.removeSource(progressLiveData);
+                }
+            }
+        });
         mRepo.loginWithGoogle();
+        //mLoginState.setValue(LoginViewModel.LoginState.SUCCESS);
     }
 
     public void catchGoogleResult(@Nullable Intent data) {
@@ -89,7 +104,6 @@ public class LoginViewModel extends AndroidViewModel {
         NOT_VALID_EMAIL,
         NOT_VALID_PASSWORD,
         NOT_VALID_EMAIL_AND_PASSWORD,
-        ERROR,
         IN_PROGRESS,
         SUCCESS,
         FAILED

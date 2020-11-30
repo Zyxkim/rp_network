@@ -83,6 +83,7 @@ public class RegistrationViewModel extends AndroidViewModel {
 
     public void registerWithGoogle() {
         mRepo.loginWithGoogle();
+        mRegistrationState.setValue(RegistrationState.SUCCESS);
     }
 
     public void catchGoogleResult(@Nullable Intent data) {

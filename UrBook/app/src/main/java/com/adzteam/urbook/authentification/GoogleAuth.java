@@ -34,22 +34,26 @@ public class GoogleAuth {
                     //Toast.makeText(activity, "logged in successfully", Toast.LENGTH_SHORT).show();
                     FirebaseUser user = auth.getCurrentUser();
                 } else {
+                    //throw new Exception("Exception message");
                     //Toast.makeText(activity, "error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    public static Intent signInWithGoogle(Context context){
+    public static GoogleSignInClient getGoogleSignInClient(Context context){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(context, gso);
+        return googleSignInClient;
+    }
+
+    public static Intent getGoogleIntent(GoogleSignInClient googleSignInClient) {
         Intent signInIntent = googleSignInClient.getSignInIntent();
         return signInIntent;
     }
-
     public static void catchResult(@Nullable Intent data, FirebaseAuth auth) {
         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
         try {

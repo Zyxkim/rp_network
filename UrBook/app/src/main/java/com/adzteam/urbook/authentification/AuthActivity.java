@@ -1,23 +1,36 @@
 package com.adzteam.urbook.authentification;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.GeneralActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 public class AuthActivity extends AppCompatActivity {
 
+    private AuthActivityViewModel mAuthActivityViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
+        mAuthActivityViewModel = new ViewModelProvider(this).get(AuthActivityViewModel.class);
+
         if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.activity_auth_container, new LoginFragment())
-                    .commit();
+            if (mAuthActivityViewModel.isLoggedIn()) {
+                Intent intent = new Intent(this, GeneralActivity.class);
+                startActivity(intent);
+            } else {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.activity_auth_container, new LoginFragment())
+                        .commit();
+            }
         }
     }
 

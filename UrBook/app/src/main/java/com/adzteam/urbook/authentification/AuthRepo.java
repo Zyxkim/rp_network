@@ -2,8 +2,6 @@ package com.adzteam.urbook.authentification;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +48,7 @@ public class AuthRepo {
         mResetPasswordProgress.setValue(ResetPasswordProgress.NONE);
         mAuth.setValue(FirebaseAuth.getInstance());
         db = FirebaseFirestore.getInstance();
+        mGoogleSignInClient.setValue(GoogleAuth.getGoogleSignInClient(mContext));
     }
 
     public LiveData<GoogleSignInClient> getGoogleSignInClient() {
@@ -98,12 +97,13 @@ public class AuthRepo {
     }
 
     public void loginWithGoogle() {
-        mGoogleSignInIntent.setValue(GoogleAuth.signInWithGoogle(mContext));
+        mGoogleSignInIntent.setValue(GoogleAuth.getGoogleIntent(mGoogleSignInClient.getValue()));
         mGoogleSignInIntent.setValue(null);
     }
 
     public void catchGoogleResult(@Nullable Intent data) {
         GoogleAuth.catchResult(data, mAuth.getValue());
+        mLoginProgress.setValue(LoginProgress.SUCCESS);
     }
 
     public void resetPassword(String mail) {
@@ -138,7 +138,6 @@ public class AuthRepo {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             mRegistrationProgress.setValue(RegistrationProgress.FAILED);
-                            //Log.d(INFO, "Email wasn't sent" + e.getMessage());
                         }
                     });
                 } else {
@@ -166,6 +165,17 @@ public class AuthRepo {
                 mAddUserToDatabaseProgress.setValue(AddUserToDatabaseProgress.FAILED);
             }
         });
+    }
+
+    public boolean isLoggedIn() {
+        return mAuth.getValue().getCurrentUser() != null;
+    }
+
+    public void signOut() {
+        mAuth.getValue().signOut();
+        if (mGoogleSignInClient.getValue() != null) {
+            mGoogleSignInClient.getValue().signOut();
+        }
     }
 
     enum LoginProgress {
