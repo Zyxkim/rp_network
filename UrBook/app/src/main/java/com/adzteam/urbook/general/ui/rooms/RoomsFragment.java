@@ -1,6 +1,5 @@
 package com.adzteam.urbook.general.ui.rooms;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.adzteam.urbook.room.RoomActivity;
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 
 import java.util.ArrayList;
@@ -44,6 +42,9 @@ public class RoomsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
         View view = inflater.inflate(R.layout.fragment_rooms, container, false);
 

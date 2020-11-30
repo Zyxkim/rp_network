@@ -15,17 +15,6 @@
       },
       "oauth_client": [
         {
-<<<<<<< HEAD
-          "client_id": "490808674601-48vepsgpl4rr33f7il7o76euev7jb84v.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.adzteam.urbook",
-            "certificate_hash": "a66fec5ebeeb9099b88785f7a6b798ed6e2a8105"
-          }
-        },
-        {
-=======
->>>>>>> GeneralActivitiesUI
           "client_id": "490808674601-jbeu5pgu2hgjj1gakc02v67pd426d7eg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
