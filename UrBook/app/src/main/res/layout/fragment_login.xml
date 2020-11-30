@@ -93,16 +93,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password" />
 
-            <ImageView
-                android:id="@+id/facebookSignIn"
-                android:layout_weight="2"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:contentDescription="@null"
-                android:src="@drawable/facebook_auth"
-                app:layout_constraintEnd_toStartOf="@+id/googleAuth"
-                app:layout_constraintTop_toBottomOf="@+id/password" />
-
         <ImageView
             android:id="@+id/googleSignIn"
             android:layout_weight="2"
