@@ -139,6 +139,36 @@ public class AuthRepo {
     public void loginWithGoogle() {
         mGoogleSignInIntent.setValue(GoogleAuth.getGoogleIntent(mGoogleSignInClient.getValue()));
         mGoogleSignInIntent.setValue(null);
+
+        try {
+            FileOutputStream fos = mContext.openFileOutput("Profile.txt", mContext.MODE_PRIVATE);
+
+            XmlSerializer serializer = Xml.newSerializer();
+            serializer.setOutput(fos, "UTF-8");
+            serializer.startDocument(null, Boolean.valueOf(true));
+            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+
+            serializer.startTag(null, "root");
+
+            serializer.startTag(null, "name");
+            serializer.text("NAME");
+            serializer.endTag(null, "name");
+
+            serializer.startTag(null, "email");
+            serializer.text("gmail");
+            serializer.endTag(null, "email");
+
+            serializer.startTag(null, "password");
+            serializer.text("-");
+            serializer.endTag(null, "password");
+
+            serializer.endDocument();
+            serializer.flush();
+
+            fos.close();
+        } catch (Exception e) {
+            //Toast.makeText(this,"Error:"+ e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void catchGoogleResult(@Nullable Intent data) {
