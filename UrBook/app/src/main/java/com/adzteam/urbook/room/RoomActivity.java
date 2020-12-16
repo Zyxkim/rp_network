@@ -7,12 +7,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toolbar;
 
-import androidx.annotation.Nullable;
+import androidx.appcompat.view.menu.ActionMenuItemView;
 
-import com.adzteam.urbook.general.GeneralActivity;
 import com.adzteam.urbook.room.model.Message;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
@@ -33,7 +30,7 @@ public class RoomActivity extends GeneralRoomActivity
     }
 
     private MessagesList messagesList;
-    private Button mBtGoBack;
+    private ActionMenuItemView mBtGoBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +45,7 @@ public class RoomActivity extends GeneralRoomActivity
         input.setTypingListener(this);
         input.setAttachmentsListener(this);
 
-        mBtGoBack = (Button) findViewById(R.id.home);
+        mBtGoBack = (ActionMenuItemView) findViewById(R.id.home);
 
         mBtGoBack.setOnClickListener(new View.OnClickListener() {
             @Override

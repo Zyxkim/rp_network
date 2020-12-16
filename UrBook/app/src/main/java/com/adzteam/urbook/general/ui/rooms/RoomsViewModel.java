@@ -1,7 +1,13 @@
 package com.adzteam.urbook.general.ui.rooms;
 
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
 
-public class RoomsViewModel extends ViewModel {
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 
+public class RoomsViewModel extends AndroidViewModel {
+
+    public RoomsViewModel(@NonNull Application application) {
+        super(application);
+    }
 }

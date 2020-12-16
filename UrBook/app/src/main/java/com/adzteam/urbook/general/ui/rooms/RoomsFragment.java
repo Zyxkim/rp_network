@@ -1,19 +1,19 @@
 package com.adzteam.urbook.general.ui.rooms;
 
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,7 +27,8 @@ import com.adzteam.urbook.general.ui.RoomsDataSource;
 
 public class RoomsFragment extends Fragment {
 
-    Button mNewRoomBtn;
+    private ActionMenuItemView mNewRoomBtn;
+    private RoomsViewModel mRoomsViewModel;
 
     private static final int START_LIST = 100;
     private final String EXTRA = "EXTRA";
@@ -42,24 +43,11 @@ public class RoomsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        View view = inflater.inflate(R.layout.fragment_rooms, container, false);
-
-        mNewRoomBtn = view.findViewById(R.id.addRoom);
-
-        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditDialog();
-            }
-        });
-
-        setHasOptionsMenu(true);
-
-        return view;
+        mRoomsViewModel = new ViewModelProvider(this).get(RoomsViewModel.class);
+        return inflater.inflate(R.layout.fragment_rooms, container, false);
     }
 
     @Override
@@ -74,13 +62,16 @@ public class RoomsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView list = view.findViewById(R.id.recyclerView);
+        list.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
         list.setAdapter(ADAPTER);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            list.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
-        } else {
-            list.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
-        }
+        mNewRoomBtn = view.findViewById(R.id.add_room);
+        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditDialog();
+            }
+        });
     }
 
     private void showEditDialog() {
