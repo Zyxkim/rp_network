@@ -8,11 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toolbar;
 
-import androidx.annotation.Nullable;
-
-import com.adzteam.urbook.general.GeneralActivity;
 import com.adzteam.urbook.room.model.Message;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;

@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
-import java.io.FileOutputStream;
-
 public class AuthActivity extends AppCompatActivity {
 
     private AuthActivityViewModel mAuthActivityViewModel;

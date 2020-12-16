@@ -1,7 +1,5 @@
 package com.adzteam.urbook.general.ui;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class RoomsDataSource {
     public String NUMBER;
     public String roomDescription;
