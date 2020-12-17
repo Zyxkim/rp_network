@@ -36,6 +36,7 @@
     <string name="title_feed">News Feed</string>
     <string name="title_rooms">Rooms</string>
     <string name="title_profile">Profile</string>
+    <string name="title_friends">Friends</string>
 
     <string name="profile_name">MsReader</string>
     <string name="profile_title">Your Profile</string>
