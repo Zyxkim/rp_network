@@ -1,4 +1,4 @@
-package com.adzteam.urbook.authentification;
+package com.adzteam.urbook.authentification.login;
 
 import android.app.Application;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
+import com.adzteam.urbook.authentification.AuthRepo;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -92,7 +93,6 @@ public class LoginViewModel extends AndroidViewModel {
             }
         });
         mRepo.loginWithGoogle();
-        //mLoginState.setValue(LoginViewModel.LoginState.SUCCESS);
     }
 
     public void catchGoogleResult(@Nullable Intent data) {

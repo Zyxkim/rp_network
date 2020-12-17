@@ -1,6 +1,9 @@
 package com.adzteam.urbook.authentification;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.authentification.login.LoginFragment;
+import com.adzteam.urbook.authentification.registration.RegistrationFragment;
+import com.adzteam.urbook.authentification.reset_password.ResetPasswordFragment;
 import com.adzteam.urbook.general.GeneralActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,8 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-
-import java.io.FileOutputStream;
 
 public class AuthActivity extends AppCompatActivity {
 

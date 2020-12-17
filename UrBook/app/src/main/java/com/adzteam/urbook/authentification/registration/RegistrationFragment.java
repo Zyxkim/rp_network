@@ -1,4 +1,4 @@
-package com.adzteam.urbook.authentification;
+package com.adzteam.urbook.authentification.registration;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.authentification.AuthActivity;
+import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class RegistrationFragment extends Fragment {
@@ -52,7 +53,8 @@ public class RegistrationFragment extends Fragment {
         mRegistrationViewModel = new ViewModelProvider(getActivity()).get(RegistrationViewModel.class);
 
         mRegistrationViewModel.getRegistrationLiveData().observe(getViewLifecycleOwner(), new RegistrationDataObserver());
-        mRegistrationViewModel.getRegistrationState().observe(getViewLifecycleOwner(), new ProgressObserver());
+        mRegistrationViewModel.getRegistrationState().observe(getViewLifecycleOwner(), new RegisterProgressObserver());
+        mRegistrationViewModel.getLoginState().observe(getViewLifecycleOwner(), new LoginProgressObserver());
         mRegistrationViewModel.getAddUserToDatabaseState().observe(getViewLifecycleOwner(), new AddToDatabaseObserver());
         mRegistrationViewModel.getGoogleSignInIntent().observe(getViewLifecycleOwner(), new IntentObserver());
 
@@ -133,7 +135,22 @@ public class RegistrationFragment extends Fragment {
         }
     }
 
-    private class ProgressObserver implements Observer<RegistrationViewModel.RegistrationState> {
+    private class LoginProgressObserver implements Observer<RegistrationViewModel.LoginState> {
+
+        @Override
+        public void onChanged(RegistrationViewModel.LoginState loginState) {
+            if (loginState == RegistrationViewModel.LoginState.SUCCESS) {
+                Intent intent = new Intent(getActivity(), GeneralActivity.class);
+                startActivity(intent);
+            } else if (loginState == RegistrationViewModel.LoginState.FAILED) {
+
+            } if (loginState == RegistrationViewModel.LoginState.IN_PROGRESS) {
+
+            }
+        }
+    }
+
+    private class RegisterProgressObserver implements Observer<RegistrationViewModel.RegistrationState> {
 
         @Override
         public void onChanged(RegistrationViewModel.RegistrationState registrationState) {
@@ -148,6 +165,8 @@ public class RegistrationFragment extends Fragment {
             }
         }
     }
+
+
 
     private class AddToDatabaseObserver implements Observer<RegistrationViewModel.AddUserToDatabaseState> {
 

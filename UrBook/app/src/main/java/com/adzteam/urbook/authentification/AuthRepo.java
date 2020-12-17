@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.adzteam.urbook.authentification.login.LoginViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,16 +21,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.FileOutputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.security.auth.callback.Callback;
 
 public class AuthRepo {
     private static final int RC_SIGN_IN = 9001;
@@ -132,8 +133,6 @@ public class AuthRepo {
                 }
             }
         });
-
-
     }
 
     public void loginWithGoogle() {
@@ -172,8 +171,8 @@ public class AuthRepo {
     }
 
     public void catchGoogleResult(@Nullable Intent data) {
-        GoogleAuth.catchResult(data, mAuth.getValue());
-        mLoginProgress.setValue(LoginProgress.SUCCESS);
+        Log.i("www", "CATCH");
+        GoogleAuth.catchResult(data, mAuth.getValue(), new LoginCallback());
     }
 
     public void resetPassword(String mail) {
@@ -248,31 +247,50 @@ public class AuthRepo {
         }
     }
 
-    enum LoginProgress {
+    public enum LoginProgress {
         NONE,
         SUCCESS,
+        IN_PROGRESS,
         FAILED,
     }
 
-    enum RegistrationProgress {
+    public enum RegistrationProgress {
         NONE,
         SUCCESS,
         FAILED,
         SEND_EMAIL,
     }
 
-    enum AddUserToDatabaseProgress {
+    public enum AddUserToDatabaseProgress {
         NONE,
         SUCCESS,
         FAILED,
     }
 
-    enum ResetPasswordProgress {
+    public enum ResetPasswordProgress {
         NONE,
         SUCCESS,
         FAILED,
     }
 
+    public interface Callback {
+
+        public void setSuccess();
+        public void setFailed();
+    }
+
+    public class LoginCallback implements Callback {
+
+        @Override
+        public void setSuccess() {
+            mLoginProgress.setValue(LoginProgress.SUCCESS);
+        }
+
+        @Override
+        public void setFailed() {
+            mLoginProgress.setValue(LoginProgress.FAILED);
+        }
+    }
 
 }
 
