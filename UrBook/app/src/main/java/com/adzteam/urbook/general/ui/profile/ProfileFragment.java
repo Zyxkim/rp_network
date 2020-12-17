@@ -47,6 +47,7 @@ public class ProfileFragment extends Fragment {
 
     private ProfileViewModel mProfileViewModel;
     private ActionMenuItemView mLogOutBottom;
+    private ActionMenuItemView mEditProfileBtn;
 
     private ImageButton mNewRoomBtn;
     
@@ -63,12 +64,21 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mLogOutBottom = view.findViewById(R.id.logout);
+        mEditProfileBtn = view.findViewById(R.id.edit);
 
         mLogOutBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mProfileViewModel.signOut();
                 Intent intent = new Intent(getActivity(), AuthActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -86,6 +96,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        /*
         FileInputStream fis = null;
         InputStreamReader isr = null;
 
@@ -168,6 +179,7 @@ public class ProfileFragment extends Fragment {
             for (int j = 0; j < item.getTextContent().length(); j++) password += "*";
             ((TextView)view.findViewById(R.id.password_profile)).setText(password);
         }
+         */
     }
 
     private void showEditDialog() {
