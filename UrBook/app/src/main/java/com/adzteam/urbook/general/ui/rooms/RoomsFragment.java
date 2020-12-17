@@ -34,8 +34,8 @@ public class RoomsFragment extends Fragment {
     private final String EXTRA = "EXTRA";
 
     private int mCounter = START_LIST;
-    private final ArrayList<RoomsDataSource> LIST_DATA = new ArrayList<>();
-    private final MyAdapter ADAPTER = new MyAdapter(LIST_DATA);
+    private final ArrayList<RoomsDataSource> mRoomsData = new ArrayList<>();
+    private final MyAdapter ADAPTER = new MyAdapter(mRoomsData);
 
     public RoomsFragment() {
     }
@@ -92,7 +92,7 @@ public class RoomsFragment extends Fragment {
                             Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
                         } else {
                             mCounter++;
-                            LIST_DATA.add(new RoomsDataSource(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
+                            mRoomsData.add(new RoomsDataSource(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
                             ADAPTER.notifyItemInserted(mCounter - 1);
                             Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
                             flatDialog.dismiss();
@@ -115,10 +115,10 @@ public class RoomsFragment extends Fragment {
     }
 
     class MyAdapter extends RecyclerView.Adapter<MyHolder> {
-        private final ArrayList<RoomsDataSource> LIST_DATA_ADAPTER;
+        private final ArrayList<RoomsDataSource> mRoomsAdapter;
 
         public MyAdapter(ArrayList<RoomsDataSource> listDataAdapter) {
-            this.LIST_DATA_ADAPTER = listDataAdapter;
+            this.mRoomsAdapter = listDataAdapter;
         }
 
         @NonNull
@@ -130,10 +130,10 @@ public class RoomsFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
-            holder.TEXT_VIEW.setText(LIST_DATA_ADAPTER.get(position).NUMBER);
-            holder.mRoomDescription.setText(LIST_DATA_ADAPTER.get(position).roomDescription);
+            holder.mRoomName.setText(mRoomsAdapter.get(position).NUMBER);
+            holder.mRoomDescription.setText(mRoomsAdapter.get(position).roomDescription);
 
-            holder.TEXT_VIEW.setOnClickListener(new View.OnClickListener() {
+            holder.mRoomName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (getActivity() instanceof GeneralActivity) {
@@ -145,18 +145,18 @@ public class RoomsFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return LIST_DATA_ADAPTER.size();
+            return mRoomsAdapter.size();
         }
     }
 
     public static class MyHolder extends RecyclerView.ViewHolder {
-        final TextView TEXT_VIEW;
+        final TextView mRoomName;
         final TextView mRoomDescription;
         //final CircleImageView mRoomImage;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
-            TEXT_VIEW = itemView.findViewById(R.id.number);
+            mRoomName = itemView.findViewById(R.id.room_name);
             mRoomDescription = itemView.findViewById(R.id.room_description);
             //mRoomImage = itemView.findViewById(R.id.room_image);
         }

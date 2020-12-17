@@ -1,22 +1,29 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.adapters.Post;
+import com.adzteam.urbook.adapters.PostsAdapter;
 import com.adzteam.urbook.authentification.AuthActivity;
+import com.example.flatdialoglibrary.dialog.FlatDialog;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -41,10 +48,14 @@ public class ProfileFragment extends Fragment {
     private ProfileViewModel mProfileViewModel;
     private ActionMenuItemView mLogOutBottom;
 
+    private ImageButton mNewRoomBtn;
+    
+    private final ArrayList<Post> mPostsData = new ArrayList<>();
+    private final PostsAdapter mAdapter = new PostsAdapter(mPostsData);
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         mProfileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-        //View root = inflater.inflate(R.layout.fragment_profile, container, false);
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -59,6 +70,19 @@ public class ProfileFragment extends Fragment {
                 mProfileViewModel.signOut();
                 Intent intent = new Intent(getActivity(), AuthActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        RecyclerView rv = view.findViewById(R.id.recyclerView);
+        rv.setHasFixedSize(true);
+        rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
+        rv.setAdapter(mAdapter);
+
+        mNewRoomBtn = view.findViewById(R.id.add_feed);
+        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditDialog();
             }
         });
 
@@ -144,5 +168,42 @@ public class ProfileFragment extends Fragment {
             for (int j = 0; j < item.getTextContent().length(); j++) password += "*";
             ((TextView)view.findViewById(R.id.password_profile)).setText(password);
         }
+    }
+
+    private void showEditDialog() {
+        final FlatDialog flatDialog = new FlatDialog(getActivity());
+        flatDialog.setTitle("NewRoom")
+                .setBackgroundColor(Color.parseColor("#442D68"))
+                .setFirstButtonColor(Color.parseColor("#F97794"))
+                .setSecondButtonColor(Color.WHITE)
+                .setSecondButtonTextColor(Color.parseColor("#F97794"))
+                .setFirstTextFieldHint("Room Name")
+                .setSecondTextFieldHint("Room Description")
+                .setFirstButtonText("CREATE")
+                .setSecondButtonText("CANCEL")
+                .withFirstButtonListner(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (TextUtils.isEmpty(flatDialog.getFirstTextField())) {
+                            Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mPostsData.add(new Post(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
+                            Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
+                            flatDialog.dismiss();
+                        }
+                    }
+                })
+                .withSecondButtonListner(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        flatDialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

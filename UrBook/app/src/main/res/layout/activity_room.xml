@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:menu="@menu/top_room_app_bar"
-        app:title="@string/chatrooms"
+        app:title="@string/chatroom"
         app:titleTextColor="@color/colorAccent"
         android:background="@color/colorPrimary"
         style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />
