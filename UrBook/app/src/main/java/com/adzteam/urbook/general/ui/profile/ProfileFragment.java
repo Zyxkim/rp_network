@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.authentification.AuthActivity;
+import com.adzteam.urbook.general.GeneralActivity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -57,8 +58,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mProfileViewModel.signOut();
-                Intent intent = new Intent(getActivity(), AuthActivity.class);
-                startActivity(intent);
+                ((GeneralActivity) getActivity()).replaceWithAuthActivity();
             }
         });
 

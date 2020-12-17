@@ -10,6 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.authentification.AuthActivity;
 import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -35,6 +36,12 @@ public class GeneralActivity extends AppCompatActivity {
 
     public void roomClickListener() {
         Intent intent = new Intent(this, RoomActivity.class);
+        startActivity(intent);
+    }
+
+    public void replaceWithAuthActivity() {
+        Intent intent = new Intent(this, AuthActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 }
