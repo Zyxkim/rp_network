@@ -140,8 +140,7 @@ public class RegistrationFragment extends Fragment {
         @Override
         public void onChanged(RegistrationViewModel.LoginState loginState) {
             if (loginState == RegistrationViewModel.LoginState.SUCCESS) {
-                Intent intent = new Intent(getActivity(), GeneralActivity.class);
-                startActivity(intent);
+                ((AuthActivity) getActivity()).replaceWithGeneralActivity();
             } else if (loginState == RegistrationViewModel.LoginState.FAILED) {
 
             } if (loginState == RegistrationViewModel.LoginState.IN_PROGRESS) {

@@ -129,8 +129,8 @@ public class LoginFragment extends Fragment {
                 //Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
             } else if (loginState == LoginViewModel.LoginState.SUCCESS) {
                 //Toast.makeText(getActivity(), "logged in successfully", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(), GeneralActivity.class);
-                startActivity(intent);
+                ((AuthActivity) getActivity()).replaceWithGeneralActivity();
+
             } else {
 
             }
