@@ -30,13 +30,9 @@ public class AuthActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             if (mAuthActivityViewModel.isLoggedIn()) {
-                Intent intent = new Intent(this, GeneralActivity.class);
-                startActivity(intent);
+                replaceWithGeneralActivity();
             } else {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .add(R.id.activity_auth_container, new LoginFragment())
-                        .commit();
+                replaceWithLoginFragment();
             }
         }
     }

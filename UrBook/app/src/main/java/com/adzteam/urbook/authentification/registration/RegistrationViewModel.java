@@ -162,7 +162,6 @@ public class RegistrationViewModel extends AndroidViewModel {
         public boolean isValidate() {
             return mIsValidate;
         }
-
         public boolean isEmailValidate() {
             return validateEmail(mEmail);
         }
