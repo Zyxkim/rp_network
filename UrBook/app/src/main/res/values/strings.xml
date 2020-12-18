@@ -81,6 +81,9 @@
     <string name="post_content">Enter Your Text</string>
     <string name="create_new_post">Create New Post</string>
 
+    <string name="find_room">Find Room</string>
+    <string name="content_description_find_room">Find Room</string>
+
     <string name="back">Go Back</string>
     <string name="content_description_back">Go Back</string>
 
