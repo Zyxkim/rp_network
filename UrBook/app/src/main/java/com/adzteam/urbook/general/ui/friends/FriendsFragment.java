@@ -1,11 +1,13 @@
-package com.adzteam.urbook.general.ui.rooms;
+package com.adzteam.urbook.general.ui.friends;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,35 +19,27 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
-import com.adzteam.urbook.adapters.Room;
-import com.adzteam.urbook.adapters.RoomsAdapter;
-import com.example.flatdialoglibrary.dialog.FlatDialog;
 
 import java.util.ArrayList;
 
-public class RoomsFragment extends Fragment {
+import com.adzteam.urbook.adapters.Friend;
+import com.adzteam.urbook.adapters.FriendsAdapter;
+import com.adzteam.urbook.general.ui.profile.ProfileViewModel;
+import com.example.flatdialoglibrary.dialog.FlatDialog;
 
-    private ActionMenuItemView mNewRoomBtn;
-    private RoomsViewModel mRoomsViewModel;
+public class FriendsFragment extends Fragment {
 
-    private final ArrayList<Room> mRoomsData = new ArrayList<>();
-    private final RoomsAdapter mAdapter = new RoomsAdapter(mRoomsData);
+    private ProfileViewModel mFriendsViewModel;
 
-    public RoomsFragment() {
-    }
+    private ActionMenuItemView mNewFriendBtn;
 
-    @Override
+    private final ArrayList<Friend> mFriendsData = new ArrayList<>();
+    private final FriendsAdapter mAdapter = new FriendsAdapter(mFriendsData);
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        mRoomsViewModel = new ViewModelProvider(this).get(RoomsViewModel.class);
-        return inflater.inflate(R.layout.fragment_rooms, container, false);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        mFriendsViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        return inflater.inflate(R.layout.fragment_friends, container, false);
     }
 
     @Override
@@ -57,8 +51,8 @@ public class RoomsFragment extends Fragment {
         rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
         rv.setAdapter(mAdapter);
 
-        mNewRoomBtn = view.findViewById(R.id.add_room);
-        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
+        mNewFriendBtn = view.findViewById(R.id.add_friend);
+        mNewFriendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showEditDialog();
@@ -68,23 +62,23 @@ public class RoomsFragment extends Fragment {
 
     private void showEditDialog() {
         final FlatDialog flatDialog = new FlatDialog(getActivity());
-        flatDialog.setTitle("NewRoom")
+        flatDialog.setTitle("New Friend")
                 .setBackgroundColor(Color.parseColor("#442D68"))
                 .setFirstButtonColor(Color.parseColor("#F97794"))
                 .setSecondButtonColor(Color.WHITE)
                 .setSecondButtonTextColor(Color.parseColor("#F97794"))
-                .setFirstTextFieldHint("Room Name")
-                .setSecondTextFieldHint("Room Description")
+                .setFirstTextFieldHint("Friend Name")
+                .setSecondTextFieldHint("Friend Status")
                 .setFirstButtonText("CREATE")
                 .setSecondButtonText("CANCEL")
                 .withFirstButtonListner(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (TextUtils.isEmpty(flatDialog.getFirstTextField())) {
-                            Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Add friend name please", Toast.LENGTH_SHORT).show();
                         } else {
-                            mRoomsData.add(new Room(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
-                            Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
+                            mFriendsData.add(new Friend(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
+                            Toast.makeText(getActivity(), "Wow! You have friends!", Toast.LENGTH_SHORT).show();
                             flatDialog.dismiss();
                         }
                     }

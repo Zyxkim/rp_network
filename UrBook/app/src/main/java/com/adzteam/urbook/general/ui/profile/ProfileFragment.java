@@ -1,13 +1,14 @@
 package com.adzteam.urbook.general.ui.profile;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,16 +17,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.adapters.Post;
+import com.adzteam.urbook.adapters.PostsAdapter;
 import com.adzteam.urbook.authentification.AuthActivity;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Document;
@@ -40,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,17 +55,19 @@ public class ProfileFragment extends Fragment {
 
     private ProfileViewModel mProfileViewModel;
     private ActionMenuItemView mLogOutBottom;
+    private ActionMenuItemView mEditProfileBtn;
     private CircleImageView mProfileImage;
-    private MaterialButton mEditProfileBtn;
     private StorageReference mStorageReference;
     private FirebaseAuth mAuth;
 
-    private static final int RC_SIGN_IN = 1000;
+    private ImageButton mNewRoomBtn;
+    
+    private final ArrayList<Post> mPostsData = new ArrayList<>();
+    private final PostsAdapter mAdapter = new PostsAdapter(mPostsData);
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         mProfileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-        //View root = inflater.inflate(R.layout.fragment_profile, container, false);
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -69,6 +75,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mLogOutBottom = view.findViewById(R.id.logout);
+        mEditProfileBtn = view.findViewById(R.id.edit);
 
         mLogOutBottom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +86,28 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        RecyclerView rv = view.findViewById(R.id.recyclerView);
+        rv.setHasFixedSize(true);
+        rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
+        rv.setAdapter(mAdapter);
+
+        mNewRoomBtn = view.findViewById(R.id.add_feed);
+        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditDialog();
+            }
+        });
+
+        /*
         FileInputStream fis = null;
         InputStreamReader isr = null;
 
@@ -160,10 +189,8 @@ public class ProfileFragment extends Fragment {
             String password = "";
             for (int j = 0; j < item.getTextContent().length(); j++) password += "*";
             ((TextView)view.findViewById(R.id.password_profile)).setText(password);
-        }
-
+        }*/
         mProfileImage = view.findViewById(R.id.profile_image);
-        mEditProfileBtn = view.findViewById(R.id.editProfileBtn);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
@@ -175,43 +202,42 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent openGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(openGallery, RC_SIGN_IN);
+    }
 
-            }
-        });
+    private void showEditDialog() {
+        final FlatDialog flatDialog = new FlatDialog(getActivity());
+        flatDialog.setTitle("NewRoom")
+                .setBackgroundColor(Color.parseColor("#442D68"))
+                .setFirstButtonColor(Color.parseColor("#F97794"))
+                .setSecondButtonColor(Color.WHITE)
+                .setSecondButtonTextColor(Color.parseColor("#F97794"))
+                .setFirstTextFieldHint("Room Name")
+                .setSecondTextFieldHint("Room Description")
+                .setFirstButtonText("CREATE")
+                .setSecondButtonText("CANCEL")
+                .withFirstButtonListner(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (TextUtils.isEmpty(flatDialog.getFirstTextField())) {
+                            Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mPostsData.add(new Post(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
+                            Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
+                            flatDialog.dismiss();
+                        }
+                    }
+                })
+                .withSecondButtonListner(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        flatDialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == Activity.RESULT_OK) {
-                Uri imgUri = data.getData();
-                uploadImageToFirebase(imgUri);
-            }
-        }
-    }
-    private void uploadImageToFirebase(Uri imgUri) {
-        StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-        profileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Picasso.get().load(uri).into(mProfileImage);
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Failed to upload", Toast.LENGTH_SHORT).show();
-            }
-        });
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }
