@@ -73,4 +73,21 @@
         sunt in culpa qui officia deserunt mollit anim id est laborum.
     </string>
 
+    <string name="room_name">Enter New Room Name</string>
+    <string name="room_description">Enter Room Description</string>
+    <string name="room_image">Add Room Cover</string>
+    <string name="create_new_room">Create New Room</string>
+
+    <string name="post_content">Enter Your Text</string>
+    <string name="create_new_post">Create New Post</string>
+
+    <string name="back">Go Back</string>
+    <string name="content_description_back">Go Back</string>
+
+    <string name="save">Save</string>
+    <string name="content_description_save">Save</string>
+
+    <string name="add_to_room">Invite People</string>
+    <string name="content_description_add_to_room">Invite People</string>
+
 </resources>

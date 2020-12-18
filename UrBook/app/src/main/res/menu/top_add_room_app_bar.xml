@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/back"
+        android:icon="@drawable/ic_baseline_arrow_back_24"
+        android:title="@string/logout"
+        android:contentDescription="@string/content_description_logout"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/add_to_room"
+        android:icon="@drawable/ic_baseline_person_add_24"
+        android:title="@string/add_to_room"
+        android:contentDescription="@string/content_description_add_to_room"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/save"
+        android:icon="@drawable/ic_baseline_done_24"
+        android:title="@string/logout"
+        android:contentDescription="@string/content_description_logout"
+        app:showAsAction="ifRoom" />
+
+</menu>
