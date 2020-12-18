@@ -75,30 +75,32 @@ public class RoomsFragment extends Fragment {
                 showEditDialog();
             }
         });
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = db.collection("rooms");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        if(savedInstanceState == null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference collectionReference = db.collection("rooms");
+            collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    Log.i("aaa", "task suc");
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String name = (String) document.get("name");
-                        String description = (String) document.get("description");
-                        String creator = (String) document.get("creator");
-                        String date = (String) document.get("date");
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Log.i("aaa", "task suc");
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String name = (String) document.get("name");
+                            String description = (String) document.get("description");
+                            String creator = (String) document.get("creator");
+                            String date = (String) document.get("date");
 
-                        Room newRoom = new Room(name, description, creator, date);
-                        mRoomsData.add(newRoom);
-                        mAdapter.notifyItemInserted(mRoomsData.size()-1);
-                        Log.i("aaa", String.valueOf(mRoomsData.size()));
+                            Room newRoom = new Room(name, description, creator, date);
+                            mRoomsData.add(newRoom);
+                            mAdapter.notifyItemInserted(mRoomsData.size() - 1);
+                            Log.i("aaa", String.valueOf(mRoomsData.size()));
+                        }
+                    } else {
+                        Log.i("aaa", "not suc");
                     }
-                } else {
-                    Log.i("aaa", "not suc");
                 }
-            }
-        });
+            });
+        }
     }
 
     private void showEditDialog() {
@@ -140,6 +142,7 @@ public class RoomsFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("isThereRoomArray", "true");
         super.onSaveInstanceState(outState);
     }
 }
