@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".general.ui.profile.ProfileFragment">
+    tools:context=".general.ui.rooms.SearchRoomActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -12,27 +12,26 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/rooms_bar"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/top_rooms_app_bar"
-            app:title="@string/chatrooms"
-            app:titleTextColor="@color/colorAccent"
-            android:background="@color/colorPrimary"
-            style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />
+            android:layout_height="wrap_content">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/search_room_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:menu="@menu/top_search_room_app_bar"
+                app:title="@string/chatrooms"
+                app:titleTextColor="@color/colorAccent"
+                android:background="@color/colorPrimary"
+                style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
             tools:listitem="@layout/rooms_item" />
 
     </LinearLayout>
