@@ -24,11 +24,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.PostsAdapter;
+import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.authentification.AuthActivity;
 
+import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
 import com.example.flatdialoglibrary.dialog.FlatDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 //import com.squareup.picasso.Picasso;
@@ -70,13 +78,17 @@ public class ProfileFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         mProfileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mLogOutBottom = view.findViewById(R.id.logout);
         mEditProfileBtn = view.findViewById(R.id.edit);
 
@@ -106,9 +118,13 @@ public class ProfileFragment extends Fragment {
         mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showEditDialog();
+                ((GeneralActivity) getActivity()).replaceWithCreatePostActivity();
             }
         });
+
+        if(savedInstanceState == null) {
+            downloadPosts(null);
+        }
 
         /*
         FileInputStream fis = null;
@@ -173,7 +189,7 @@ public class ProfileFragment extends Fragment {
 
         dom.getDocumentElement().normalize();
 
-        NodeList nameItems = dom.getElementsByTagName("name");
+        NodeList nameItems = dom.getElementsByTagName("characterName");
         NodeList emailItems = dom.getElementsByTagName("email");
         NodeList passwordItems = dom.getElementsByTagName("password");
 
@@ -207,36 +223,35 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void showEditDialog() {
-        final FlatDialog flatDialog = new FlatDialog(getActivity());
-        flatDialog.setTitle("NewRoom")
-                .setBackgroundColor(Color.parseColor("#442D68"))
-                .setFirstButtonColor(Color.parseColor("#F97794"))
-                .setSecondButtonColor(Color.WHITE)
-                .setSecondButtonTextColor(Color.parseColor("#F97794"))
-                .setFirstTextFieldHint("Room Name")
-                .setSecondTextFieldHint("Room Description")
-                .setFirstButtonText("CREATE")
-                .setSecondButtonText("CANCEL")
-                .withFirstButtonListner(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (TextUtils.isEmpty(flatDialog.getFirstTextField())) {
-                            Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
-                        } else {
-                            mPostsData.add(new Post(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
-                            Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
-                            flatDialog.dismiss();
+    public void downloadPosts(final RoomsFragment.RefreshCallBack callBack) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference collectionReference = db.collection("posts");
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String creator = (String) document.get("creator");
+
+                        if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            String date = (String) document.get("date");
+                            String characterName = (String) document.get("characterName");
+                            String content = (String) document.get("content");
+
+                            Post newPost = new Post(date, creator, characterName, content);
+                            mPostsData.add(newPost);
                         }
                     }
-                })
-                .withSecondButtonListner(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        flatDialog.dismiss();
+                    mAdapter.notifyDataSetChanged();
+                    if (callBack != null) {
+                        callBack.stopResreshing();
                     }
-                })
-                .show();
+                } else {
+                    Log.i("lol", "kek");
+                }
+            }
+        });
     }
 
     @Override

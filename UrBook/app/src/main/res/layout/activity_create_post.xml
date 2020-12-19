@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".general.ui.create.CreatePostActivity">
+    tools:context=".general.ui.profile.CreatePostActivity">
 
     <View
         android:layout_width="match_parent"
@@ -26,42 +26,97 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:menu="@menu/top_add_post_app_bar"
-            app:title="@string/create_new_room"
+            app:title="@string/create_new_post"
             app:titleTextColor="@color/colorAccent"
             android:background="@color/colorPrimary"
             style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/post_content_text"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        app:boxStrokeWidth="2dp"
-        android:hint="@string/post_content"
-        app:boxStrokeColor="@color/colorAccent"
-        app:hintAnimationEnabled="true"
-        app:counterEnabled="true"
-        app:counterMaxLength="200"
-        app:hintTextColor="@color/colorAccent">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/new_post_content"
-            android:background="@color/colorPrimary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="?attr/actionBarSize"
+        <ImageView
+            android:id="@+id/post_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:gravity="top|start"
-            android:lines="3"
-            android:maxLines="10"
-            android:minLines="3"
-            android:singleLine="false"
-            android:scrollbars="vertical"
-            android:maxLength="200"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:src="@drawable/no_cover_room" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editPostImageBtn"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/room_image"
+            android:textColor="@color/colorAccentLight"
+            app:strokeColor="@color/colorAccentLight"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/post_character_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:boxStrokeWidth="2dp"
+            android:hint="@string/post_content"
+            app:boxStrokeColor="@color/colorAccent"
+            app:hintAnimationEnabled="true"
+            app:counterEnabled="true"
+            app:counterMaxLength="50"
+            app:hintTextColor="@color/colorAccent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/new_character_name_content"
+                android:background="@color/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="top|start"
+                android:maxLength="50"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/post_content_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:boxStrokeWidth="2dp"
+            android:hint="@string/post_content"
+            app:boxStrokeColor="@color/colorAccent"
+            app:hintAnimationEnabled="true"
+            app:counterEnabled="true"
+            app:counterMaxLength="200"
+            app:hintTextColor="@color/colorAccent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/new_post_content"
+                android:background="@color/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="top|start"
+                android:lines="3"
+                android:maxLines="10"
+                android:minLines="3"
+                android:singleLine="false"
+                android:scrollbars="vertical"
+                android:maxLength="200"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

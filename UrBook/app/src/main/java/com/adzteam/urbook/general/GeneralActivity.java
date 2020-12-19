@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.ui.profile.CreatePostActivity;
 import com.adzteam.urbook.general.ui.rooms.CreateRoomActivity;
 import com.adzteam.urbook.authentification.AuthActivity;
 import com.adzteam.urbook.room.RoomActivity;
@@ -38,7 +39,7 @@ public class GeneralActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_friends, R.id.navigation_rooms, R.id.navigation_profile)
+                R.id.navigation_feed, R.id.navigation_rooms, R.id.navigation_profile)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -77,6 +78,11 @@ public class GeneralActivity extends AppCompatActivity {
 
     public void replaceWithCreateRoomActivity() {
         Intent intent = new Intent(this, CreateRoomActivity.class);
+        startActivity(intent);
+    }
+
+    public void replaceWithCreatePostActivity() {
+        Intent intent = new Intent(this, CreatePostActivity.class);
         startActivity(intent);
     }
 
