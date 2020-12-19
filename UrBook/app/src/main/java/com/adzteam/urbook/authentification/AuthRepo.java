@@ -11,16 +11,22 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.adzteam.urbook.R;
 import com.adzteam.urbook.authentification.login.LoginViewModel;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -62,7 +68,7 @@ public class AuthRepo {
         mResetPasswordProgress.setValue(ResetPasswordProgress.NONE);
         mAuth.setValue(FirebaseAuth.getInstance());
         db = FirebaseFirestore.getInstance();
-        mGoogleSignInClient.setValue(GoogleAuth.getGoogleSignInClient(mContext));
+        mGoogleSignInClient.setValue(getGoogleSignInClient(mContext));
     }
 
     public LiveData<GoogleSignInClient> getGoogleSignInClient() {
@@ -143,7 +149,7 @@ public class AuthRepo {
     }
 
     public void loginWithGoogle() {
-        mGoogleSignInIntent.setValue(GoogleAuth.getGoogleIntent(mGoogleSignInClient.getValue()));
+        mGoogleSignInIntent.setValue(getGoogleIntent(mGoogleSignInClient.getValue()));
         mGoogleSignInIntent.setValue(null);
 
         try {
@@ -179,7 +185,7 @@ public class AuthRepo {
 
     public void catchGoogleResult(@Nullable Intent data) {
         Log.i("www", "CATCH");
-        GoogleAuth.catchResult(data, mAuth.getValue(), new LoginCallback());
+        catchResult(data, mAuth.getValue(), new LoginCallback());
     }
 
     public void resetPassword(String mail) {
@@ -337,6 +343,50 @@ public class AuthRepo {
             mLoginProgress.setValue(LoginProgress.FAILED);
         }
     }
+
+
+    public void firebaseAuthWithGoogle(GoogleSignInAccount account, Callback callback) {
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+
+        mAuth.getValue().signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    FirebaseUser user = mAuth.getValue().getCurrentUser();
+                    addUserToDataBase(account.getEmail(), account.getDisplayName());
+                    callback.setSuccess();
+                } else {
+                    //Toast.makeText(activity, "error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public GoogleSignInClient getGoogleSignInClient(Context context){
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(context, gso);
+        return googleSignInClient;
+    }
+
+    public Intent getGoogleIntent(GoogleSignInClient googleSignInClient) {
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        return signInIntent;
+    }
+
+    public void catchResult(@Nullable Intent data, FirebaseAuth auth, AuthRepo.Callback callback) {
+        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+        try {
+            GoogleSignInAccount account = task.getResult(ApiException.class);
+            firebaseAuthWithGoogle(account, callback);
+        } catch (ApiException e) {
+            callback.setFailed();
+        }
+    }
+
 
 }
 
