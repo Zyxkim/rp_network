@@ -232,13 +232,16 @@ public class ProfileFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        String date = (String) document.get("date");
                         String creator = (String) document.get("creator");
-                        String characterName = (String) document.get("characterName");
-                        String content = (String) document.get("content");
 
-                        Post newPost = new Post(date, creator, characterName, content);
-                        mPostsData.add(newPost);
+                        if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            String date = (String) document.get("date");
+                            String characterName = (String) document.get("characterName");
+                            String content = (String) document.get("content");
+
+                            Post newPost = new Post(date, creator, characterName, content);
+                            mPostsData.add(newPost);
+                        }
                     }
                     mAdapter.notifyDataSetChanged();
                     if (callBack != null) {

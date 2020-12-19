@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:menu="@menu/top_add_post_app_bar"
-            app:title="@string/create_new_room"
+            app:title="@string/create_new_post"
             app:titleTextColor="@color/colorAccent"
             android:background="@color/colorPrimary"
             style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />

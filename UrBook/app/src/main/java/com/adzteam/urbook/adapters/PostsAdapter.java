@@ -39,7 +39,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder
     public void onBindViewHolder(MyViewHolder holder, int position) {
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Post c = mPostsList.get(position);
-        holder.mDate.setText(java.text.DateFormat.getDateTimeInstance().format(new Date()));
+        holder.mDate.setText(c.getDate());
         holder.mPostName.setText(c.getCharacterName());
         holder.mDescription.setText(c.getContent());
     }
