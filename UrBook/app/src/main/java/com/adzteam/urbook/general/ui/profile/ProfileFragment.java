@@ -27,6 +27,11 @@ import com.adzteam.urbook.authentification.AuthActivity;
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -44,6 +49,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -85,11 +91,23 @@ public class ProfileFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
+        FirebaseFirestore mFStore = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
+        TextView mName = view.findViewById(R.id.profile_name);
+        docRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+                mName.setText(documentSnapshot.getString("name"));
+                //mStatus.setText(documentSnapshot.getString("status"));
+            }
+        });
         mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                intent.putExtra("name", mName.getText().toString());
+                //intent.putExtra("status", "new status");
                 startActivity(intent);
             }
         });
@@ -192,7 +210,6 @@ public class ProfileFragment extends Fragment {
         }*/
         mProfileImage = view.findViewById(R.id.profile_image);
         mStorageReference = FirebaseStorage.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
