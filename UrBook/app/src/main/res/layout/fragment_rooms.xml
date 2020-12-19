@@ -31,13 +31,13 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
             android:id="@+id/room_swipe">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="?attr/actionBarSize"
                 tools:listitem="@layout/rooms_item" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
