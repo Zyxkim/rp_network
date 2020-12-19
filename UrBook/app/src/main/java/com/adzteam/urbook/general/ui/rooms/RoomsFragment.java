@@ -94,44 +94,7 @@ public class RoomsFragment extends Fragment {
             }
         });
     }
-
-    private void showEditDialog() {
-        final FlatDialog flatDialog = new FlatDialog(getActivity());
-        flatDialog.setTitle("NewRoom")
-                .setBackgroundColor(Color.parseColor("#442D68"))
-                .setFirstButtonColor(Color.parseColor("#F97794"))
-                .setSecondButtonColor(Color.WHITE)
-                .setSecondButtonTextColor(Color.parseColor("#F97794"))
-                .setFirstTextFieldHint("Room Name")
-                .setSecondTextFieldHint("Room Description")
-                .setFirstButtonText("CREATE")
-                .setSecondButtonText("CANCEL")
-                .withFirstButtonListner(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (TextUtils.isEmpty(flatDialog.getFirstTextField())) {
-                            Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
-                        } else {
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            CollectionReference collectionReference = db.collection("rooms");
-                            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                            Room newRoom = new Room(flatDialog.getFirstTextField(), flatDialog.getSecondTextField(), mAuth.getCurrentUser().getUid(), (new Date()).toString());
-                            collectionReference.add(newRoom);
-                            mRoomsData.add(newRoom);
-                            Toast.makeText(getActivity(), "The Room " + flatDialog.getFirstTextField() + " was created", Toast.LENGTH_SHORT).show();
-                            flatDialog.dismiss();
-                        }
-                    }
-                })
-                .withSecondButtonListner(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        flatDialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
+    
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString("isThereRoomArray", "true");
