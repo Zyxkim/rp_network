@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
+//import com.squareup.picasso.Picasso;
 import com.adzteam.urbook.general.GeneralActivity;
 
 import org.w3c.dom.Document;
@@ -83,6 +84,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mProfileViewModel.signOut();
+                Log.i("ggg", "rrr");
                 ((GeneralActivity) getActivity()).replaceWithAuthActivity();
             }
         });
@@ -196,12 +198,12 @@ public class ProfileFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        /*profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.get().load(uri).into(mProfileImage);
             }
-        });
+        });*/
 
     }
 
