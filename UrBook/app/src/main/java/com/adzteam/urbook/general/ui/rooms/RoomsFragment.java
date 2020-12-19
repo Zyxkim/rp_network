@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Room;
@@ -37,6 +38,7 @@ public class RoomsFragment extends Fragment {
 
     private ActionMenuItemView mNewRoomBtn;
     private RoomsViewModel mRoomsViewModel;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private final ArrayList<Room> mRoomsData = new ArrayList<>();
     private final RoomsAdapter mAdapter = new RoomsAdapter(mRoomsData);
@@ -75,32 +77,21 @@ public class RoomsFragment extends Fragment {
                 showEditDialog();
             }
         });
+
         if(savedInstanceState == null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference collectionReference = db.collection("rooms");
-            collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Log.i("aaa", "task suc");
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String name = (String) document.get("name");
-                            String description = (String) document.get("description");
-                            String creator = (String) document.get("creator");
-                            String date = (String) document.get("date");
-
-                            Room newRoom = new Room(name, description, creator, date);
-                            mRoomsData.add(newRoom);
-                            mAdapter.notifyItemInserted(mRoomsData.size() - 1);
-                            Log.i("aaa", String.valueOf(mRoomsData.size()));
-                        }
-                    } else {
-                        Log.i("aaa", "not suc");
-                    }
-                }
-            });
+            downloadRooms(null);
         }
+
+        mSwipeRefreshLayout = view.findViewById(R.id.room_swipe);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+
+            @Override
+            public void onRefresh() {
+                mRoomsData.clear();
+                mAdapter.notifyDataSetChanged();
+                downloadRooms(new RefreshCallBack());
+            }
+        });
     }
 
     private void showEditDialog() {
@@ -144,5 +135,42 @@ public class RoomsFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString("isThereRoomArray", "true");
         super.onSaveInstanceState(outState);
+    }
+
+    public void downloadRooms(final RefreshCallBack callBack) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference collectionReference = db.collection("rooms");
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.i("aaa", "task suc");
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String name = (String) document.get("name");
+                        String description = (String) document.get("description");
+                        String creator = (String) document.get("creator");
+                        String date = (String) document.get("date");
+
+                        Room newRoom = new Room(name, description, creator, date);
+                        mRoomsData.add(newRoom);
+                        Log.i("aaa", String.valueOf(mRoomsData.size()));
+                    }
+                    mAdapter.notifyDataSetChanged();
+                    if (callBack != null) {
+                        callBack.stopResreshing();
+                    }
+                    Log.i("aaa", "bbbb");
+                } else {
+                    Log.i("aaa", "not suc");
+                }
+            }
+        });
+    }
+
+    public class RefreshCallBack {
+        public void stopResreshing() {
+            mSwipeRefreshLayout.setRefreshing(false);
+        };
     }
 }
