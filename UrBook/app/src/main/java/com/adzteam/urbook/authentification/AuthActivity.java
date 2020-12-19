@@ -1,9 +1,13 @@
 package com.adzteam.urbook.authentification;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.authentification.login.LoginFragment;
+import com.adzteam.urbook.authentification.registration.RegistrationFragment;
+import com.adzteam.urbook.authentification.reset_password.ResetPasswordFragment;
 import com.adzteam.urbook.general.GeneralActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -26,13 +30,9 @@ public class AuthActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             if (mAuthActivityViewModel.isLoggedIn()) {
-                Intent intent = new Intent(this, GeneralActivity.class);
-                startActivity(intent);
+                replaceWithGeneralActivity();
             } else {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .add(R.id.activity_auth_container, new LoginFragment())
-                        .commit();
+                replaceWithLoginFragment();
             }
         }
     }
@@ -71,5 +71,11 @@ public class AuthActivity extends AppCompatActivity {
                 .replace(R.id.activity_auth_container, new ResetPasswordFragment())
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void replaceWithGeneralActivity() {
+        Intent intent = new Intent(this, GeneralActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

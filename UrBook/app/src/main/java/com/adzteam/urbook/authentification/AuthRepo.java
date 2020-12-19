@@ -2,6 +2,7 @@ package com.adzteam.urbook.authentification;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.util.Xml;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.adzteam.urbook.authentification.login.LoginViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,9 +26,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.security.auth.callback.Callback;
 
 public class AuthRepo {
     private static final int RC_SIGN_IN = 9001;
@@ -92,6 +102,7 @@ public class AuthRepo {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    writeIsLogin();
                     mLoginProgress.setValue(LoginProgress.SUCCESS);
 
                     try {
@@ -129,8 +140,6 @@ public class AuthRepo {
                 }
             }
         });
-
-
     }
 
     public void loginWithGoogle() {
@@ -169,8 +178,8 @@ public class AuthRepo {
     }
 
     public void catchGoogleResult(@Nullable Intent data) {
-        GoogleAuth.catchResult(data, mAuth.getValue());
-        mLoginProgress.setValue(LoginProgress.SUCCESS);
+        Log.i("www", "CATCH");
+        GoogleAuth.catchResult(data, mAuth.getValue(), new LoginCallback());
     }
 
     public void resetPassword(String mail) {
@@ -235,7 +244,26 @@ public class AuthRepo {
     }
 
     public boolean isLoggedIn() {
-        return mAuth.getValue().getCurrentUser() != null;
+        try {
+            FileInputStream fis = mContext.openFileInput("IsLogin.txt");
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(fis, StandardCharsets.UTF_8);
+            StringBuilder stringBuilder = new StringBuilder();
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            String line = reader.readLine();
+            if (line != null) stringBuilder.append(line);
+            line = reader.readLine();
+            while (line != null) {
+                stringBuilder.append('\n').append(line);
+                line = reader.readLine();
+            }
+            if (stringBuilder.toString().equals("true")) return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
     }
 
     public void signOut() {
@@ -243,33 +271,72 @@ public class AuthRepo {
         if (mGoogleSignInClient.getValue() != null) {
             mGoogleSignInClient.getValue().signOut();
         }
+        writeIsNotLogin();
     }
 
-    enum LoginProgress {
+    public enum LoginProgress {
         NONE,
         SUCCESS,
+        IN_PROGRESS,
         FAILED,
     }
 
-    enum RegistrationProgress {
+    public enum RegistrationProgress {
         NONE,
         SUCCESS,
         FAILED,
         SEND_EMAIL,
     }
 
-    enum AddUserToDatabaseProgress {
+    public enum AddUserToDatabaseProgress {
         NONE,
         SUCCESS,
         FAILED,
     }
 
-    enum ResetPasswordProgress {
+    public enum ResetPasswordProgress {
         NONE,
         SUCCESS,
         FAILED,
     }
 
+    public interface Callback {
+
+        public void setSuccess();
+        public void setFailed();
+    }
+
+
+    public void writeIsLogin() {
+        try {
+            FileOutputStream fos = mContext.openFileOutput("IsLogin.txt", mContext.MODE_PRIVATE);
+            fos.write("true".getBytes());
+        } catch (Exception e) {
+        }
+    }
+
+    public void writeIsNotLogin() {
+        try {
+            FileOutputStream fos = mContext.openFileOutput("IsLogin.txt", mContext.MODE_PRIVATE);
+            fos.write("false".getBytes());
+        } catch (Exception e) {
+        }
+    }
+
+    public class LoginCallback implements Callback {
+
+        @Override
+        public void setSuccess() {
+            writeIsLogin();
+            mLoginProgress.setValue(LoginProgress.SUCCESS);
+
+        }
+
+        @Override
+        public void setFailed() {
+            mLoginProgress.setValue(LoginProgress.FAILED);
+        }
+    }
 
 }
 

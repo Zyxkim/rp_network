@@ -24,12 +24,14 @@ import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.PostsAdapter;
 import com.adzteam.urbook.authentification.AuthActivity;
+
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+import com.adzteam.urbook.general.GeneralActivity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -81,8 +83,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mProfileViewModel.signOut();
-                Intent intent = new Intent(getActivity(), AuthActivity.class);
-                startActivity(intent);
+                ((GeneralActivity) getActivity()).replaceWithAuthActivity();
             }
         });
 

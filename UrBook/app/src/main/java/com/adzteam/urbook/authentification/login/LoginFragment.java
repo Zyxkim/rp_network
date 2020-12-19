@@ -1,4 +1,4 @@
-package com.adzteam.urbook.authentification;
+package com.adzteam.urbook.authentification.login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.adzteam.urbook.R;
 
+import com.adzteam.urbook.authentification.AuthActivity;
 import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -128,8 +129,8 @@ public class LoginFragment extends Fragment {
                 //Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
             } else if (loginState == LoginViewModel.LoginState.SUCCESS) {
                 //Toast.makeText(getActivity(), "logged in successfully", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(), GeneralActivity.class);
-                startActivity(intent);
+                ((AuthActivity) getActivity()).replaceWithGeneralActivity();
+
             } else {
 
             }

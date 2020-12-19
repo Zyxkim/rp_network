@@ -1,4 +1,4 @@
-package com.adzteam.urbook.authentification;
+package com.adzteam.urbook.authentification.registration;
 
 import android.app.Application;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
+import com.adzteam.urbook.authentification.AuthRepo;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +21,7 @@ public class RegistrationViewModel extends AndroidViewModel {
 
     private MediatorLiveData<RegistrationData> mRegistrationData = new MediatorLiveData<>();
     private MediatorLiveData<RegistrationState> mRegistrationState = new MediatorLiveData<>();
+    private MediatorLiveData<LoginState> mLoginState = new MediatorLiveData<>();
     private MediatorLiveData<AddUserToDatabaseState> mAddUserToDatabaseState = new MediatorLiveData<>();
 
     private LiveData<Intent> mGoogleSignInIntent = mRepo.getGoogleSignInIntent();
@@ -33,6 +36,10 @@ public class RegistrationViewModel extends AndroidViewModel {
 
     public LiveData<RegistrationState> getRegistrationState() {
         return mRegistrationState;
+    }
+
+    public LiveData<LoginState> getLoginState() {
+        return mLoginState;
     }
 
     public LiveData<AddUserToDatabaseState> getAddUserToDatabaseState() {
@@ -81,8 +88,27 @@ public class RegistrationViewModel extends AndroidViewModel {
     }
 
     public void registerWithGoogle() {
+
+        final LiveData<AuthRepo.LoginProgress> registrationProgress = mRepo.getLoginProgress();
+
+        mLoginState.addSource(registrationProgress, new Observer<AuthRepo.LoginProgress>() {
+            @Override
+            public void onChanged(AuthRepo.LoginProgress progress) {
+                if (progress == AuthRepo.LoginProgress.SUCCESS) {
+                    mLoginState.postValue(LoginState.SUCCESS);
+                    mLoginState.removeSource(registrationProgress);
+                } else if (progress == AuthRepo.LoginProgress.IN_PROGRESS) {
+                    mLoginState.postValue(LoginState.IN_PROGRESS);
+                    mLoginState.removeSource(registrationProgress);
+                } else if (progress == AuthRepo.LoginProgress.FAILED) {
+                    mLoginState.postValue(LoginState.FAILED);
+                    mLoginState.removeSource(registrationProgress);
+                }
+
+            }
+        });
+
         mRepo.loginWithGoogle();
-        mRegistrationState.setValue(RegistrationState.SUCCESS);
     }
 
     public void catchGoogleResult(@Nullable Intent data) {
@@ -98,6 +124,13 @@ public class RegistrationViewModel extends AndroidViewModel {
         SUCCESS,
         FAILED,
         SEND_EMAIL,
+        NONE
+    }
+
+    enum LoginState {
+        IN_PROGRESS,
+        SUCCESS,
+        FAILED,
         NONE
     }
 
@@ -128,7 +161,6 @@ public class RegistrationViewModel extends AndroidViewModel {
         public boolean isValidate() {
             return mIsValidate;
         }
-
         public boolean isEmailValidate() {
             return validateEmail(mEmail);
         }
