@@ -78,13 +78,17 @@ public class ProfileFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         mProfileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mLogOutBottom = view.findViewById(R.id.logout);
         mEditProfileBtn = view.findViewById(R.id.edit);
 
