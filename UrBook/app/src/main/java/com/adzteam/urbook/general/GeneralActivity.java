@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.ui.rooms.CreateRoomActivity;
 import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,7 +44,7 @@ public class GeneralActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        /*FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         final DocumentReference docRef = db.collection("users").document(mAuth.getUid());
 
@@ -63,13 +64,18 @@ public class GeneralActivity extends AppCompatActivity {
                 }
             }
 
-        });
+        });*/
 
 
     }
 
     public void roomClickListener() {
         Intent intent = new Intent(this, RoomActivity.class);
+        startActivity(intent);
+    }
+
+    public void replaceWithCreateRoomActivity() {
+        Intent intent = new Intent(this, CreateRoomActivity.class);
         startActivity(intent);
     }
 }

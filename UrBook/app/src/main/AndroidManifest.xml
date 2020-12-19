@@ -12,6 +12,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".general.ui.rooms.SearchRoomActivity"></activity>
         <activity android:name=".general.ui.create.CreatePostActivity" />
+        <activity android:name=".general.ui.rooms.CreateRoomActivity" />
         <activity android:name=".general.ui.create.CreateRoomActivity" />
         <activity android:name=".general.ui.profile.EditProfileActivity" />
         <activity android:name=".room.GeneralRoomActivity" />

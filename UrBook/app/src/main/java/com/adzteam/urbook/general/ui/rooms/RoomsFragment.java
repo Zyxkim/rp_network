@@ -21,6 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.adapters.RoomsAdapter;
+import com.adzteam.urbook.general.GeneralActivity;
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -74,7 +75,7 @@ public class RoomsFragment extends Fragment {
         mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showEditDialog();
+                ((GeneralActivity) getActivity()).replaceWithCreateRoomActivity();
             }
         });
 
