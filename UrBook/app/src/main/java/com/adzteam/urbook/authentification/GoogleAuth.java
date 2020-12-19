@@ -54,13 +54,15 @@ public class GoogleAuth {
         Intent signInIntent = googleSignInClient.getSignInIntent();
         return signInIntent;
     }
-    public static void catchResult(@Nullable Intent data, FirebaseAuth auth) {
+    public static void catchResult(@Nullable Intent data, FirebaseAuth auth, AuthRepo.Callback callback) {
         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
+            callback.setSuccess();
             //Toast.makeText(activity, "firebaseAuthWithGoogle:" + account.getId(), Toast.LENGTH_SHORT).show();
             GoogleAuth.firebaseAuthWithGoogle(account.getIdToken(), auth);
         } catch (ApiException e) {
+            callback.setFailed();
             //Toast.makeText(activity, "Google sign in failed" + e, Toast.LENGTH_SHORT).show();
         }
     }

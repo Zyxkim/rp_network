@@ -1,4 +1,4 @@
-package com.adzteam.urbook.authentification;
+package com.adzteam.urbook.authentification.reset_password;
 
 import android.os.Bundle;
 
@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.authentification.AuthActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
