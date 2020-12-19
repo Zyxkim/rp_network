@@ -116,7 +116,7 @@ public class RoomsFragment extends Fragment {
                         String creator = (String) document.get("creator");
                         String date = (String) document.get("date");
 
-                        Room newRoom = new Room(name, description, creator, date);
+                        Room newRoom = new Room(document.getId(), name, description, creator, date);
                         mRoomsData.add(newRoom);
                         Log.i("aaa", String.valueOf(mRoomsData.size()));
                     }

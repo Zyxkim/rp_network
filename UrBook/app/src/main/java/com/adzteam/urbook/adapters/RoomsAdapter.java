@@ -1,14 +1,25 @@
 package com.adzteam.urbook.adapters;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -20,11 +31,13 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
 
         public TextView mRoomName;
         public TextView mRoomDescription;
+        public ImageView mRoomImg;
 
         public MyViewHolder(View view) {
             super(view);
             mRoomName = (TextView) view.findViewById(R.id.room_name);
             mRoomDescription = (TextView) view.findViewById(R.id.room_description);
+            mRoomImg = (ImageView) view.findViewById(R.id.room_image);
         }
     }
 
@@ -38,6 +51,16 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         Room c = mRoomList.get(position);
         holder.mRoomName.setText(c.getName());
         holder.mRoomDescription.setText(c.getDescription());
+
+        StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference profileRef = mStorageReference.child("rooms/" + c.getId() + "/image.jpg");
+
+        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).into(holder.mRoomImg);
+            }
+        });
     }
 
     @Override
