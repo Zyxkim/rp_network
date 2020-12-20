@@ -3,11 +3,11 @@ package com.adzteam.urbook.room.model;
 import com.google.firebase.Timestamp;
 
 public class Message {
-    protected Timestamp mDate;
+    protected Long mDate;
     private String mCreator;
     protected String mContent;
 
-    public Message(Timestamp mDate, String mCreator, String mContent) {
+    public Message(Long mDate, String mCreator, String mContent) {
         this.mDate = mDate;
         this.mCreator = mCreator;
         this.mContent = mContent;

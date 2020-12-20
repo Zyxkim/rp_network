@@ -54,7 +54,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         holder.mRoomName.setText(c.getName());
         holder.mRoomDescription.setText(c.getDescription());
 
-        StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
+        /*StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
         StorageReference profileRef = mStorageReference.child("rooms/" + c.getId() + "/image.jpg");
 
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -62,7 +62,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
             public void onSuccess(Uri uri) {
                 Picasso.get().load(uri).into(holder.mRoomImg);
             }
-        });
+        });*/
 
         holder.mRoomName.setOnClickListener(new View.OnClickListener() {
             @Override

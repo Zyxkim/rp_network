@@ -11,7 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.room.model.Message;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.MyViewHolder> {
 
@@ -39,7 +43,19 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
     public void onBindViewHolder(MyViewHolder holder, int position) {
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Message c = mPostsList.get(position);
-        holder.mDate.setText(c.getDate());
+        //Date d = new Date(Long.parseLong(c.getDate()) * 1000);
+        //SimpleDateFormat sdfr = new SimpleDateFormat("dd.mm.yyyy");
+
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+        long milliSeconds= Long.parseLong(c.getDate());
+        System.out.println(milliSeconds);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        //System.out.println(formatter.format(calendar.getTime()));
+
+        holder.mDate.setText(formatter.format(calendar.getTime()));
         holder.mPostName.setText(c.getCreator());
         holder.mDescription.setText(c.getContent());
     }

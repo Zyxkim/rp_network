@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -28,10 +30,16 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.core.DocumentViewChange;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.adzteam.urbook.R;
 
@@ -49,8 +57,8 @@ public class RoomActivity extends AppCompatActivity {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private final ArrayList<Message> mPostsData = new ArrayList<>();
-    private final CurrentRoomAdapter mAdapter = new CurrentRoomAdapter(mPostsData);
+    private final ArrayList<Message> mMessagesData = new ArrayList<>();
+    private final CurrentRoomAdapter mAdapter = new CurrentRoomAdapter(mMessagesData);
 
     private MaterialToolbar mToolbar;
     private ActionMenuItemView mBtGoBack;
@@ -67,7 +75,18 @@ public class RoomActivity extends AppCompatActivity {
         return inflater.inflate(R.layout.fragment_feed, container, false);
     }
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference noteRef = db.collection("rooms")
+            .document(CURRENT_ROOM_ID)
+            .collection("messages");
+
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
@@ -80,6 +99,32 @@ public class RoomActivity extends AppCompatActivity {
         mMessageContent = findViewById(R.id.message_input);
         mSendBtn = findViewById(R.id.button_send);
 
+           /* db.collection("rooms")
+                    .document(CURRENT_ROOM_ID)
+                    .collection("messages")
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                            if (error != null) {
+                                System.err.println("Listen failed: " + error);
+                                return;
+                            }
+
+                            for (DocumentChange dc : value.getDocumentChanges()) {
+                                if (dc.getType() == DocumentChange.Type.ADDED) {
+
+                                    String creator = (String) dc.getDocument().get("creator");
+                                    String date = (String) dc.getDocument().get("date");
+                                    String content = (String) dc.getDocument().get("content");
+                                    Log.i("New Data", content);
+
+                                    Message newPost = new Message(Long.parseLong(date), creator, content);
+                                    mMessagesData.add(newPost);
+                                }
+                            }
+                        }
+                    });*/
+
         mSendBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -91,7 +136,7 @@ public class RoomActivity extends AppCompatActivity {
                         .collection("messages");
                 FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                Message newPost = new Message(Timestamp.now(), mAuth.getCurrentUser().getUid(), mMessageContent.getText().toString().trim());
+                Message newPost = new Message(System.currentTimeMillis(), mAuth.getCurrentUser().getUid(), mMessageContent.getText().toString().trim());
                 collectionReference.add(newPost);
             }
         });
@@ -120,16 +165,16 @@ public class RoomActivity extends AppCompatActivity {
             }
         });
 
-        if(savedInstanceState == null) {
-            downloadPosts(null);
-        }
+        mMessagesData.clear();
+        mAdapter.notifyDataSetChanged();
+        downloadPosts(new RefreshCallBack());
 
         mSwipeRefreshLayout = findViewById(R.id.room_swipe);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
 
             @Override
             public void onRefresh() {
-                mPostsData.clear();
+                mMessagesData.clear();
                 mAdapter.notifyDataSetChanged();
                 downloadPosts(new RefreshCallBack());
             }
@@ -138,20 +183,21 @@ public class RoomActivity extends AppCompatActivity {
 
     public void downloadPosts(final RoomActivity.RefreshCallBack callBack) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = db.collection("posts");
+        CollectionReference collectionReference = db.collection("rooms");
         collectionReference.document(CURRENT_ROOM_ID).collection("messages")
+                .orderBy("date", Query.Direction.ASCENDING)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String creator = (String) document.get("creator");
-                                Timestamp date = (Timestamp) document.get("date");
+                                String date = (String) document.get("date");
                                 String content = (String) document.get("content");
                                 Log.i("Done", "oh yeah :^)");
 
-                                Message newPost = new Message(date, creator, content);
-                                mPostsData.add(newPost);
+                                Message newPost = new Message(Long.parseLong(date), creator, content);
+                                mMessagesData.add(newPost);
                             }
                             mAdapter.notifyDataSetChanged();
                             if (callBack != null) {
