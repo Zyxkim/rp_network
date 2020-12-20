@@ -8,10 +8,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
-import com.adzteam.urbook.general.GeneralActivity;
 import com.adzteam.urbook.room.RoomActivity;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
 
     private ArrayList<Room> mRoomList;
     private Context mContext;
+    public static String CURRENT_ROOM_ID;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -47,6 +49,8 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         holder.mRoomName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                CURRENT_ROOM_ID = c.getId();
+                Log.d("ItemClick", CURRENT_ROOM_ID);
                 Intent intent = new Intent(mContext, RoomActivity.class);
                 mContext.startActivity(intent);
             }
@@ -59,6 +63,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         return mRoomList.size();
     }
 
+    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext=parent.getContext();
