@@ -99,10 +99,10 @@ public class RoomActivity extends AppCompatActivity {
         mMessageContent = findViewById(R.id.message_input);
         mSendBtn = findViewById(R.id.button_send);
 
-           /* db.collection("rooms")
+        db.collection("rooms")
                     .document(CURRENT_ROOM_ID)
                     .collection("messages")
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                .orderBy("date", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                             if (error != null) {
@@ -112,18 +112,21 @@ public class RoomActivity extends AppCompatActivity {
 
                             for (DocumentChange dc : value.getDocumentChanges()) {
                                 if (dc.getType() == DocumentChange.Type.ADDED) {
+                                    mMessagesData.clear();
+                                    for (QueryDocumentSnapshot document : value) {
+                                        String creator = (String) document.get("creator");
+                                        String date = (String) document.get("date");
+                                        String content = (String) document.get("content");
+                                        Log.i("Done", "oh yeah :^)");
 
-                                    String creator = (String) dc.getDocument().get("creator");
-                                    String date = (String) dc.getDocument().get("date");
-                                    String content = (String) dc.getDocument().get("content");
-                                    Log.i("New Data", content);
-
-                                    Message newPost = new Message(Long.parseLong(date), creator, content);
-                                    mMessagesData.add(newPost);
+                                        Message newPost = new Message(Long.parseLong(date), creator, content);
+                                        mMessagesData.add(newPost);
+                                    }
+                                    mAdapter.notifyDataSetChanged();
                                 }
                             }
                         }
-                    });*/
+                    });
 
         mSendBtn.setOnClickListener(new View.OnClickListener() {
 
