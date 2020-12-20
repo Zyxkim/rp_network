@@ -8,9 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 
 import com.adzteam.urbook.room.model.Message;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
@@ -19,6 +25,8 @@ import com.adzteam.urbook.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+
+import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
 public class RoomActivity extends GeneralRoomActivity
         implements MessageInput.InputListener,
@@ -30,6 +38,8 @@ public class RoomActivity extends GeneralRoomActivity
     }
 
     private MessagesList messagesList;
+
+    private MaterialToolbar mToolbar;
     private ActionMenuItemView mBtGoBack;
 
     @Override
@@ -45,8 +55,22 @@ public class RoomActivity extends GeneralRoomActivity
         input.setTypingListener(this);
         input.setAttachmentsListener(this);
 
-        mBtGoBack = (ActionMenuItemView) findViewById(R.id.home);
+        mToolbar = (MaterialToolbar)findViewById(R.id.room_bar);
+        FirebaseFirestore.getInstance()
+                        .collection("rooms")
+                        .document(CURRENT_ROOM_ID)
+                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    String name = (String) document.get("name");
+                                    mToolbar.setTitle(name);
+                                }
+                            }
+                        });
 
+        mBtGoBack = (ActionMenuItemView) findViewById(R.id.home);
         mBtGoBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
