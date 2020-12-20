@@ -76,7 +76,7 @@ public class CreateRoomActivity extends AppCompatActivity {
                     CollectionReference collectionReference = db.collection("rooms");
                     FirebaseAuth mAuth = FirebaseAuth.getInstance();
                     DocumentReference docRef = collectionReference.document();
-                    Room newRoom = new Room(docRef.getId(), mRoomNameInput.getText().toString().trim(), mRoomDescriptionInput.getText().toString().trim(), mAuth.getCurrentUser().getUid(), (new Date()).toString());
+                    Room newRoom = new Room(docRef.getId(), mRoomNameInput.getText().toString().trim(), mRoomDescriptionInput.getText().toString().trim(), mAuth.getCurrentUser().getUid(), (new Date()).toString(), (mImgUri != null));
 
                     docRef.set(newRoom);
 
