@@ -16,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.room.RoomActivity;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder> {
@@ -54,16 +56,23 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         holder.mRoomName.setText(c.getName());
         holder.mRoomDescription.setText(c.getDescription());
 
-        /*StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference profileRef = mStorageReference.child("rooms/" + c.getId() + "/image.jpg");
 
-        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(holder.mRoomImg);
-            }
-        });*/
-
+        if (c.isThereImage()) {
+            StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
+            StorageReference profileRef = mStorageReference.child("rooms/" + c.getId() + "/image.jpg");
+            Log.i("rrr", String.valueOf(profileRef.getDownloadUrl()));
+            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).into(holder.mRoomImg);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i("f", "Ooops");
+                }
+            });
+        }
         holder.mRoomName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

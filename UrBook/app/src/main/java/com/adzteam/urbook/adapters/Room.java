@@ -7,13 +7,15 @@ public class Room {
     private String mDescription;
     private String mCreator;
     private String mDateOfCreating;
+    private Boolean mIsThereImage;
 
-    public Room(String id, String name, String description, String creator, String date) {
+    public Room(String id, String name, String description, String creator, String date, Boolean isThereImage) {
         mId = id;
         mName = name;
         mDescription = description;
         mCreator = creator;
         mDateOfCreating = date;
+        mIsThereImage = isThereImage;
     }
 
     public String getName() {
@@ -35,4 +37,10 @@ public class Room {
     public String getId() {
         return mId;
     }
+
+    public Boolean isThereImage() {
+        return mIsThereImage;
+    }
+
+
 }
