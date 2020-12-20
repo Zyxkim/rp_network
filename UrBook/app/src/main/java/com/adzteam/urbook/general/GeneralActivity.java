@@ -2,9 +2,7 @@ package com.adzteam.urbook.general;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -16,14 +14,6 @@ import com.adzteam.urbook.general.ui.rooms.CreateRoomActivity;
 import com.adzteam.urbook.authentification.AuthActivity;
 import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-
-import java.util.ArrayList;
 
 
 public class GeneralActivity extends AppCompatActivity {

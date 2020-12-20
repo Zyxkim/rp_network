@@ -39,25 +39,28 @@
             android:layout_marginTop="?attr/actionBarSize"
             android:orientation="vertical">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/profile_image" />
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/editProfileImageBtn"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/change_avatar"
-                android:textColor="@color/colorAccentLight"
-                app:strokeColor="@color/colorAccentLight"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/profile_image" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/editProfileImageBtn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="80dp"
+                    android:src="@drawable/ic_round_add_a_photo_24" />
+
+            </FrameLayout>
 
             <View
                 android:layout_marginTop="8dp"

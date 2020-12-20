@@ -2,8 +2,6 @@ package com.adzteam.urbook.room.model;
 
 import com.stfalcon.chatkit.commons.models.IUser;
 
-import java.util.ArrayList;
-
 public class User implements IUser {
 
     private String id;

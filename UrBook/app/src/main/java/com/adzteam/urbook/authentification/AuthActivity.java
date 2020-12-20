@@ -7,7 +7,6 @@ import com.adzteam.urbook.authentification.reset_password.ResetPasswordFragment;
 import com.adzteam.urbook.general.GeneralActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;

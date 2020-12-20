@@ -4,18 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuView;
 
-import android.text.TextUtils;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
-import android.widget.Toast;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;

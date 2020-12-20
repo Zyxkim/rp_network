@@ -1,5 +1,4 @@
 package com.adzteam.urbook.adapters;
-import java.util.Date;
 
 public class Room {
     private String mName;

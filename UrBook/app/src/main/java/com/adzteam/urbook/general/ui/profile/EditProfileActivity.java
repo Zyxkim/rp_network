@@ -4,16 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,14 +17,10 @@ import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -36,18 +28,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditProfileActivity extends AppCompatActivity {
     private static final String TAG = "";
-    private CircleImageView mProfileImage;
+    private CircleImageView mProfileImage, mEditProfileImageBtn;
     private StorageReference mStorageReference;
     private FirebaseAuth mAuth;
     private FirebaseFirestore mFStore;
-    private MaterialButton mEditProfileImageBtn;
     TextInputEditText mEditName, mEditStatus;
     ActionMenuItemView mBackBtn, mSaveBtn;
 
@@ -61,6 +50,12 @@ public class EditProfileActivity extends AppCompatActivity {
     public boolean isStatusValidate() {
         String sEditStatus = mEditStatus.getText().toString();
         return !sEditStatus.isEmpty();
+    }
+
+    public void replaceWithGeneralActivity() {
+        Intent intent = new Intent(getApplicationContext(), GeneralActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override
@@ -111,13 +106,18 @@ public class EditProfileActivity extends AppCompatActivity {
                     docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(getApplicationContext(), "onSuccess", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), GeneralActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
+                            Toast.makeText(getApplicationContext(), "profile edited successfully", Toast.LENGTH_SHORT).show();
+                            replaceWithGeneralActivity();
                         }
                     });
                 }
+            }
+        });
+
+        mBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replaceWithGeneralActivity();
             }
         });
     }

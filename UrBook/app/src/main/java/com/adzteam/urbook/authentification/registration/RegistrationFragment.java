@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.authentification.AuthActivity;
-import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class RegistrationFragment extends Fragment {

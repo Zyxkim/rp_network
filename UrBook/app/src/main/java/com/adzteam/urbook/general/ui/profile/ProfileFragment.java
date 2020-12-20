@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.PostsAdapter;
-import com.adzteam.urbook.authentification.AuthActivity;
 
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,24 +39,7 @@ import com.google.firebase.storage.StorageReference;
 import com.adzteam.urbook.general.GeneralActivity;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -112,7 +94,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 intent.putExtra("name", mName.getText().toString());
-                intent.putExtra("status", "new status");
+                intent.putExtra("status", mStatus.getText().toString());
                 startActivity(intent);
             }
         });
