@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -16,14 +18,17 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
-import com.adzteam.urbook.authentification.AuthActivity;
+import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -43,22 +48,10 @@ public class EditProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore mFStore;
     private MaterialButton mEditProfileImageBtn;
-    TextInputEditText mEditName, mEditStatus, mEditEmail, mEditPassword, mConfirmNewPassword;
+    TextInputEditText mEditName, mEditStatus;
     ActionMenuItemView mBackBtn, mSaveBtn;
 
-    private static final String EMAIL_PATTERN = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    private final Pattern mPattern = Pattern.compile(EMAIL_PATTERN);
-
     private static final int RC_SIGN_IN = 1000;
-
-    public boolean isEmailValidate() {
-        String sEditEmail = mEditEmail.getText().toString();
-        return validateEmail(sEditEmail);
-    }
-
-    public boolean isPasswordValidate() {
-        return validatePassword(mEditPassword);
-    }
 
     public boolean isNameValidate() {
         String sEditName = mEditName.getText().toString();
@@ -68,20 +61,6 @@ public class EditProfileActivity extends AppCompatActivity {
     public boolean isStatusValidate() {
         String sEditStatus = mEditStatus.getText().toString();
         return !sEditStatus.isEmpty();
-    }
-
-    public boolean isConfirmPasswordValidate() {
-        return mEditPassword.equals(mConfirmNewPassword);
-    }
-
-    public boolean validateEmail(String email) {
-        Matcher matcher;
-        matcher = mPattern.matcher(email);
-        return matcher.matches();
-    }
-
-    public boolean validatePassword(TextInputEditText password) {
-        return password.length() > 5;
     }
 
     @Override
@@ -94,7 +73,6 @@ public class EditProfileActivity extends AppCompatActivity {
         String userStatus = userData.getStringExtra("status");
         mEditName = findViewById(R.id.new_name);
         mEditStatus = findViewById(R.id.new_status);
-        mEditEmail = findViewById(R.id.new_email);
         mEditName.setText(userName);
         mEditStatus.setText(userStatus);
 
@@ -119,34 +97,24 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent openGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(openGallery, RC_SIGN_IN);
-
             }
         });
 
         mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isNameValidate() && isStatusValidate() && isEmailValidate()) {
-                    String email = mEditEmail.getText().toString();
-                    mAuth.getCurrentUser().updateEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
+                if (isNameValidate() && isStatusValidate()) {
+                    DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
+                    Map<String, Object> edited = new HashMap<>();
+                    edited.put("name", mEditName.getText().toString());
+                    edited.put("status", mEditStatus.getText().toString());
+                    docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
-                            Map<String, Object> edited = new HashMap<>();
-                            edited.put("email", email);
-                            edited.put("name", mEditName.getText().toString());
-                            edited.put("status", mEditStatus.getText().toString());
-                            docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-
-                                }
-                            });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "onSuccess", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), GeneralActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
                         }
                     });
                 }

@@ -38,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 //import com.squareup.picasso.Picasso;
 import com.adzteam.urbook.general.GeneralActivity;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -98,11 +99,12 @@ public class ProfileFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
         TextView mName = view.findViewById(R.id.profile_name);
+        TextView mStatus = view.findViewById(R.id.profile_status);
         docRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                 mName.setText(documentSnapshot.getString("name"));
-                //mStatus.setText(documentSnapshot.getString("status"));
+                mStatus.setText(documentSnapshot.getString("status"));
             }
         });
         mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +112,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 intent.putExtra("name", mName.getText().toString());
-                //intent.putExtra("status", "new status");
+                intent.putExtra("status", "new status");
                 startActivity(intent);
             }
         });
@@ -215,12 +217,12 @@ public class ProfileFragment extends Fragment {
         mStorageReference = FirebaseStorage.getInstance().getReference();
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-        /*profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.get().load(uri).into(mProfileImage);
             }
-        });*/
+        });
 
     }
 
