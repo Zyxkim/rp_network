@@ -1,49 +1,27 @@
 package com.adzteam.urbook.room.model;
 
-import com.stfalcon.chatkit.commons.models.IMessage;
+import com.google.firebase.Timestamp;
 
-import java.util.Date;
+public class Message {
+    protected Timestamp mDate;
+    private String mCreator;
+    protected String mContent;
 
-public class Message implements IMessage {
-
-    private String id;
-    private String text;
-    private Date createdAt;
-    private User user;
-
-    public Message(String id, User user, String text) {
-        this(id, user, text, new Date());
+    public Message(Timestamp mDate, String mCreator, String mContent) {
+        this.mDate = mDate;
+        this.mCreator = mCreator;
+        this.mContent = mContent;
     }
 
-    public Message(String id, User user, String text, Date createdAt) {
-        this.id = id;
-        this.text = text;
-        this.user = user;
-        this.createdAt = createdAt;
+    public String getDate() {
+        return mDate.toString();
     }
 
-    @Override
-    public String getId() {
-        return id;
+    public String getCreator() {
+        return mCreator;
     }
 
-    @Override
-    public String getText() {
-        return text;
+    public String getContent() {
+        return mContent;
     }
-
-    @Override
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    @Override
-    public User getUser() {
-        return this.user;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
 }

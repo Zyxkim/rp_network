@@ -14,7 +14,6 @@
         <activity android:name=".general.ui.profile.CreatePostActivity" />
         <activity android:name=".general.ui.rooms.CreateRoomActivity" />
         <activity android:name=".general.ui.profile.EditProfileActivity" />
-        <activity android:name=".room.GeneralRoomActivity" />
         <activity android:name=".room.RoomActivity" />
         <activity
             android:name=".general.GeneralActivity"

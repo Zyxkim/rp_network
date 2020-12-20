@@ -1,59 +1,101 @@
 package com.adzteam.urbook.room;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.adzteam.urbook.adapters.CurrentRoomAdapter;
+import com.adzteam.urbook.general.ui.feed.FeedFragment;
+import com.adzteam.urbook.general.ui.profile.ProfileViewModel;
+import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
 import com.adzteam.urbook.room.model.Message;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.stfalcon.chatkit.commons.ImageLoader;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.stfalcon.chatkit.messages.MessageInput;
-import com.stfalcon.chatkit.messages.MessagesList;
-import com.stfalcon.chatkit.messages.MessagesListAdapter;
 import com.adzteam.urbook.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.ArrayList;
 
 import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
-public class RoomActivity extends GeneralRoomActivity
-        implements MessageInput.InputListener,
-        MessageInput.AttachmentsListener,
-        MessageInput.TypingListener {
+public class RoomActivity extends AppCompatActivity {
 
-    public static void open(Context context) {
+    /*public static void open(Context context) {
         context.startActivity(new Intent(context, RoomActivity.class));
-    }
+    }*/
 
-    private MessagesList messagesList;
+    private ProfileViewModel mPostsViewModel;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private final ArrayList<Message> mPostsData = new ArrayList<>();
+    private final CurrentRoomAdapter mAdapter = new CurrentRoomAdapter(mPostsData);
 
     private MaterialToolbar mToolbar;
     private ActionMenuItemView mBtGoBack;
+
+    private EditText mMessageContent;
+    private ImageButton mSendBtn;
+
+    public RoomActivity() {
+    }
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        return inflater.inflate(R.layout.fragment_feed, container, false);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
 
-        this.messagesList = (MessagesList) findViewById(R.id.messagesList);
-        initAdapter();
+        RecyclerView rv = findViewById(R.id.recyclerView);
+        rv.setHasFixedSize(true);
+        rv.setLayoutManager(new GridLayoutManager(this, 1));
+        rv.setAdapter(mAdapter);
 
-        MessageInput input = (MessageInput) findViewById(R.id.input);
-        input.setInputListener(this);
-        input.setTypingListener(this);
-        input.setAttachmentsListener(this);
+        mMessageContent = findViewById(R.id.message_input);
+        mSendBtn = findViewById(R.id.button_send);
+
+        mSendBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                CollectionReference collectionReference = db.collection("rooms")
+                        .document(CURRENT_ROOM_ID)
+                        .collection("messages");
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+                Message newPost = new Message(Timestamp.now(), mAuth.getCurrentUser().getUid(), mMessageContent.getText().toString().trim());
+                collectionReference.add(newPost);
+            }
+        });
+
 
         mToolbar = (MaterialToolbar)findViewById(R.id.room_bar);
         FirebaseFirestore.getInstance()
@@ -77,78 +119,54 @@ public class RoomActivity extends GeneralRoomActivity
                 finish();
             }
         });
-    }
 
-    @Override
-    public boolean onSubmit(CharSequence input) {
-        super.messagesAdapter.addToStart(
-                MessagesFixtures.getTextMessage(input.toString()), true);
-        return true;
-    }
+        if(savedInstanceState == null) {
+            downloadPosts(null);
+        }
 
-    @Override
-    public void onAddAttachments() {
-    }
+        mSwipeRefreshLayout = findViewById(R.id.room_swipe);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
 
-    private void initAdapter() {
-        super.messagesAdapter = new MessagesListAdapter<>(super.senderId, super.imageLoader);
-        this.messagesList.setAdapter(super.messagesAdapter);
-    }
-
-    @Override
-    public void onStartTyping() {
-        Log.v("Typing listener", getString(R.string.start_typing_status));
-    }
-
-    @Override
-    public void onStopTyping() {
-        Log.v("Typing listener", getString(R.string.stop_typing_status));
-    }
-
-    protected final String senderId = "0";
-    protected ImageLoader imageLoader;
-    protected MessagesListAdapter<Message> messagesAdapter;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-    }
-
-    @Override
-    public void onLoadMore(int page, int totalItemsCount) {
-    }
-
-    @Override
-    public void onSelectionChanged(int count) {
-    }
-
-    private MessagesListAdapter.Formatter<Message> getMessageStringFormatter() {
-        return new MessagesListAdapter.Formatter<Message>() {
             @Override
-            public String format(Message message) {
-                String createdAt = new SimpleDateFormat("MMM d, EEE 'at' h:mm a", Locale.getDefault())
-                        .format(message.getCreatedAt());
-
-                String text = message.getText();
-                if (text == null) text = "[attachment]";
-
-                return String.format(Locale.getDefault(), "%s: %s (%s)",
-                        message.getUser().getName(), text, createdAt);
+            public void onRefresh() {
+                mPostsData.clear();
+                mAdapter.notifyDataSetChanged();
+                downloadPosts(new RefreshCallBack());
             }
-        };
+        });
+    }
+
+    public void downloadPosts(final RoomActivity.RefreshCallBack callBack) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference collectionReference = db.collection("posts");
+        collectionReference.document(CURRENT_ROOM_ID).collection("messages")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String creator = (String) document.get("creator");
+                                Timestamp date = (Timestamp) document.get("date");
+                                String content = (String) document.get("content");
+                                Log.i("Done", "oh yeah :^)");
+
+                                Message newPost = new Message(date, creator, content);
+                                mPostsData.add(newPost);
+                            }
+                            mAdapter.notifyDataSetChanged();
+                            if (callBack != null) {
+                                callBack.stopRefreshing();
+                            }
+                        } else {
+                            Log.i("RoomActivity", "oh no :^(");
+                        }
+                    }
+                });
+    }
+
+    public class RefreshCallBack {
+        public void stopRefreshing() {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
     }
 }
