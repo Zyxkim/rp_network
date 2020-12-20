@@ -11,6 +11,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
@@ -24,7 +25,7 @@
         android:layout_marginStart="16dp"
         tools:text="01.01.2021"
         android:textSize="12sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/darker_gray"/>
 
         <TextView
             android:id="@+id/message_blank"
@@ -33,7 +34,7 @@
             android:layout_marginStart="3dp"
             tools:text="from"
             android:textSize="12sp"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textColor="@android:color/darker_gray"/>
 
     <TextView
         android:id="@+id/message_user"
@@ -42,14 +43,15 @@
         android:layout_marginStart="3dp"
         tools:text="User"
         android:textSize="12sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/darker_gray"/>
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/message_content"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="start"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:paddingEnd="8dp"
@@ -60,19 +62,5 @@
         android:background="@drawable/shape_bubble_sent"
         android:textColor="@android:color/white"
         android:maxWidth="256dp" />
-
-    <!--<TextView
-        android:id="@+id/textview_chat_received"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="24dp"
-        android:layout_gravity="end"
-        tools:text="This is a received message keep the text going so we can see"
-        android:background="@drawable/shape_bubble_recieved"
-        android:textColor="@android:color/white"
-        android:maxWidth="256dp" />-->
 
 </LinearLayout>

@@ -1,15 +1,21 @@
 package com.adzteam.urbook.adapters;
 
+import android.annotation.SuppressLint;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.room.model.Message;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,14 +30,14 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mDate;
-        public TextView mPostName;
-        public TextView mDescription;
+        public TextView mUserName;
+        public TextView mMessageContent;
 
         public MyViewHolder(View view) {
             super(view);
             mDate = view.findViewById(R.id.message_date);
-            mPostName = view.findViewById(R.id.message_user);
-            mDescription = view.findViewById(R.id.message_content);
+            mUserName = view.findViewById(R.id.message_user);
+            mMessageContent = view.findViewById(R.id.message_content);
         }
     }
 
@@ -39,25 +45,37 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
         this.mPostsList = mPostsList;
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Message c = mPostsList.get(position);
-        //Date d = new Date(Long.parseLong(c.getDate()) * 1000);
-        //SimpleDateFormat sdfr = new SimpleDateFormat("dd.mm.yyyy");
 
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm 'from'");
 
         long milliSeconds= Long.parseLong(c.getDate());
         System.out.println(milliSeconds);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliSeconds);
-        //System.out.println(formatter.format(calendar.getTime()));
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        if (c.getCreator().equals(mAuth.getCurrentUser().getUid())){
+            LinearLayout.LayoutParams para=new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+            para.gravity = Gravity.END;
+            holder.mMessageContent.setLayoutParams(para);
+        } else {
+            LinearLayout.LayoutParams para=new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+            para.gravity = Gravity.START;
+            holder.mMessageContent.setLayoutParams(para);
+        }
 
         holder.mDate.setText(formatter.format(calendar.getTime()));
-        holder.mPostName.setText(c.getCreator());
-        holder.mDescription.setText(c.getContent());
+        holder.mUserName.setText(c.getName());
+        holder.mMessageContent.setText(c.getContent());
     }
 
     @Override

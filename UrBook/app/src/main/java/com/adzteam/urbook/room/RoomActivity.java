@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,19 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.adzteam.urbook.adapters.CurrentRoomAdapter;
-import com.adzteam.urbook.general.ui.feed.FeedFragment;
 import com.adzteam.urbook.general.ui.profile.ProfileViewModel;
-import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
 import com.adzteam.urbook.room.model.Message;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,8 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.core.DocumentViewChange;
-import com.stfalcon.chatkit.messages.MessageInput;
+
 import com.adzteam.urbook.R;
 
 import java.util.ArrayList;
@@ -62,6 +55,8 @@ public class RoomActivity extends AppCompatActivity {
     private EditText mMessageContent;
     private ImageButton mSendBtn;
 
+    private String mUserName;
+
     public RoomActivity() {
     }
 
@@ -82,7 +77,7 @@ public class RoomActivity extends AppCompatActivity {
     }
 
 
-        @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
@@ -111,11 +106,12 @@ public class RoomActivity extends AppCompatActivity {
                                     mMessagesData.clear();
                                     for (QueryDocumentSnapshot document : value) {
                                         String creator = (String) document.get("creator");
+                                        String name = (String) document.get("name");
                                         String date = (String) document.get("date");
                                         String content = (String) document.get("content");
                                         Log.i("Done", "oh yeah :^)");
 
-                                        Message newPost = new Message(Long.parseLong(date), creator, content);
+                                        Message newPost = new Message(Long.parseLong(date), creator, name, content);
                                         mMessagesData.add(newPost);
                                     }
                                     mAdapter.notifyDataSetChanged();
@@ -129,18 +125,35 @@ public class RoomActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                if (!(mMessageContent.getText().toString().isEmpty())){
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                CollectionReference collectionReference = db.collection("rooms")
-                        .document(CURRENT_ROOM_ID)
-                        .collection("messages");
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                    db.collection("users")
+                            .document(mAuth.getCurrentUser().getUid())
+                            .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                mUserName = (String) document.get("name");
+                                String err = (mUserName == null) ? "Failed" : mUserName;
+                                Log.i("Name", err);
+                                CollectionReference collectionReference = db.collection("rooms")
+                                        .document(CURRENT_ROOM_ID)
+                                        .collection("messages");
 
-                Message newPost = new Message(System.currentTimeMillis(), mAuth.getCurrentUser().getUid(), mMessageContent.getText().toString().trim());
-                collectionReference.add(newPost);
+                                Message newPost = new Message(System.currentTimeMillis(), mAuth.getCurrentUser().getUid(), mUserName, mMessageContent.getText().toString().trim());
+                                collectionReference.add(newPost);
+                                mMessageContent.setText(null);
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(getApplicationContext(), "Empty Message", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
 
         mToolbar = (MaterialToolbar)findViewById(R.id.room_bar);
         FirebaseFirestore.getInstance()
@@ -188,11 +201,12 @@ public class RoomActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String creator = (String) document.get("creator");
+                                String name = (String) document.get("name");
                                 String date = (String) document.get("date");
                                 String content = (String) document.get("content");
                                 Log.i("Done", "oh yeah :^)");
 
-                                Message newPost = new Message(Long.parseLong(date), creator, content);
+                                Message newPost = new Message(Long.parseLong(date), creator, name, content);
                                 mMessagesData.add(newPost);
                             }
                             mAdapter.notifyDataSetChanged();
