@@ -49,10 +49,6 @@ import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
 public class RoomActivity extends AppCompatActivity {
 
-    /*public static void open(Context context) {
-        context.startActivity(new Intent(context, RoomActivity.class));
-    }*/
-
     private ProfileViewModel mPostsViewModel;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -123,6 +119,7 @@ public class RoomActivity extends AppCompatActivity {
                                         mMessagesData.add(newPost);
                                     }
                                     mAdapter.notifyDataSetChanged();
+                                    rv.smoothScrollToPosition(rv.getAdapter().getItemCount()-1);
                                 }
                             }
                         }
@@ -167,10 +164,6 @@ public class RoomActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        mMessagesData.clear();
-        mAdapter.notifyDataSetChanged();
-        downloadPosts(new RefreshCallBack());
 
         mSwipeRefreshLayout = findViewById(R.id.room_swipe);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
