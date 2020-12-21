@@ -41,8 +41,9 @@
 
         <ImageView
             android:id="@+id/post_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="400dp"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
@@ -58,7 +59,7 @@
             android:layout_marginEnd="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/room_image"
+            android:text="Add Image to Your Post"
             android:textColor="@color/colorAccentLight"
             app:strokeColor="@color/colorAccentLight"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton" />

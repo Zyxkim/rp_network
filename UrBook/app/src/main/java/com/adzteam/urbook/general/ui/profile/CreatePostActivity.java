@@ -100,7 +100,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
                                 docRef.set(newPost);
                                 uploadImageToFirebase(mImgUri, docRef.getId());
-                                finish();
+                                replaceWithGeneralActivity();;
                             }
                         }
                     });
