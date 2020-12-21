@@ -216,13 +216,13 @@ public class ProfileFragment extends Fragment {
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
-        StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
+        /*StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.get().load(uri).into(mProfileImage);
             }
-        });
+        });*/
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collectionReference = db.collection("posts");
@@ -242,7 +242,7 @@ public class ProfileFragment extends Fragment {
 
                             if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                 String date = (String) document.get("date");
-                                String id = (String) document.get("id");
+                                //String id = (String) document.get("id");
                                 String name = (String) document.get("name");
                                 String characterName = (String) document.get("characterName");
                                 String content = (String) document.get("content");
@@ -252,7 +252,7 @@ public class ProfileFragment extends Fragment {
                                 if (isThereImage == null) isThereImage =false;
                                 Log.i("eee", characterName +" "+ String.valueOf(isThereImage));
 
-                                Post newPost = new Post(id, Long.parseLong(date), name, creator, characterName, content, isThereImage);
+                                Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content, isThereImage);
                                 mPostsData.add(newPost);
                             }
                             mAdapter.notifyDataSetChanged();
