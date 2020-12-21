@@ -90,7 +90,12 @@ public class FeedFragment extends Fragment {
                         String characterName = (String) document.get("characterName");
                         String content = (String) document.get("content");
 
-                        Post newPost = new Post(id, Long.parseLong(date), name, creator, characterName, content);
+                        Boolean isThereImage;
+                        isThereImage = document.getBoolean("thereImage");
+                        if (isThereImage == null) isThereImage =false;
+                        Log.i("eee", String.valueOf(isThereImage));
+
+                        Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content, isThereImage);
                         mPostsData.add(newPost);
                     }
                     mAdapter.notifyDataSetChanged();

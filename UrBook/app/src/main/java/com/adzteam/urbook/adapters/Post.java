@@ -7,22 +7,20 @@ public class Post {
     private String mId;
     protected String mCharacterName;
     protected String mContent;
+    private Boolean mIsThereImage;
 
-    public Post(String mId, Long mDate, String mName, String mCreator, String mCharacterName, String mContent) {
+    public Post(String mId, Long mDate, String mName, String mCreator, String mCharacterName, String mContent, Boolean isThereImage) {
         this.mId = mId;
         this.mDate = mDate;
         this.mCreator = mCreator;
         this.mName = mName;
         this.mCharacterName = mCharacterName;
         this.mContent = mContent;
+        this.mIsThereImage = isThereImage;
     }
 
     public String getDate() {
         return mDate.toString();
-    }
-
-    public String getId() {
-        return mId;
     }
 
     public String getCreator() {
@@ -39,5 +37,13 @@ public class Post {
 
     public String getContent() {
         return mContent;
+    }
+
+    public String getId() {
+        return mId;
+    }
+
+    public Boolean isThereImage() {
+        return mIsThereImage;
     }
 }
