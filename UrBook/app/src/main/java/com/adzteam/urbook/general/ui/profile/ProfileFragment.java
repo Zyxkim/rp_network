@@ -100,8 +100,10 @@ public class ProfileFragment extends Fragment {
         docRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
-                mName.setText(documentSnapshot.getString("name"));
-                mStatus.setText(documentSnapshot.getString("status"));
+                if (documentSnapshot != null) {
+                    mName.setText(documentSnapshot.getString("name"));
+                    mStatus.setText(documentSnapshot.getString("status"));
+                }
             }
         });
         mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
