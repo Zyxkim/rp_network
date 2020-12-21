@@ -23,18 +23,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
-import com.adzteam.urbook.adapters.PostsAdapter;
+import com.adzteam.urbook.adapters.UserPostsAdapter;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.authentification.AuthActivity;
 
 import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
+import com.adzteam.urbook.room.model.Message;
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -62,6 +67,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
+
 public class ProfileFragment extends Fragment {
 
     private ProfileViewModel mProfileViewModel;
@@ -74,7 +81,7 @@ public class ProfileFragment extends Fragment {
     private ImageButton mNewRoomBtn;
     
     private final ArrayList<Post> mPostsData = new ArrayList<>();
-    private final PostsAdapter mAdapter = new PostsAdapter(mPostsData);
+    private final UserPostsAdapter mAdapter = new UserPostsAdapter(mPostsData);
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -121,10 +128,6 @@ public class ProfileFragment extends Fragment {
                 ((GeneralActivity) getActivity()).replaceWithCreatePostActivity();
             }
         });
-
-        if(savedInstanceState == null) {
-            downloadPosts(null);
-        }
 
         /*
         FileInputStream fis = null;
@@ -221,34 +224,35 @@ public class ProfileFragment extends Fragment {
             }
         });*/
 
-    }
-
-    public void downloadPosts(final RoomsFragment.RefreshCallBack callBack) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collectionReference = db.collection("posts");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-
+        collectionReference.orderBy("date", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String creator = (String) document.get("creator");
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    System.err.println("Listen failed: " + error);
+                    return;
+                }
 
-                        if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            String date = (String) document.get("date");
-                            String characterName = (String) document.get("characterName");
-                            String content = (String) document.get("content");
+                for (DocumentChange dc : value.getDocumentChanges()) {
+                    if (dc.getType() == DocumentChange.Type.ADDED || dc.getType() == DocumentChange.Type.REMOVED) {
+                        mPostsData.clear();
+                        for (QueryDocumentSnapshot document : value) {
+                            String creator = (String) document.get("creator");
 
-                            Post newPost = new Post(date, creator, characterName, content);
-                            mPostsData.add(newPost);
+                            if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                String date = (String) document.get("date");
+                                String id = (String) document.get("id");
+                                String name = (String) document.get("name");
+                                String characterName = (String) document.get("characterName");
+                                String content = (String) document.get("content");
+
+                                Post newPost = new Post(id, Long.parseLong(date), name, creator, characterName, content);
+                                mPostsData.add(newPost);
+                            }
+                            mAdapter.notifyDataSetChanged();
                         }
                     }
-                    mAdapter.notifyDataSetChanged();
-                    if (callBack != null) {
-                        callBack.stopResreshing();
-                    }
-                } else {
-                    Log.i("lol", "kek");
                 }
             }
         });

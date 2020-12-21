@@ -1,14 +1,18 @@
 package com.adzteam.urbook.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import android.util.Log;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.room.RoomActivity;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder> {
+public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.MyViewHolder> {
 
     private ArrayList<Post> mPostsList;
 
@@ -26,17 +30,19 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder
         public TextView mUserName;
         public TextView mPostName;
         public TextView mDescription;
+        public ImageButton mDeleteBtn;
 
         public MyViewHolder(View view) {
             super(view);
             mDate = view.findViewById(R.id.post_date);
+            mDeleteBtn = view.findViewById(R.id.button_delete);
             mUserName = view.findViewById(R.id.post_user);
             mPostName = view.findViewById(R.id.post_name);
             mDescription = view.findViewById(R.id.post_description);
         }
     }
 
-    public PostsAdapter(ArrayList<Post> mPostsList) {
+    public UserPostsAdapter(ArrayList<Post> mPostsList) {
         this.mPostsList = mPostsList;
     }
 
@@ -57,6 +63,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder
         holder.mUserName.setText(c.getName());
         holder.mPostName.setText(c.getCharacterName());
         holder.mDescription.setText(c.getContent());
+
+        holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("posts").document(c.getId()).delete();
+                mPostsList.remove(position);
+            }
+        });
     }
 
     @Override
@@ -67,7 +82,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_post_item, parent, false);
         return new MyViewHolder(v);
     }
 }
