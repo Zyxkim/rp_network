@@ -98,7 +98,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isNameValidate() && isStatusValidate()) {
+                if (isNameValidate()) {
                     DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
                     Map<String, Object> edited = new HashMap<>();
                     edited.put("name", mEditName.getText().toString());
