@@ -6,8 +6,8 @@ android {
     buildToolsVersion "30.0.2"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
 
     defaultConfig {
