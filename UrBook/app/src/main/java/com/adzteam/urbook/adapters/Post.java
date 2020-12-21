@@ -1,12 +1,12 @@
 package com.adzteam.urbook.adapters;
 
 public class Post {
-    protected String mDate;
+    protected Long mDate;
     private String mCreator;
     protected String mCharacterName;
     protected String mContent;
 
-    public Post(String mDate, String mCreator, String mCharacterName, String mContent) {
+    public Post(Long mDate, String mCreator, String mCharacterName, String mContent) {
         this.mDate = mDate;
         this.mCreator = mCreator;
         this.mCharacterName = mCharacterName;
@@ -14,7 +14,7 @@ public class Post {
     }
 
     public String getDate() {
-        return mDate;
+        return mDate.toString();
     }
 
     public String getCreator() {

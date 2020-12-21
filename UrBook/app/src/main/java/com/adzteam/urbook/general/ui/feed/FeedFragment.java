@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -76,7 +77,7 @@ public class FeedFragment extends Fragment {
     public void downloadPosts(final FeedFragment.RefreshCallBack callBack) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collectionReference = db.collection("posts");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        collectionReference.orderBy("date", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -87,7 +88,7 @@ public class FeedFragment extends Fragment {
                         String characterName = (String) document.get("characterName");
                         String content = (String) document.get("content");
 
-                        Post newPost = new Post(date, creator, characterName, content);
+                        Post newPost = new Post(Long.parseLong(date), creator, characterName, content);
                         mPostsData.add(newPost);
                     }
                     mAdapter.notifyDataSetChanged();

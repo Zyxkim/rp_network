@@ -56,9 +56,9 @@ public class CreatePostActivity extends AppCompatActivity {
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     CollectionReference collectionReference = db.collection("posts");
                     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                    Post newPost = new Post((new Date()).toString(), mAuth.getCurrentUser().getUid(), mPostName.getText().toString().trim(), mPostContent.getText().toString().trim());
+                    Post newPost = new Post(System.currentTimeMillis(), mAuth.getCurrentUser().getUid(), mPostName.getText().toString().trim(), mPostContent.getText().toString().trim());
                     collectionReference.add(newPost);
-                    replaceWithGeneralActivity();
+                    finish();
                 }
             }
         });
@@ -66,7 +66,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                replaceWithGeneralActivity();
+                finish();
             }
         });
 
