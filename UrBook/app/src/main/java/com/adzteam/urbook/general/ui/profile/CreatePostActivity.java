@@ -141,24 +141,26 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     private void uploadImageToFirebase(Uri imgUri, String id) {
-        StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference profileRef = mStorageReference.child("posts/" + id + "/image.jpg");
-        profileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        //Picasso.get().load(uri).into(mPostImg);
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (imgUri != null) {
+            StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
+            StorageReference profileRef = mStorageReference.child("posts/" + id + "/image.jpg");
+            profileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            //Picasso.get().load(uri).into(mPostImg);
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
 
