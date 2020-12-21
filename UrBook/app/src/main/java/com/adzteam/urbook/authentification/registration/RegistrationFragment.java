@@ -157,6 +157,9 @@ public class RegistrationFragment extends Fragment {
             } else if (registrationState == RegistrationViewModel.RegistrationState.IN_PROGRESS) {
                 Toast.makeText(getActivity(), "IN_PROGRESS: ", Toast.LENGTH_SHORT).show();
             } else if (registrationState == RegistrationViewModel.RegistrationState.SUCCESS) {
+                if (getActivity() != null) {
+                    ((AuthActivity) getActivity()).replaceWithLoginFragment();
+                }
                 Toast.makeText(getActivity(), "register successfully", Toast.LENGTH_SHORT).show();
             } else if (registrationState == RegistrationViewModel.RegistrationState.SEND_EMAIL){
                 Toast.makeText(getActivity(), "Verification email has been sent", Toast.LENGTH_SHORT).show();
