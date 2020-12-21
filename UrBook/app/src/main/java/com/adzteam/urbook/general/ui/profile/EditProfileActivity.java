@@ -114,7 +114,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     CollectionReference collectionReference = db.collection("posts");
-                    
+
                     db.collection("posts")
                             .get()
                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -122,8 +122,10 @@ public class EditProfileActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
-                                            Log.d(TAG, document.getId() + " => " + document.getData());
-                                            document.getReference().update("name", name);
+                                            if (document.get("creator").toString().equals(mAuth.getCurrentUser().getUid())) {
+                                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                                document.getReference().update("name", name);
+                                            }
                                         }
                                     } else {
                                         Log.d(TAG, "Error getting documents: ", task.getException());
