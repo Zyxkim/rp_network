@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".GeneralActivity">
 
-    <item
+    <!--<item
         android:id="@+id/find_room"
         android:icon="@drawable/ic_baseline_search_24"
         android:title="@string/find_room"
         android:contentDescription="@string/content_description_find_room"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />-->
 
     <item
         android:id="@+id/add_room"
