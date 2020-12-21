@@ -23,12 +23,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mDate;
+        public TextView mUserName;
         public TextView mPostName;
         public TextView mDescription;
 
         public MyViewHolder(View view) {
             super(view);
             mDate = view.findViewById(R.id.post_date);
+            mUserName = view.findViewById(R.id.post_user);
             mPostName = view.findViewById(R.id.post_name);
             mDescription = view.findViewById(R.id.post_description);
         }
@@ -43,7 +45,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Post c = mPostsList.get(position);
 
-        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm 'from'");
+        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm 'by'");
 
         long milliSeconds= Long.parseLong(c.getDate());
         System.out.println(milliSeconds);
@@ -52,6 +54,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.MyViewHolder
         calendar.setTimeInMillis(milliSeconds);
 
         holder.mDate.setText(formatter.format(calendar.getTime()));
+        holder.mUserName.setText(c.getName());
         holder.mPostName.setText(c.getCharacterName());
         holder.mDescription.setText(c.getContent());
     }

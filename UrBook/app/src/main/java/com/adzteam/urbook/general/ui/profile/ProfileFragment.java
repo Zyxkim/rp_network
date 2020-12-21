@@ -242,14 +242,14 @@ public class ProfileFragment extends Fragment {
 
                             if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                 String date = (String) document.get("date");
+                                String name = (String) document.get("name");
                                 String characterName = (String) document.get("characterName");
                                 String content = (String) document.get("content");
 
-                                Post newPost = new Post(Long.parseLong(date), creator, characterName, content);
+                                Post newPost = new Post(Long.parseLong(date), name, creator, characterName, content);
                                 mPostsData.add(newPost);
                             }
                             mAdapter.notifyDataSetChanged();
-                            rv.smoothScrollToPosition(rv.getAdapter().getItemCount() - 1);
                         }
                     }
                 }

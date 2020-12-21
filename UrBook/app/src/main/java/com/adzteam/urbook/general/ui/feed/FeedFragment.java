@@ -84,11 +84,12 @@ public class FeedFragment extends Fragment {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         String creator = (String) document.get("creator");
+                        String name = (String) document.get("name");
                         String date = (String) document.get("date");
                         String characterName = (String) document.get("characterName");
                         String content = (String) document.get("content");
 
-                        Post newPost = new Post(Long.parseLong(date), creator, characterName, content);
+                        Post newPost = new Post(Long.parseLong(date), name, creator, characterName, content);
                         mPostsData.add(newPost);
                     }
                     mAdapter.notifyDataSetChanged();
