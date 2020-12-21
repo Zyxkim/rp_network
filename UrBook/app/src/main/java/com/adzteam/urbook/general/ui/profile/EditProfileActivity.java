@@ -10,17 +10,24 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.general.GeneralActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -101,8 +108,29 @@ public class EditProfileActivity extends AppCompatActivity {
                 if (isNameValidate()) {
                     DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
                     Map<String, Object> edited = new HashMap<>();
+                    String name = mEditName.getText().toString();
                     edited.put("name", mEditName.getText().toString());
                     edited.put("status", mEditStatus.getText().toString());
+
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    CollectionReference collectionReference = db.collection("posts");
+                    
+                    db.collection("posts")
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            Log.d(TAG, document.getId() + " => " + document.getData());
+                                            document.getReference().update("name", name);
+                                        }
+                                    } else {
+                                        Log.d(TAG, "Error getting documents: ", task.getException());
+                                    }
+                                }
+                            });
+
                     docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
