@@ -1,4 +1,4 @@
-package com.adzteam.urbook.authentification;
+package com.adzteam.urbook.authentification.reset_password;
 
 import android.app.Application;
 
@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
+import com.adzteam.urbook.authentification.AuthRepo;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

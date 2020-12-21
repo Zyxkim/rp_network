@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,31 +24,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.PostsAdapter;
-import com.adzteam.urbook.authentification.AuthActivity;
+
 import com.example.flatdialoglibrary.dialog.FlatDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+//import com.squareup.picasso.Picasso;
+import com.adzteam.urbook.general.GeneralActivity;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -81,15 +73,28 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mProfileViewModel.signOut();
-                Intent intent = new Intent(getActivity(), AuthActivity.class);
-                startActivity(intent);
+                Log.i("ggg", "rrr");
+                ((GeneralActivity) getActivity()).replaceWithAuthActivity();
             }
         });
-
+        FirebaseFirestore mFStore = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
+        TextView mName = view.findViewById(R.id.profile_name);
+        TextView mStatus = view.findViewById(R.id.profile_status);
+        docRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+                mName.setText(documentSnapshot.getString("name"));
+                mStatus.setText(documentSnapshot.getString("status"));
+            }
+        });
         mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                intent.putExtra("name", mName.getText().toString());
+                intent.putExtra("status", mStatus.getText().toString());
                 startActivity(intent);
             }
         });
@@ -192,7 +197,6 @@ public class ProfileFragment extends Fragment {
         }*/
         mProfileImage = view.findViewById(R.id.profile_image);
         mStorageReference = FirebaseStorage.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
