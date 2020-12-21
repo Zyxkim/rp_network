@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
-import com.adzteam.urbook.adapters.PostsAdapter;
+import com.adzteam.urbook.adapters.UserPostsAdapter;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.authentification.AuthActivity;
 
@@ -81,7 +81,7 @@ public class ProfileFragment extends Fragment {
     private ImageButton mNewRoomBtn;
     
     private final ArrayList<Post> mPostsData = new ArrayList<>();
-    private final PostsAdapter mAdapter = new PostsAdapter(mPostsData);
+    private final UserPostsAdapter mAdapter = new UserPostsAdapter(mPostsData);
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -242,11 +242,12 @@ public class ProfileFragment extends Fragment {
 
                             if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                 String date = (String) document.get("date");
+                                String id = (String) document.get("id");
                                 String name = (String) document.get("name");
                                 String characterName = (String) document.get("characterName");
                                 String content = (String) document.get("content");
 
-                                Post newPost = new Post(Long.parseLong(date), name, creator, characterName, content);
+                                Post newPost = new Post(id, Long.parseLong(date), name, creator, characterName, content);
                                 mPostsData.add(newPost);
                             }
                             mAdapter.notifyDataSetChanged();

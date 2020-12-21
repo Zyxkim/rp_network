@@ -26,6 +26,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import androidx.appcompat.view.menu.ActionMenuItemView;
@@ -74,8 +75,11 @@ public class CreatePostActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot document = task.getResult();
                                 mUserName = (String) document.get("name");
-                                Post newPost = new Post(System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mPostName.getText().toString().trim(), mPostContent.getText().toString().trim());
-                                collectionReference.add(newPost);
+                                DocumentReference newRef = collectionReference.document();
+                                Post newPost = new Post(newRef.getId(), System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mPostName.getText().toString().trim(), mPostContent.getText().toString().trim());
+                                Log.i("postID", newRef.getId());
+                                newRef.set(newPost);
+                                //collectionReference.add(newPost);
                                 finish();
                             }
                         }
