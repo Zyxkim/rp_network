@@ -94,7 +94,7 @@ public class FeedFragment extends Fragment {
                         if (isThereImage == null) isThereImage =false;
                         Log.i("eee", String.valueOf(isThereImage));
 
-                        Post newPost = new Post(db.collection("posts").document().getId(), Long.parseLong(date), name, creator, characterName, content, isThereImage);
+                        Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content, isThereImage);
                         mPostsData.add(newPost);
                     }
                     mAdapter.notifyDataSetChanged();
