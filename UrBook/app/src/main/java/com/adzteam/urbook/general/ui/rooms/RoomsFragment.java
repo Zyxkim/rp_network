@@ -116,11 +116,8 @@ public class RoomsFragment extends Fragment {
                         String creator = (String) document.get("creator");
                         String date = (String) document.get("date");
                         Boolean isThereImage;
-                        try {
-                            isThereImage = document.get("isThereImage").equals("true");
-                        } catch (NullPointerException e) {
-                            isThereImage = false;
-                        }
+                        isThereImage = document.getBoolean("thereImage");
+                        if (isThereImage == null) isThereImage =false;
                         Log.i("eee", String.valueOf(isThereImage));
                         Room newRoom = new Room(document.getId(), name, description, creator, date, isThereImage);
                         mRoomsData.add(newRoom);
