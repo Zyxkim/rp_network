@@ -216,13 +216,13 @@ public class ProfileFragment extends Fragment {
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
-        /*StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
+        StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.get().load(uri).into(mProfileImage);
             }
-        });*/
+        });
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collectionReference = db.collection("posts");
