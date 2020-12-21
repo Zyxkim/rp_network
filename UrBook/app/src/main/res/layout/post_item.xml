@@ -63,6 +63,16 @@
         android:gravity="start"
         android:layout_gravity="center"/>
 
+    <ImageView
+        android:id="@+id/post_image"
+        android:src="@drawable/no_cover_room"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        android:focusable="true" />
+
     <View
         android:layout_marginTop="8dp"
         android:layout_width="match_parent"
