@@ -235,7 +235,7 @@ public class ProfileFragment extends Fragment {
                 }
 
                 for (DocumentChange dc : value.getDocumentChanges()) {
-                    if (dc.getType() == DocumentChange.Type.ADDED) {
+                    if (dc.getType() == DocumentChange.Type.ADDED || dc.getType() == DocumentChange.Type.REMOVED) {
                         mPostsData.clear();
                         for (QueryDocumentSnapshot document : value) {
                             String creator = (String) document.get("creator");

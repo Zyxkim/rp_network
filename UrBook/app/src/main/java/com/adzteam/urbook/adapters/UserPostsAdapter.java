@@ -69,6 +69,7 @@ public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.MyVi
             public void onClick(View view) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("posts").document(c.getId()).delete();
+                mPostsList.remove(position);
             }
         });
     }
