@@ -117,7 +117,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                replaceWithGeneralActivity();
+                finish();
             }
         });
     }
