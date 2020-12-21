@@ -54,10 +54,9 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/editProfileImageBtn"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="bottom"
-                    android:layout_marginLeft="80dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="bottom|end"
                     android:src="@drawable/ic_round_add_a_photo_24" />
 
             </FrameLayout>
