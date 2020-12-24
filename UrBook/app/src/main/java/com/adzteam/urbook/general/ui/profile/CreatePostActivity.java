@@ -1,6 +1,7 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -84,29 +85,34 @@ public class CreatePostActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (mPostName.getText().toString().trim().equals("")) {
-                    mPostName.setError("Add Character name");
-                } else {
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    CollectionReference collectionReference = db.collection("posts");
-                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                if (GeneralActivity.hasConnection(getApplicationContext())) {
+                    if (mPostName.getText().toString().trim().equals("")) {
+                        mPostName.setError("Add Character name");
+                    } else {
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        CollectionReference collectionReference = db.collection("posts");
+                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                    db.collection("users").document(mAuth.getCurrentUser().getUid())
-                            .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                mUserName = (String) document.get("name");
-                                DocumentReference docRef = collectionReference.document();
-                                Post newPost = new Post(docRef.getId(), System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mPostName.getText().toString().trim(), mPostContent.getText().toString().trim(), (mImgUri != null));
+                        db.collection("users").document(mAuth.getCurrentUser().getUid())
+                                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    mUserName = (String) document.get("name");
+                                    DocumentReference docRef = collectionReference.document();
+                                    Post newPost = new Post(docRef.getId(), System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mPostName.getText().toString().trim(), mPostContent.getText().toString().trim(), (mImgUri != null));
 
-                                docRef.set(newPost);
-                                uploadImageToFirebase(mImgUri, docRef.getId());
-                                replaceWithGeneralActivity();;
+                                    docRef.set(newPost);
+                                    uploadImageToFirebase(mImgUri, docRef.getId());
+                                    replaceWithGeneralActivity();
+                                    ;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

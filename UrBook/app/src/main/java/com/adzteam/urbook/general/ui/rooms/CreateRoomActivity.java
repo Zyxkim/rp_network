@@ -73,20 +73,24 @@ public class CreateRoomActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (mRoomNameInput.getText().toString().trim().equals("")) {
-                    mRoomNameInput.setError("Add Room name");
-                    //Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
+                if (GeneralActivity.hasConnection(getApplicationContext())) {
+                    if (mRoomNameInput.getText().toString().trim().equals("")) {
+                        mRoomNameInput.setError("Add Room name");
+                        //Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
+                    } else {
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        CollectionReference collectionReference = db.collection("rooms");
+                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                        DocumentReference docRef = collectionReference.document();
+                        Room newRoom = new Room(docRef.getId(), mRoomNameInput.getText().toString().trim(), mRoomDescriptionInput.getText().toString().trim(), mAuth.getCurrentUser().getUid(), (new Date()).toString(), (mImgUri != null));
+
+                        docRef.set(newRoom);
+
+                        uploadImageToFirebase(mImgUri, docRef.getId());
+                        replaceWithGeneralActivity();
+                    }
                 } else {
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    CollectionReference collectionReference = db.collection("rooms");
-                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                    DocumentReference docRef = collectionReference.document();
-                    Room newRoom = new Room(docRef.getId(), mRoomNameInput.getText().toString().trim(), mRoomDescriptionInput.getText().toString().trim(), mAuth.getCurrentUser().getUid(), (new Date()).toString(), (mImgUri != null));
-
-                    docRef.set(newRoom);
-
-                    uploadImageToFirebase(mImgUri, docRef.getId());
-                    replaceWithGeneralActivity();
+                    Toast.makeText(getApplicationContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -106,7 +110,6 @@ public class CreateRoomActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     public void replaceWithGeneralActivity() {

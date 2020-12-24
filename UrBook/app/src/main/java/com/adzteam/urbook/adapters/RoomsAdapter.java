@@ -100,10 +100,14 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("rooms").document(c.getId()).delete();
-                Toast.makeText(view.getContext(), "Please, refresh page.", Toast.LENGTH_SHORT).show();
-                mRoomList.remove(position);
+                if (GeneralActivity.hasConnection(view.getContext())) {
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("rooms").document(c.getId()).delete();
+                    Toast.makeText(view.getContext(), "Please, refresh page.", Toast.LENGTH_SHORT).show();
+                    mRoomList.remove(position);
+                } else {
+                    Toast.makeText(view.getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

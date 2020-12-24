@@ -10,11 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.GeneralActivity;
+import com.adzteam.urbook.general.ui.profile.ProfileFragment;
 import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -96,10 +99,14 @@ public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.MyVi
         holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("posts").document(c.getId()).delete();
-                mPostsList.remove(position);
-                notifyDataSetChanged();
+                if (GeneralActivity.hasConnection(view.getContext())) {
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("posts").document(c.getId()).delete();
+                    mPostsList.remove(position);
+                    notifyDataSetChanged();
+                } else {
+                    Toast.makeText(view.getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

@@ -109,41 +109,45 @@ public class EditProfileActivity extends AppCompatActivity {
         mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isNameValidate()) {
-                    DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
-                    Map<String, Object> edited = new HashMap<>();
-                    String name = mEditName.getText().toString();
-                    edited.put("name", mEditName.getText().toString());
-                    edited.put("status", mEditStatus.getText().toString());
+                if (GeneralActivity.hasConnection(getApplicationContext())) {
+                    if (isNameValidate()) {
+                        DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
+                        Map<String, Object> edited = new HashMap<>();
+                        String name = mEditName.getText().toString();
+                        edited.put("name", mEditName.getText().toString());
+                        edited.put("status", mEditStatus.getText().toString());
 
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    CollectionReference collectionReference = db.collection("posts");
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        CollectionReference collectionReference = db.collection("posts");
 
-                    db.collection("posts")
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            if (document.get("creator").toString().equals(mAuth.getCurrentUser().getUid())) {
-                                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                                document.getReference().update("name", name);
+                        db.collection("posts")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                if (document.get("creator").toString().equals(mAuth.getCurrentUser().getUid())) {
+                                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                                    document.getReference().update("name", name);
+                                                }
                                             }
+                                        } else {
+                                            Log.d(TAG, "Error getting documents: ", task.getException());
                                         }
-                                    } else {
-                                        Log.d(TAG, "Error getting documents: ", task.getException());
                                     }
-                                }
-                            });
+                                });
 
-                    docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(getApplicationContext(), "profile edited successfully", Toast.LENGTH_SHORT).show();
-                            replaceWithGeneralActivity();
-                        }
-                    });
+                        docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(getApplicationContext(), "profile edited successfully", Toast.LENGTH_SHORT).show();
+                                replaceWithGeneralActivity();
+                            }
+                        });
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
