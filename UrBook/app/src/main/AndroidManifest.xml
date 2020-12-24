@@ -5,15 +5,21 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".general.ui.rooms.SearchRoomActivity" />
-        <activity android:name=".general.ui.profile.CreatePostActivity" />
-        <activity android:name=".general.ui.rooms.CreateRoomActivity" />
-        <activity android:name=".general.ui.profile.EditProfileActivity" />
+        <activity
+            android:name=".general.ui.profile.CreatePostActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".general.ui.rooms.CreateRoomActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".general.ui.profile.EditProfileActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".room.RoomActivity" />
         <activity
             android:name=".general.GeneralActivity"

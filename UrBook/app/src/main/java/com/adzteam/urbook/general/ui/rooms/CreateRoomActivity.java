@@ -2,6 +2,7 @@ package com.adzteam.urbook.general.ui.rooms;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -56,6 +57,9 @@ public class CreateRoomActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         setContentView(R.layout.activity_create_room);
 
         mRoomDescriptionInput = findViewById(R.id.new_room_description);
