@@ -149,7 +149,7 @@
             app:boxStrokeColor="@color/colorAccent"
             app:hintAnimationEnabled="true"
             app:counterEnabled="true"
-            app:counterMaxLength="500"
+            app:counterMaxLength="2500"
             app:hintTextColor="@color/colorAccent">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -165,7 +165,7 @@
                 android:minLines="3"
                 android:singleLine="false"
                 android:scrollbars="vertical"
-                android:maxLength="500"
+                android:maxLength="2500"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>

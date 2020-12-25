@@ -1,5 +1,7 @@
 package com.adzteam.urbook.adapters;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +12,12 @@ import android.widget.TextView;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.ui.profile.CharacterActivity;
+import com.adzteam.urbook.general.ui.profile.CreatePostActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,16 +30,20 @@ import java.util.ArrayList;
 public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAdapter.MyViewHolder> {
 
     private ArrayList<Characters> mCharactersList;
+    private Context mContext;
+    public static String CURRENT_CHARACTER_ID;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mPostName;
         public ImageView mPostImage;
+        public CardView mCard;
 
         public MyViewHolder(View view) {
             super(view);
             mPostName = view.findViewById(R.id.character_post_name);
             mPostImage = view.findViewById(R.id.character_post_image);
+            mCard = view.findViewById(R.id.cardView);
         }
     }
 
@@ -48,7 +57,6 @@ public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAd
         Characters c = mCharactersList.get(position);
 
         if (c.isThereImage()) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
             StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
             StorageReference profileRef = mStorageReference.child("characters/" + c.getId() + "/image.jpg");
             Log.i("rrr", String.valueOf(profileRef.getDownloadUrl()));
@@ -65,8 +73,16 @@ public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAd
             });
         }
 
-
         holder.mPostName.setText(c.getCharacterName());
+        holder.mCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CURRENT_CHARACTER_ID = c.getId();
+                Log.d("ItemClick", CURRENT_CHARACTER_ID);
+                Intent intent = new Intent(mContext, CharacterActivity.class);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -77,6 +93,7 @@ public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAd
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        mContext=parent.getContext();
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.character_item, parent, false);
         return new MyViewHolder(v);
     }

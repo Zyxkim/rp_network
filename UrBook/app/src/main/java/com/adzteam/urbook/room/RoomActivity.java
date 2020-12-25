@@ -63,7 +63,7 @@ public class RoomActivity extends AppCompatActivity {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        return inflater.inflate(R.layout.fragment_feed, container, false);
+        return inflater.inflate(R.layout.activity_room, container, false);
     }
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
