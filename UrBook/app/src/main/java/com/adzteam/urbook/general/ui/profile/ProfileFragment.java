@@ -22,7 +22,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.adapters.Characters;
 import com.adzteam.urbook.adapters.Post;
+import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.adapters.UserPostsAdapter;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.authentification.AuthActivity;
@@ -63,11 +65,15 @@ public class ProfileFragment extends Fragment {
     private StorageReference mStorageReference;
     private FirebaseAuth mAuth;
 
-    private ImageButton mNewRoomBtn;
+    private ImageButton mNewPostBtn;
+    private ImageButton mNewCharacterBtn;
     
     private final ArrayList<Post> mPostsData = new ArrayList<>();
-    private final UserPostsAdapter mAdapter = new UserPostsAdapter(mPostsData);
+    private final UserPostsAdapter mPostsAdapter = new UserPostsAdapter(mPostsData);
 
+    private final ArrayList<Characters> mCharactersData = new ArrayList<>();
+    private final UserCharactersAdapter mCharacterAdapter = new UserCharactersAdapter(mCharactersData);
+    
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,13 +125,26 @@ public class ProfileFragment extends Fragment {
         RecyclerView rv = view.findViewById(R.id.recyclerView);
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
-        rv.setAdapter(mAdapter);
+        rv.setAdapter(mPostsAdapter);
 
-        mNewRoomBtn = view.findViewById(R.id.add_feed);
-        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
+        RecyclerView rvc = view.findViewById(R.id.characters_view);
+        rvc.setHasFixedSize(true);
+        rvc.setLayoutManager(new GridLayoutManager(view.getContext(), 1, GridLayoutManager.HORIZONTAL, false));
+        rvc.setAdapter(mCharacterAdapter);
+
+        mNewPostBtn = view.findViewById(R.id.add_feed);
+        mNewPostBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((GeneralActivity) getActivity()).replaceWithCreatePostActivity();
+            }
+        });
+
+        mNewCharacterBtn = view.findViewById(R.id.add_character);
+        mNewCharacterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((GeneralActivity) getActivity()).replaceWithCreateCharacterActivity();
             }
         });
 
@@ -247,15 +266,48 @@ public class ProfileFragment extends Fragment {
                                 String characterName = (String) document.get("characterName");
                                 String content = (String) document.get("content");
 
+                                Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content);
+                                mPostsData.add(newPost);
+                            }
+                            mPostsAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+        });
+
+
+        db.collection("characters").orderBy("fandom", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    System.err.println("Listen failed: " + error);
+                    return;
+                }
+
+                for (DocumentChange dc : value.getDocumentChanges()) {
+                    if (dc.getType() == DocumentChange.Type.ADDED) {
+                        mCharactersData.clear();
+                        for (QueryDocumentSnapshot document : value) {
+                            String creator = (String) document.get("creator");
+
+                            if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                String date = (String) document.get("date");
+                                String fandom = (String) document.get("fandom");
+                                String name = (String) document.get("name");
+                                String characterName = (String) document.get("characterName");
+                                String characterSurname = (String) document.get("characterSurname");
+                                String content = (String) document.get("content");
+
                                 Boolean isThereImage;
                                 isThereImage = document.getBoolean("thereImage");
                                 if (isThereImage == null) isThereImage =false;
                                 Log.i("eee", characterName +" "+ String.valueOf(isThereImage));
 
-                                Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content, isThereImage);
-                                mPostsData.add(newPost);
+                                Characters newCharacter = new Characters(document.getId(), Long.parseLong(date), name, creator, fandom, characterName, characterSurname, content, isThereImage);
+                                mCharactersData.add(newCharacter);
                             }
-                            mAdapter.notifyDataSetChanged();
+                            mCharacterAdapter.notifyDataSetChanged();
                         }
                     }
                 }

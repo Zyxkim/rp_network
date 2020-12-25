@@ -65,24 +65,6 @@ public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.MyVi
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Post c = mPostsList.get(position);
 
-        if (c.isThereImage()) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
-            StorageReference profileRef = mStorageReference.child("posts/" + c.getId() + "/image.jpg");
-            Log.i("rrr", String.valueOf(profileRef.getDownloadUrl()));
-            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Picasso.get().load(uri).into(holder.mPostImage);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.i("f", "Ooops");
-                }
-            });
-        }
-
         DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm 'by'");
 
         long milliSeconds= Long.parseLong(c.getDate());

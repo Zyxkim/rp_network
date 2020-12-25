@@ -1,20 +1,26 @@
 package com.adzteam.urbook.adapters;
 
-public class Post {
+public class Characters {
     protected Long mDate;
     private String mCreator;
     private String mName;
     private String mId;
+    private String mFandom;
     protected String mCharacterName;
+    protected String mCharacterSurname;
     protected String mContent;
+    private Boolean mIsThereImage;
 
-    public Post(String mId, Long mDate, String mName, String mCreator, String mCharacterName, String mContent) {
+    public Characters(String mId, Long mDate, String mName, String mCreator, String mFandom, String mCharacterName, String mCharacterSurname, String mContent, Boolean isThereImage) {
         this.mId = mId;
         this.mDate = mDate;
         this.mCreator = mCreator;
+        this.mFandom = mFandom;
         this.mName = mName;
         this.mCharacterName = mCharacterName;
+        this.mCharacterSurname = mCharacterSurname;
         this.mContent = mContent;
+        this.mIsThereImage = isThereImage;
     }
 
     public String getDate() {
@@ -25,8 +31,16 @@ public class Post {
         return mCreator;
     }
 
+    public String getFandom() {
+        return mFandom;
+    }
+
     public String getCharacterName() {
         return mCharacterName;
+    }
+
+    public String getCharacterSurname() {
+        return mCharacterSurname;
     }
 
     public String getName() {
@@ -39,5 +53,9 @@ public class Post {
 
     public String getId() {
         return mId;
+    }
+
+    public Boolean isThereImage() {
+        return mIsThereImage;
     }
 }

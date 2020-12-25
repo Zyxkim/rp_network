@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.adapters.Characters;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.general.GeneralActivity;
@@ -50,15 +51,18 @@ import java.util.Date;
 
 import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
-public class CreatePostActivity extends AppCompatActivity {
+public class CreateCharacterActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1002;
 
-    TextInputEditText mPostName;
+    TextInputEditText mFandom;
+    TextInputEditText mCharactersName;
+    TextInputEditText mCharacterSurname;
     TextInputEditText mPostContent;
     ActionMenuItemView mSaveItem;
     ActionMenuItemView mBackItem;
     MaterialButton mPostImage;
+    private MaterialButton mAddPostCover;
     private ImageView mPostImg;
     private Uri mImgUri;
 
@@ -70,13 +74,16 @@ public class CreatePostActivity extends AppCompatActivity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        setContentView(R.layout.activity_create_post);
+        setContentView(R.layout.activity_create_character);
 
-        mPostName = findViewById(R.id.new_character_name_content);
+        mFandom = findViewById(R.id.fandom);
+        mCharactersName = findViewById(R.id.new_character_name_content);
+        mCharacterSurname = findViewById(R.id.new_character_surname_content);
         mPostContent = findViewById(R.id.new_post_content);
         mPostImage = findViewById(R.id.editPostImageBtn);
         mSaveItem = findViewById(R.id.save);
         mBackItem = findViewById(R.id.back);
+        mAddPostCover = findViewById(R.id.editPostImageBtn);
         mPostImg = findViewById(R.id.post_image);
 
         mSaveItem.setOnClickListener(new View.OnClickListener() {
@@ -84,11 +91,11 @@ public class CreatePostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (GeneralActivity.hasConnection(getApplicationContext())) {
-                    if (mPostName.getText().toString().trim().equals("")) {
-                        mPostName.setError("Add Character name");
+                    if (mCharactersName.getText().toString().trim().equals("")) {
+                        mCharactersName.setError("Add Character name");
                     } else {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        CollectionReference collectionReference = db.collection("posts");
+                        CollectionReference collectionReference = db.collection("characters");
                         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
                         db.collection("users").document(mAuth.getCurrentUser().getUid())
@@ -99,9 +106,9 @@ public class CreatePostActivity extends AppCompatActivity {
                                     DocumentSnapshot document = task.getResult();
                                     mUserName = (String) document.get("name");
                                     DocumentReference docRef = collectionReference.document();
-                                    Post newPost = new Post(docRef.getId(), System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mPostName.getText().toString().trim(), mPostContent.getText().toString().trim());
+                                    Characters newCharacter = new Characters(docRef.getId(), System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mFandom.getText().toString().trim(), mCharactersName.getText().toString().trim(), mCharacterSurname.getText().toString().trim(), mPostContent.getText().toString().trim(), (mImgUri != null));
 
-                                    docRef.set(newPost);
+                                    docRef.set(newCharacter);
                                     uploadImageToFirebase(mImgUri, docRef.getId());
                                     replaceWithGeneralActivity();
                                     ;
@@ -120,6 +127,14 @@ public class CreatePostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        mAddPostCover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(openGallery, RC_SIGN_IN);
             }
         });
     }
@@ -142,7 +157,7 @@ public class CreatePostActivity extends AppCompatActivity {
     private void uploadImageToFirebase(Uri imgUri, String id) {
         if (imgUri != null) {
             StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
-            StorageReference profileRef = mStorageReference.child("posts/" + id + "/image.jpg");
+            StorageReference profileRef = mStorageReference.child("characters/" + id + "/image.jpg");
             profileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
