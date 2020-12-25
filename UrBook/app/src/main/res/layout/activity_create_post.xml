@@ -74,7 +74,7 @@
             app:boxStrokeColor="@color/colorAccent"
             app:hintAnimationEnabled="true"
             app:counterEnabled="true"
-            app:counterMaxLength="500"
+            app:counterMaxLength="1000"
             app:hintTextColor="@color/colorAccent">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -85,13 +85,13 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:gravity="top|start"
-                android:lines="3"
+                android:lines="10"
                 android:maxLines="10"
-                android:minLines="3"
+                android:minLines="1"
                 android:singleLine="false"
                 android:scrollbars="vertical"
-                android:maxLength="500"
-                android:inputType="text" />
+                android:maxLength="1000"
+                android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 

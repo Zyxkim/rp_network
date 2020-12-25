@@ -160,13 +160,13 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:gravity="top|start"
-                android:lines="3"
-                android:maxLines="10"
-                android:minLines="3"
+                android:lines="5"
+                android:maxLines="30"
+                android:minLines="1"
                 android:singleLine="false"
                 android:scrollbars="vertical"
                 android:maxLength="2500"
-                android:inputType="text" />
+                android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
