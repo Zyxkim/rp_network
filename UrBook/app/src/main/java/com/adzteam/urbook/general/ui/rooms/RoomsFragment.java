@@ -1,10 +1,10 @@
 package com.adzteam.urbook.general.ui.rooms;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.lifecycle.Observer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,23 +19,17 @@ import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.adapters.RoomsAdapter;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
 
 public class RoomsFragment extends Fragment {
 
-    private ActionMenuItemView mNewRoomBtn;
     private RoomsViewModel mRoomsViewModel;
+
+    private ActionMenuItemView mNewRoomBtn;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private final ArrayList<Room> mRoomsData = new ArrayList<>();
-    private final RoomsAdapter mAdapter = new RoomsAdapter(mRoomsData);
+    private RoomsAdapter mAdapter;
 
     public RoomsFragment() {
     }
@@ -46,7 +40,7 @@ public class RoomsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         mRoomsViewModel = new ViewModelProvider(this).get(RoomsViewModel.class);
-
+        mAdapter = new RoomsAdapter(mRoomsData, mRoomsViewModel);
         return inflater.inflate(R.layout.fragment_rooms, container, false);
     }
 
@@ -63,29 +57,19 @@ public class RoomsFragment extends Fragment {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
         rv.setAdapter(mAdapter);
-        
-        mNewRoomBtn = view.findViewById(R.id.add_room);
-        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((GeneralActivity) getActivity()).replaceWithCreateRoomActivity();
-            }
-        });
 
-        if(savedInstanceState == null) {
-            downloadRooms(null);
+        if (savedInstanceState == null) {
+            mRoomsViewModel.downloadRooms();
         }
 
-        mSwipeRefreshLayout = view.findViewById(R.id.room_swipe);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+        mNewRoomBtn = view.findViewById(R.id.add_room);
+        mNewRoomBtn.setOnClickListener(v -> ((GeneralActivity) getActivity()).replaceWithCreateRoomActivity());
 
-            @Override
-            public void onRefresh() {
-                mRoomsData.clear();
-                mAdapter.notifyDataSetChanged();
-                downloadRooms(new RefreshCallBack());
-            }
-        });
+        mSwipeRefreshLayout = view.findViewById(R.id.room_swipe);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mRoomsViewModel.refresh());
+
+        mRoomsViewModel.getRefreshState().observe(getViewLifecycleOwner(), new RefreshProgressObserver());
+        mRoomsViewModel.getRooms().observe(getViewLifecycleOwner(), new RoomsDataObserver());
     }
     
     @Override
@@ -94,43 +78,23 @@ public class RoomsFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public void downloadRooms(final RefreshCallBack callBack) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = db.collection("rooms");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    private class RoomsDataObserver implements Observer<ArrayList<Room>> {
 
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    Log.i("aaa", "task suc");
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String name = (String) document.get("name");
-                        String description = (String) document.get("description");
-                        String creator = (String) document.get("creator");
-                        String date = (String) document.get("date");
-                        Boolean isThereImage;
-                        isThereImage = document.getBoolean("thereImage");
-                        if (isThereImage == null) isThereImage =false;
-                        Log.i("eee", String.valueOf(isThereImage));
-                        Room newRoom = new Room(document.getId(), name, description, creator, date, isThereImage);
-                        mRoomsData.add(newRoom);
-                        Log.i("aaa", String.valueOf(mRoomsData.size()));
-                    }
-                    mAdapter.notifyDataSetChanged();
-                    if (callBack != null) {
-                        callBack.stopResreshing();
-                    }
-                    Log.i("aaa", "bbbb");
-                } else {
-                    Log.i("aaa", "not suc");
-                }
-            }
-        });
+        @Override
+        public void onChanged(ArrayList<Room> rooms) {
+            mRoomsData.clear();
+            mRoomsData.addAll(rooms);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
-    public class RefreshCallBack {
-        public void stopResreshing() {
-            mSwipeRefreshLayout.setRefreshing(false);
-        };
+    private class RefreshProgressObserver implements Observer<RoomsViewModel.RefreshState> {
+
+        @Override
+        public void onChanged(RoomsViewModel.RefreshState refreshState) {
+            if (refreshState == RoomsViewModel.RefreshState.DONE) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }
     }
 }
