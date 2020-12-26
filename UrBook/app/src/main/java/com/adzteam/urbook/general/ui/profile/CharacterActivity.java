@@ -1,5 +1,6 @@
 package com.adzteam.urbook.general.ui.profile;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,14 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.adzteam.urbook.adapters.CurrentRoomAdapter;
-import com.adzteam.urbook.room.model.Message;
+import com.adzteam.urbook.adapters.UserCharactersAdapter;
+import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -29,14 +30,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
-import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 import static com.adzteam.urbook.adapters.UserCharactersAdapter.CURRENT_CHARACTER_ID;
 
 public class CharacterActivity extends AppCompatActivity {
 
+    private final UserCharactersAdapter mCharactersAdapter = new UserCharactersAdapter(UserCharactersAdapter.mCharactersList);
+
+    private MaterialToolbar mToolbar;
+
     private ActionMenuItemView mBtGoBack;
+    private ActionMenuItemView mDeleteBtn;
 
     private StorageReference mStorageReference;
     
@@ -71,6 +74,32 @@ public class CharacterActivity extends AppCompatActivity {
         mCharacterDescription = findViewById(R.id.character_description);
         mCharacterImg = findViewById(R.id.character_image);
 
+        mDeleteBtn = (ActionMenuItemView) findViewById(R.id.delete);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        mToolbar = (MaterialToolbar)findViewById(R.id.character_bar);
+        FirebaseFirestore.getInstance()
+                .collection("characters")
+                .document(CURRENT_CHARACTER_ID)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    String name = (String) document.get("name");
+                    String creator = (String) document.get("creator");
+                    mToolbar.setTitle(name);
+
+                    if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                        mDeleteBtn.setVisibility(View.VISIBLE);
+                    } else {
+                        mDeleteBtn.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        });
+
         FirebaseFirestore.getInstance()
                 .collection("characters")
                 .document(CURRENT_CHARACTER_ID)
@@ -101,6 +130,20 @@ public class CharacterActivity extends AppCompatActivity {
             }
         });
 
+        mDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (GeneralActivity.hasConnection(view.getContext())) {
+                    db.collection("characters").document(CURRENT_CHARACTER_ID).delete();
+                    UserCharactersAdapter.mCharactersList.remove(UserCharactersAdapter.POSITION);
+                    mCharactersAdapter.notifyDataSetChanged();
+                    replaceWithGeneralActivity();
+                } else {
+                    Toast.makeText(view.getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         mBtGoBack = (ActionMenuItemView) findViewById(R.id.back);
         mBtGoBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,5 +151,10 @@ public class CharacterActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public void replaceWithGeneralActivity() {
+        Intent intent = new Intent(this, GeneralActivity.class);
+        startActivity(intent);
     }
 }

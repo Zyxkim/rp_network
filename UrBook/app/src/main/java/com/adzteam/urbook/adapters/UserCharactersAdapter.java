@@ -29,7 +29,8 @@ import java.util.ArrayList;
 
 public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAdapter.MyViewHolder> {
 
-    private ArrayList<Characters> mCharactersList;
+    public static ArrayList<Characters> mCharactersList;
+    public static int POSITION;
     private Context mContext;
     public static String CURRENT_CHARACTER_ID;
 
@@ -53,6 +54,7 @@ public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAd
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        POSITION = position;
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Characters c = mCharactersList.get(position);
 

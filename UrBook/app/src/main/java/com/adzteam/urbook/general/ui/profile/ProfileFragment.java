@@ -1,17 +1,14 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,15 +23,8 @@ import com.adzteam.urbook.adapters.Characters;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.adapters.UserPostsAdapter;
-import com.adzteam.urbook.adapters.Room;
-import com.adzteam.urbook.authentification.AuthActivity;
 
-import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
-import com.adzteam.urbook.room.model.Message;
-import com.example.flatdialoglibrary.dialog.FlatDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -52,7 +42,6 @@ import com.adzteam.urbook.general.GeneralActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -148,89 +137,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        /*
-        FileInputStream fis = null;
-        InputStreamReader isr = null;
-
-        try {
-            fis = getActivity().openFileInput("Profile.txt");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        isr = new InputStreamReader(fis);
-
-        char[] inputBuffer = new char[0];
-        try {
-            inputBuffer = new char[fis.available()];
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            isr.read(inputBuffer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String data = new String(inputBuffer);
-
-        try {
-            isr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        InputStream is = null;
-        try {
-            is = new ByteArrayInputStream(data.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        DocumentBuilderFactory dbf;
-        DocumentBuilder db = null;
-        Document dom = null;
-
-        dbf = DocumentBuilderFactory.newInstance();
-        try {
-            db = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-        try {
-            dom = db.parse(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
-
-        dom.getDocumentElement().normalize();
-
-        NodeList nameItems = dom.getElementsByTagName("characterName");
-        NodeList emailItems = dom.getElementsByTagName("email");
-        NodeList passwordItems = dom.getElementsByTagName("password");
-
-        for (int i = 0; i < nameItems.getLength(); i++) {
-            Node item = nameItems.item(i);
-            ((TextView)view.findViewById(R.id.profile_name)).setText(item.getTextContent());
-        }
-
-        for (int i = 0; i < emailItems.getLength(); i++) {
-            Node item = emailItems.item(i);
-            ((TextView)view.findViewById(R.id.email_profile)).setText(item.getTextContent());
-        }
-
-        for (int i = 0; i < passwordItems.getLength(); i++) {
-            Node item = passwordItems.item(i);
-            String password = "";
-            for (int j = 0; j < item.getTextContent().length(); j++) password += "*";
-            ((TextView)view.findViewById(R.id.password_profile)).setText(password);
-        }*/
         mProfileImage = view.findViewById(R.id.profile_image);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
