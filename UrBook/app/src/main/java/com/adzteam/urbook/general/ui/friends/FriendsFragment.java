@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.adzteam.urbook.R;
 
@@ -23,6 +24,8 @@ import com.adzteam.urbook.adapters.FriendsAdapter;
 public class FriendsFragment extends Fragment {
 
     private FriendsViewModel mFriendsViewModel;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private final ArrayList<Friend> mFriendsData = new ArrayList<>();
     private FriendsAdapter mAdapter;
@@ -37,7 +40,7 @@ public class FriendsFragment extends Fragment {
         setRetainInstance(true);
         mFriendsViewModel = new ViewModelProvider(this).get(FriendsViewModel.class);
         mAdapter = new FriendsAdapter(mFriendsData, mFriendsViewModel);
-        return inflater.inflate(R.layout.fragment_rooms, container, false);
+        return inflater.inflate(R.layout.fragment_friends, container, false);
     }
 
     @Override
@@ -57,7 +60,11 @@ public class FriendsFragment extends Fragment {
         if (savedInstanceState == null) {
             mFriendsViewModel.downloadFriends();
         }
-        
+
+        mSwipeRefreshLayout = view.findViewById(R.id.friends_swipe);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mFriendsViewModel.refresh());
+
+        mFriendsViewModel.getRefreshState().observe(getViewLifecycleOwner(), new RefreshProgressObserver());
         mFriendsViewModel.getFriends().observe(getViewLifecycleOwner(), new FriendsDataObserver());
     }
 
@@ -74,6 +81,16 @@ public class FriendsFragment extends Fragment {
             mFriendsData.clear();
             mFriendsData.addAll(friends);
             mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class RefreshProgressObserver implements Observer<FriendsViewModel.RefreshState> {
+
+        @Override
+        public void onChanged(FriendsViewModel.RefreshState refreshState) {
+            if (refreshState == FriendsViewModel.RefreshState.DONE) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MediatorLiveData;
 
 import com.adzteam.urbook.adapters.Friend;
+import com.adzteam.urbook.general.ui.rooms.RoomsRepo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,9 +19,14 @@ import java.util.ArrayList;
 
 public class FriendsRepo {
     private final MediatorLiveData<ArrayList<Friend>> mFriendsData = new MediatorLiveData<>();
+    private final MediatorLiveData<FriendsRepo.RefreshProgress> mRefreshProgress = new MediatorLiveData<>();
 
     public MediatorLiveData<ArrayList<Friend>> getRoomsLiveData() {
         return mFriendsData;
+    }
+
+    public MediatorLiveData<FriendsRepo.RefreshProgress> getRefreshProgress() {
+        return mRefreshProgress;
     }
 
     public void downloadFriends() {
@@ -51,11 +57,16 @@ public class FriendsRepo {
 
                                 mFriendsData.setValue(listOfFriends);
                                 Log.i("test friend", "add");
+                                mRefreshProgress.postValue(FriendsRepo.RefreshProgress.DONE);
                             }
                         }
                     });
                 }
             }
         });
+    }
+
+    public enum RefreshProgress {
+        DONE,
     }
 }
