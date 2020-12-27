@@ -208,13 +208,31 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
         mAdd = findViewById(R.id.subscribe);
+
+        db.collection("users")
+                .document(mAuth.getCurrentUser().getUid())
+                .collection("subscriptions").document(CURRENT_USER_ID)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        mAdd.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    Log.d("Subscribiton", "Failed connecting database: ", task.getException());
+                }
+            }
+        });
 
         mAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", CURRENT_USER_ID);

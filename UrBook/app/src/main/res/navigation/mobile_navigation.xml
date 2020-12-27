@@ -5,11 +5,11 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_rooms">
 
-    <!--<fragment
+    <fragment
         android:id="@+id/navigation_friends"
         android:name="com.adzteam.urbook.general.ui.friends.FriendsFragment"
         android:label="@string/friends"
-        tools:layout="@layout/fragment_friends" />-->
+        tools:layout="@layout/fragment_friends" />
 
     <fragment
         android:id="@+id/navigation_feed"

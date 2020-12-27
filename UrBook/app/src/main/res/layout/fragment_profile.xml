@@ -38,7 +38,7 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/profile_image" />
+                android:src="@drawable/no_character_image" />
 
             <TextView
                 android:id="@+id/profile_name"

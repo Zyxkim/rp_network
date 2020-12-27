@@ -1,17 +1,14 @@
 package com.adzteam.urbook.general.ui.friends;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,22 +19,30 @@ import java.util.ArrayList;
 
 import com.adzteam.urbook.adapters.Friend;
 import com.adzteam.urbook.adapters.FriendsAdapter;
-import com.adzteam.urbook.general.ui.profile.ProfileViewModel;
-import com.example.flatdialoglibrary.dialog.FlatDialog;
 
 public class FriendsFragment extends Fragment {
 
-    private ProfileViewModel mFriendsViewModel;
-
-    private ActionMenuItemView mNewFriendBtn;
+    private FriendsViewModel mFriendsViewModel;
 
     private final ArrayList<Friend> mFriendsData = new ArrayList<>();
-    private final FriendsAdapter mAdapter = new FriendsAdapter(mFriendsData);
+    private FriendsAdapter mAdapter;
 
+    public FriendsFragment() {
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        mFriendsViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-        return inflater.inflate(R.layout.fragment_friends, container, false);
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        mFriendsViewModel = new ViewModelProvider(this).get(FriendsViewModel.class);
+        mAdapter = new FriendsAdapter(mFriendsData, mFriendsViewModel);
+        return inflater.inflate(R.layout.fragment_rooms, container, false);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -49,49 +54,26 @@ public class FriendsFragment extends Fragment {
         rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
         rv.setAdapter(mAdapter);
 
-        mNewFriendBtn = view.findViewById(R.id.add_friend);
-        mNewFriendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditDialog();
-            }
-        });
-    }
-
-    private void showEditDialog() {
-        final FlatDialog flatDialog = new FlatDialog(getActivity());
-        flatDialog.setTitle("New Friend")
-                .setBackgroundColor(Color.parseColor("#442D68"))
-                .setFirstButtonColor(Color.parseColor("#F97794"))
-                .setSecondButtonColor(Color.WHITE)
-                .setSecondButtonTextColor(Color.parseColor("#F97794"))
-                .setFirstTextFieldHint("Friend Name")
-                .setSecondTextFieldHint("Friend Status")
-                .setFirstButtonText("CREATE")
-                .setSecondButtonText("CANCEL")
-                .withFirstButtonListner(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (TextUtils.isEmpty(flatDialog.getFirstTextField())) {
-                            Toast.makeText(getActivity(), "Add friend name please", Toast.LENGTH_SHORT).show();
-                        } else {
-                            mFriendsData.add(new Friend(flatDialog.getFirstTextField(), flatDialog.getSecondTextField()));
-                            Toast.makeText(getActivity(), "Wow! You have friends!", Toast.LENGTH_SHORT).show();
-                            flatDialog.dismiss();
-                        }
-                    }
-                })
-                .withSecondButtonListner(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        flatDialog.dismiss();
-                    }
-                })
-                .show();
+        if (savedInstanceState == null) {
+            mFriendsViewModel.downloadFriends();
+        }
+        
+        mFriendsViewModel.getFriends().observe(getViewLifecycleOwner(), new FriendsDataObserver());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("isThereRoomArray", "true");
         super.onSaveInstanceState(outState);
+    }
+
+    private class FriendsDataObserver implements Observer<ArrayList<Friend>> {
+
+        @Override
+        public void onChanged(ArrayList<Friend> friends) {
+            mFriendsData.clear();
+            mFriendsData.addAll(friends);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }
