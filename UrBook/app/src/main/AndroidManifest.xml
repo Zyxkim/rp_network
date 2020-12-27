@@ -11,7 +11,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".general.ui.profile.CharacterActivity"></activity>
+        <activity android:name=".general.ui.friends.UserActivity"></activity>
+        <activity android:name=".general.ui.profile.CharacterActivity" />
         <activity
             android:name=".general.ui.profile.CreateCharacterActivity"
             android:windowSoftInputMode="adjustPan" />

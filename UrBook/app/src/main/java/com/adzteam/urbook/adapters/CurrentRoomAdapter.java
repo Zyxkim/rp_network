@@ -1,6 +1,8 @@
 package com.adzteam.urbook.adapters;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.ui.friends.UserActivity;
+import com.adzteam.urbook.general.ui.profile.CharacterActivity;
 import com.adzteam.urbook.room.model.Message;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -26,6 +30,8 @@ import java.util.Date;
 public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.MyViewHolder> {
 
     private ArrayList<Message> mPostsList;
+    private Context mContext;
+    public static String CURRENT_USER_ID;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -51,7 +57,7 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Message c = mPostsList.get(position);
 
-        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm 'from'");
+        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
         long milliSeconds= Long.parseLong(c.getDate());
         System.out.println(milliSeconds);
@@ -76,6 +82,18 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
         holder.mDate.setText(formatter.format(calendar.getTime()));
         holder.mUserName.setText(c.getName());
         holder.mMessageContent.setText(c.getContent());
+
+        if (!c.getCreator().equals(mAuth.getCurrentUser().getUid())) {
+            holder.mUserName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CURRENT_USER_ID = c.getCreator();
+                    Log.d("ItemClick", CURRENT_USER_ID);
+                    Intent intent = new Intent(mContext, UserActivity.class);
+                    mContext.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
@@ -86,6 +104,7 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        mContext=parent.getContext();
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_chat, parent, false);
         return new MyViewHolder(v);
     }

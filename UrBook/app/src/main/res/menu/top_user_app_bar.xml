@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/subscribe"
+        android:icon="@drawable/ic_baseline_person_add_24"
+        android:title="Subscribe"
+        android:contentDescription="Subscribe"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/unsubscribe"
+        android:icon="@drawable/ic_baseline_person_remove_24"
+        android:title="Unsubscribe"
+        android:visible="false"
+        android:contentDescription="Unsubscribe"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/back"
+        android:icon="@drawable/ic_baseline_arrow_back_24"
+        android:title="@string/back"
+        android:contentDescription="@string/content_description_back"
+        app:showAsAction="ifRoom" />
+
+</menu>

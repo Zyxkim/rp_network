@@ -1,5 +1,14 @@
-package com.adzteam.urbook.general.ui.profile;
+package com.adzteam.urbook.general.ui.friends;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.ActionMenuItemView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,24 +16,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.view.menu.ActionMenuItemView;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Characters;
+import com.adzteam.urbook.adapters.CurrentRoomAdapter;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.UserCharactersAdapter;
-import com.adzteam.urbook.adapters.UserPostsAdapter;
-
+import com.adzteam.urbook.adapters.PostsAdapter;
+import com.adzteam.urbook.general.GeneralActivity;
+import com.adzteam.urbook.general.ui.profile.EditProfileActivity;
+import com.adzteam.urbook.general.ui.profile.ProfileViewModel;
+import com.adzteam.urbook.room.RoomActivity;
+import com.adzteam.urbook.room.model.Message;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -38,61 +49,54 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.adzteam.urbook.general.GeneralActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileFragment extends Fragment {
+import static com.adzteam.urbook.adapters.CurrentRoomAdapter.CURRENT_USER_ID;
+import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
-    private ProfileViewModel mProfileViewModel;
-    private ActionMenuItemView mLogOutBtn;
-    private ActionMenuItemView mEditProfileBtn;
+public class UserActivity extends AppCompatActivity {
+
+    private ActionMenuItemView mBtGoBack;
+
     private CircleImageView mProfileImage;
     private StorageReference mStorageReference;
-    private FirebaseAuth mAuth;
 
-    private ImageButton mNewPostBtn;
-    private ImageButton mNewCharacterBtn;
-    
     private final ArrayList<Post> mPostsData = new ArrayList<>();
-    private final UserPostsAdapter mPostsAdapter = new UserPostsAdapter(mPostsData);
+    private final PostsAdapter mPostsAdapter = new PostsAdapter(mPostsData);
 
     private final ArrayList<Characters> mCharactersData = new ArrayList<>();
     private final UserCharactersAdapter mCharacterAdapter = new UserCharactersAdapter(mCharactersData);
-    
+
+    public UserActivity() {
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        mProfileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return inflater.inflate(R.layout.activity_user, container, false);
     }
 
+
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void onStart() {
+        super.onStart();
+    }
 
-        mLogOutBtn = view.findViewById(R.id.logout);
-        mEditProfileBtn = view.findViewById(R.id.edit);
 
-        mLogOutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mProfileViewModel.signOut();
-                Log.i("ggg", "rrr");
-                ((GeneralActivity) getActivity()).replaceWithAuthActivity();
-            }
-        });
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user);
+
         FirebaseFirestore mFStore = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
-        TextView mName = view.findViewById(R.id.profile_name);
-        TextView mStatus = view.findViewById(R.id.profile_status);
-        docRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
+        DocumentReference docRef = mFStore.collection("users").document(CURRENT_USER_ID);
+        TextView mName = findViewById(R.id.user_name);
+        TextView mStatus = findViewById(R.id.user_status);
+        docRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                 if (documentSnapshot != null) {
@@ -101,47 +105,21 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-        mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                intent.putExtra("name", mName.getText().toString());
-                intent.putExtra("status", mStatus.getText().toString());
-                startActivity(intent);
-            }
-        });
 
-        RecyclerView rv = view.findViewById(R.id.recyclerView);
+        RecyclerView rv = findViewById(R.id.recyclerView);
         rv.setHasFixedSize(true);
-        rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
+        rv.setLayoutManager(new GridLayoutManager(this, 1));
         rv.setAdapter(mPostsAdapter);
 
-        RecyclerView rvc = view.findViewById(R.id.characters_view);
+        RecyclerView rvc = findViewById(R.id.characters_view);
         rvc.setHasFixedSize(true);
-        rvc.setLayoutManager(new GridLayoutManager(view.getContext(), 1, GridLayoutManager.HORIZONTAL, false));
+        rvc.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false));
         rvc.setAdapter(mCharacterAdapter);
 
-        mNewPostBtn = view.findViewById(R.id.add_feed);
-        mNewPostBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((GeneralActivity) getActivity()).replaceWithCreatePostActivity();
-            }
-        });
-
-        mNewCharacterBtn = view.findViewById(R.id.add_character);
-        mNewCharacterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((GeneralActivity) getActivity()).replaceWithCreateCharacterActivity();
-            }
-        });
-
-        mProfileImage = view.findViewById(R.id.profile_image);
+        mProfileImage = findViewById(R.id.user_image);
         mStorageReference = FirebaseStorage.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
 
-        StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
+        StorageReference profileRef = mStorageReference.child("users/" + CURRENT_USER_ID + "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -165,9 +143,8 @@ public class ProfileFragment extends Fragment {
                         for (QueryDocumentSnapshot document : value) {
                             String creator = (String) document.get("creator");
 
-                            if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            if (creator.equals(CURRENT_USER_ID)) {
                                 String date = (String) document.get("date");
-                                //String id = (String) document.get("id");
                                 String name = (String) document.get("name");
                                 String characterName = (String) document.get("characterName");
                                 String content = (String) document.get("content");
@@ -197,7 +174,7 @@ public class ProfileFragment extends Fragment {
                         for (QueryDocumentSnapshot document : value) {
                             String creator = (String) document.get("creator");
 
-                            if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            if (creator.equals(CURRENT_USER_ID)) {
                                 String date = (String) document.get("date");
                                 String fandom = (String) document.get("fandom");
                                 String name = (String) document.get("name");
@@ -219,10 +196,13 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-    }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+        mBtGoBack = findViewById(R.id.back);
+        mBtGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 }

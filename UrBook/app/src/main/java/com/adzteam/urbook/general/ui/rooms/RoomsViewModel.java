@@ -49,9 +49,9 @@ public class RoomsViewModel extends AndroidViewModel {
         return mRoomRepo.isAuthor(room.getCreator());
     }
 
-    public void downloadImage(Room room) {
+    /*public void downloadImage(Room room) {
         mRoomRepo.downloadImage();
-    }
+    }*/
     public enum RefreshState {
         DONE,
     }

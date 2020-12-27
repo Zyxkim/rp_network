@@ -1,7 +1,5 @@
 package com.adzteam.urbook.room.model;
 
-import com.google.firebase.Timestamp;
-
 public class Message {
     protected Long mDate;
     private String mCreator;
