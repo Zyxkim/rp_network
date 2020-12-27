@@ -2,7 +2,6 @@ package com.adzteam.urbook.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,31 +17,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
+import com.adzteam.urbook.general.ui.rooms.RoomsViewModel;
 import com.adzteam.urbook.room.RoomActivity;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder> {
 
-    private ArrayList<Room> mRoomList;
+    private final ArrayList<Room> mRoomList;
     private Context mContext;
+    private final RoomsViewModel mViewModel;
     public static String CURRENT_ROOM_ID;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView mRoomName;
-        public TextView mRoomDescription;
-        public ImageView mRoomImg;
-        public ImageButton mDeleteBtn;
+        public final TextView mRoomName;
+        public final TextView mRoomDescription;
+        public final ImageView mRoomImg;
+        public final ImageButton mDeleteBtn;
 
         public MyViewHolder(View view) {
             super(view);
@@ -53,8 +49,9 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         }
     }
 
-    public RoomsAdapter(ArrayList<Room> mRoomList) {
+    public RoomsAdapter(ArrayList<Room> mRoomList, RoomsViewModel viewModel) {
         this.mRoomList = mRoomList;
+        mViewModel = viewModel;
     }
 
     @Override
@@ -64,8 +61,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         holder.mRoomName.setText(c.getName());
         holder.mRoomDescription.setText(c.getDescription());
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if (c.getCreator().equals(mAuth.getCurrentUser().getUid())) {
+        if (mViewModel.isAuthorOf(c)) {
             holder.mDeleteBtn.setVisibility(View.VISIBLE);
         } else {
             holder.mDeleteBtn.setVisibility(View.INVISIBLE);
@@ -74,40 +70,24 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         if (c.isThereImage()) {
             StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
             StorageReference profileRef = mStorageReference.child("rooms/" + c.getId() + "/image.jpg");
-            Log.i("rrr", String.valueOf(profileRef.getDownloadUrl()));
-            profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Picasso.get().load(uri).into(holder.mRoomImg);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.i("f", "Ooops");
-                }
-            });
+            profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(holder.mRoomImg));
         }
-        holder.mRoomName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CURRENT_ROOM_ID = c.getId();
-                Log.d("ItemClick", CURRENT_ROOM_ID);
-                Intent intent = new Intent(mContext, RoomActivity.class);
-                mContext.startActivity(intent);
-            }
+
+        holder.mRoomName.setOnClickListener(view -> {
+            CURRENT_ROOM_ID = c.getId();
+            Log.d("ItemClick", CURRENT_ROOM_ID);
+            Intent intent = new Intent(mContext, RoomActivity.class);
+            mContext.startActivity(intent);
         });
 
-        holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (GeneralActivity.hasConnection(view.getContext())) {
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    db.collection("rooms").document(c.getId()).delete();
-                    Toast.makeText(view.getContext(), "Please, refresh page.", Toast.LENGTH_SHORT).show();
-                    mRoomList.remove(position);
-                } else {
-                    Toast.makeText(view.getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
-                }
+        holder.mDeleteBtn.setOnClickListener(view -> {
+            if (GeneralActivity.hasConnection(view.getContext())) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("rooms").document(c.getId()).delete();
+                Toast.makeText(view.getContext(), "Please, refresh page.", Toast.LENGTH_SHORT).show();
+                mRoomList.remove(position);
+            } else {
+                Toast.makeText(view.getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
             }
         });
     }

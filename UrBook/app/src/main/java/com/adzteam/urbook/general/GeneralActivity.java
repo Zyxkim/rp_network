@@ -11,7 +11,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.ui.profile.CreateCharacterActivity;
 import com.adzteam.urbook.general.ui.profile.CreatePostActivity;
@@ -38,31 +37,6 @@ public class GeneralActivity extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
-
-
-        /*FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        final DocumentReference docRef = db.collection("users").document(mAuth.getUid());
-
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    Log.w("aaa", "Listen failed.", error);
-                    return;
-                }
-
-                if (value != null && value.exists()) {
-                    Log.d("aaa", (String) ((ArrayList) value.get("future_friend")).get(0));
-                    Log.d("aaa", "Current data: " + value.getData());
-                } else {
-                    Log.d("aaa", "Current data: null");
-                }
-            }
-
-        });*/
-
-
     }
 
     public void roomClickListener() {

@@ -7,6 +7,7 @@ public class Room {
     private String mCreator;
     private String mDateOfCreating;
     private Boolean mIsThereImage;
+    //private
 
     public Room(String id, String name, String description, String creator, String date, Boolean isThereImage) {
         mId = id;
