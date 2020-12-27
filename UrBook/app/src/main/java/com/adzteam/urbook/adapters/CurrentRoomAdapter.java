@@ -108,19 +108,19 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
             }
         });
 
-        holder.mMessageContent.setText(c.getContent());
-
-        if (!c.getCreator().equals(mAuth.getCurrentUser().getUid())) {
-            holder.mUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        holder.mUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!c.getCreator().equals(mAuth.getCurrentUser().getUid())) {
                     CURRENT_USER_ID = c.getCreator();
                     Log.d("ItemClick", CURRENT_USER_ID);
                     Intent intent = new Intent(mContext, UserActivity.class);
                     mContext.startActivity(intent);
                 }
-            });
-        }
+            }
+        });
+
+        holder.mMessageContent.setText(c.getContent());
     }
 
     @Override
