@@ -12,20 +12,36 @@ import android.widget.TextView;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.ui.friends.UserActivity;
 import com.adzteam.urbook.general.ui.profile.CharacterActivity;
+import com.adzteam.urbook.room.RoomActivity;
 import com.adzteam.urbook.room.model.Message;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.Executor;
+
+import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
 public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.MyViewHolder> {
 
@@ -80,7 +96,18 @@ public class CurrentRoomAdapter extends RecyclerView.Adapter<CurrentRoomAdapter.
         }
 
         holder.mDate.setText(formatter.format(calendar.getTime()));
-        holder.mUserName.setText(c.getName());
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(c.getCreator());
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+                if (documentSnapshot != null) {
+                    holder.mUserName.setText(documentSnapshot.getString("name"));
+                }
+            }
+        });
+
         holder.mMessageContent.setText(c.getContent());
 
         if (!c.getCreator().equals(mAuth.getCurrentUser().getUid())) {

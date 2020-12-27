@@ -117,27 +117,6 @@ public class EditProfileActivity extends AppCompatActivity {
                         edited.put("name", mEditName.getText().toString());
                         edited.put("status", mEditStatus.getText().toString());
 
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        CollectionReference collectionReference = db.collection("posts");
-
-                        db.collection("posts")
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                if (document.get("creator").toString().equals(mAuth.getCurrentUser().getUid())) {
-                                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                                    document.getReference().update("name", name);
-                                                }
-                                            }
-                                        } else {
-                                            Log.d(TAG, "Error getting documents: ", task.getException());
-                                        }
-                                    }
-                                });
-
                         docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
@@ -159,7 +138,6 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
