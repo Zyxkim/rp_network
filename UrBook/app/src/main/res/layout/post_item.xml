@@ -49,24 +49,11 @@
         android:gravity="start"
         android:layout_gravity="center"/>
 
-    <ImageView
-        android:id="@+id/post_image"
-        android:src="@drawable/no_cover_room"
-        android:layout_marginTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="400dp"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:clickable="true"
-        android:focusable="true" />
-
     <TextView
         android:id="@+id/post_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/post_text"
         android:textColor="@color/black"

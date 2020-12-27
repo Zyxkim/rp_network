@@ -1,17 +1,14 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,17 +19,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.adapters.Characters;
 import com.adzteam.urbook.adapters.Post;
+import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.adapters.UserPostsAdapter;
-import com.adzteam.urbook.adapters.Room;
-import com.adzteam.urbook.authentification.AuthActivity;
 
-import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
-import com.adzteam.urbook.room.model.Message;
-import com.example.flatdialoglibrary.dialog.FlatDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -51,7 +43,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
@@ -63,11 +54,15 @@ public class ProfileFragment extends Fragment {
     private StorageReference mStorageReference;
     private FirebaseAuth mAuth;
 
-    private ImageButton mNewRoomBtn;
+    private ImageButton mNewPostBtn;
+    private ImageButton mNewCharacterBtn;
     
     private final ArrayList<Post> mPostsData = new ArrayList<>();
-    private final UserPostsAdapter mAdapter = new UserPostsAdapter(mPostsData);
+    private final UserPostsAdapter mPostsAdapter = new UserPostsAdapter(mPostsData);
 
+    private final ArrayList<Characters> mCharactersData = new ArrayList<>();
+    private final UserCharactersAdapter mCharacterAdapter = new UserCharactersAdapter(mCharactersData);
+    
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,99 +114,29 @@ public class ProfileFragment extends Fragment {
         RecyclerView rv = view.findViewById(R.id.recyclerView);
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
-        rv.setAdapter(mAdapter);
+        rv.setAdapter(mPostsAdapter);
 
-        mNewRoomBtn = view.findViewById(R.id.add_feed);
-        mNewRoomBtn.setOnClickListener(new View.OnClickListener() {
+        RecyclerView rvc = view.findViewById(R.id.characters_view);
+        rvc.setHasFixedSize(true);
+        rvc.setLayoutManager(new GridLayoutManager(view.getContext(), 1, GridLayoutManager.HORIZONTAL, false));
+        rvc.setAdapter(mCharacterAdapter);
+
+        mNewPostBtn = view.findViewById(R.id.add_feed);
+        mNewPostBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((GeneralActivity) getActivity()).replaceWithCreatePostActivity();
             }
         });
 
-        /*
-        FileInputStream fis = null;
-        InputStreamReader isr = null;
+        mNewCharacterBtn = view.findViewById(R.id.add_character);
+        mNewCharacterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((GeneralActivity) getActivity()).replaceWithCreateCharacterActivity();
+            }
+        });
 
-        try {
-            fis = getActivity().openFileInput("Profile.txt");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        isr = new InputStreamReader(fis);
-
-        char[] inputBuffer = new char[0];
-        try {
-            inputBuffer = new char[fis.available()];
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            isr.read(inputBuffer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String data = new String(inputBuffer);
-
-        try {
-            isr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        InputStream is = null;
-        try {
-            is = new ByteArrayInputStream(data.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        DocumentBuilderFactory dbf;
-        DocumentBuilder db = null;
-        Document dom = null;
-
-        dbf = DocumentBuilderFactory.newInstance();
-        try {
-            db = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-        try {
-            dom = db.parse(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
-
-        dom.getDocumentElement().normalize();
-
-        NodeList nameItems = dom.getElementsByTagName("characterName");
-        NodeList emailItems = dom.getElementsByTagName("email");
-        NodeList passwordItems = dom.getElementsByTagName("password");
-
-        for (int i = 0; i < nameItems.getLength(); i++) {
-            Node item = nameItems.item(i);
-            ((TextView)view.findViewById(R.id.profile_name)).setText(item.getTextContent());
-        }
-
-        for (int i = 0; i < emailItems.getLength(); i++) {
-            Node item = emailItems.item(i);
-            ((TextView)view.findViewById(R.id.email_profile)).setText(item.getTextContent());
-        }
-
-        for (int i = 0; i < passwordItems.getLength(); i++) {
-            Node item = passwordItems.item(i);
-            String password = "";
-            for (int j = 0; j < item.getTextContent().length(); j++) password += "*";
-            ((TextView)view.findViewById(R.id.password_profile)).setText(password);
-        }*/
         mProfileImage = view.findViewById(R.id.profile_image);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -247,15 +172,48 @@ public class ProfileFragment extends Fragment {
                                 String characterName = (String) document.get("characterName");
                                 String content = (String) document.get("content");
 
+                                Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content);
+                                mPostsData.add(newPost);
+                            }
+                            mPostsAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+        });
+
+
+        db.collection("characters").orderBy("fandom", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    System.err.println("Listen failed: " + error);
+                    return;
+                }
+
+                for (DocumentChange dc : value.getDocumentChanges()) {
+                    if (dc.getType() == DocumentChange.Type.ADDED) {
+                        mCharactersData.clear();
+                        for (QueryDocumentSnapshot document : value) {
+                            String creator = (String) document.get("creator");
+
+                            if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                String date = (String) document.get("date");
+                                String fandom = (String) document.get("fandom");
+                                String name = (String) document.get("name");
+                                String characterName = (String) document.get("characterName");
+                                String characterSurname = (String) document.get("characterSurname");
+                                String content = (String) document.get("content");
+
                                 Boolean isThereImage;
                                 isThereImage = document.getBoolean("thereImage");
                                 if (isThereImage == null) isThereImage =false;
                                 Log.i("eee", characterName +" "+ String.valueOf(isThereImage));
 
-                                Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content, isThereImage);
-                                mPostsData.add(newPost);
+                                Characters newCharacter = new Characters(document.getId(), Long.parseLong(date), name, creator, fandom, characterName, characterSurname, content, isThereImage);
+                                mCharactersData.add(newCharacter);
                             }
-                            mAdapter.notifyDataSetChanged();
+                            mCharacterAdapter.notifyDataSetChanged();
                         }
                     }
                 }

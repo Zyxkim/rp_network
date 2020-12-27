@@ -12,6 +12,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.adzteam.urbook.R;
+import com.adzteam.urbook.general.ui.profile.CreateCharacterActivity;
 import com.adzteam.urbook.general.ui.profile.CreatePostActivity;
 import com.adzteam.urbook.general.ui.rooms.CreateRoomActivity;
 import com.adzteam.urbook.authentification.AuthActivity;
@@ -50,6 +51,11 @@ public class GeneralActivity extends AppCompatActivity {
 
     public void replaceWithCreatePostActivity() {
         Intent intent = new Intent(this, CreatePostActivity.class);
+        startActivity(intent);
+    }
+
+    public void replaceWithCreateCharacterActivity() {
+        Intent intent = new Intent(this, CreateCharacterActivity.class);
         startActivity(intent);
     }
 

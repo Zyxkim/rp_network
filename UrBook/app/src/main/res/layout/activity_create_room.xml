@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".general.ui.create.CreateRoomActivity">
+    tools:context=".general.ui.rooms.CreateRoomActivity">
 
     <View
         android:layout_width="match_parent"
@@ -99,6 +99,8 @@
             android:hint="@string/room_description"
             app:boxStrokeColor="@color/colorAccent"
             app:hintAnimationEnabled="true"
+            app:counterEnabled="true"
+            app:counterMaxLength="300"
             app:hintTextColor="@color/colorAccent">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -108,7 +110,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:inputType="text" />
+                android:gravity="top|start"
+                android:lines="4"
+                android:maxLines="4"
+                android:minLines="1"
+                android:maxLength="300"
+                android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 

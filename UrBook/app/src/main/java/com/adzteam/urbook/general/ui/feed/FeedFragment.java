@@ -18,15 +18,20 @@ import com.adzteam.urbook.R;
 
 import java.util.ArrayList;
 
+import com.adzteam.urbook.adapters.Characters;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.PostsAdapter;
+import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.general.ui.profile.ProfileViewModel;
 import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,6 +44,9 @@ public class FeedFragment extends Fragment {
 
     private final ArrayList<Post> mPostsData = new ArrayList<>();
     private final PostsAdapter mAdapter = new PostsAdapter(mPostsData);
+
+    private final ArrayList<Characters> mCharactersData = new ArrayList<>();
+    private final UserCharactersAdapter mCharacterAdapter = new UserCharactersAdapter(mCharactersData);
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +65,11 @@ public class FeedFragment extends Fragment {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new GridLayoutManager(view.getContext(), 1));
         rv.setAdapter(mAdapter);
+
+        RecyclerView rvc = view.findViewById(R.id.characters_view);
+        rvc.setHasFixedSize(true);
+        rvc.setLayoutManager(new GridLayoutManager(view.getContext(), 1, GridLayoutManager.HORIZONTAL, false));
+        rvc.setAdapter(mCharacterAdapter);
 
         if(savedInstanceState == null) {
             downloadPosts(null);
@@ -84,19 +97,21 @@ public class FeedFragment extends Fragment {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         String creator = (String) document.get("creator");
-                        String name = (String) document.get("name");
-                        String date = (String) document.get("date");
-                        String id = (String) document.get("id");
-                        String characterName = (String) document.get("characterName");
-                        String content = (String) document.get("content");
+                        if (!creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            String name = (String) document.get("name");
+                            String date = (String) document.get("date");
+                            String id = (String) document.get("id");
+                            String characterName = (String) document.get("characterName");
+                            String content = (String) document.get("content");
 
-                        Boolean isThereImage;
-                        isThereImage = document.getBoolean("thereImage");
-                        if (isThereImage == null) isThereImage =false;
-                        Log.i("eee", String.valueOf(isThereImage));
+                            Boolean isThereImage;
+                            isThereImage = document.getBoolean("thereImage");
+                            if (isThereImage == null) isThereImage = false;
+                            Log.i("eee", String.valueOf(isThereImage));
 
-                        Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content, isThereImage);
-                        mPostsData.add(newPost);
+                            Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content);
+                            mPostsData.add(newPost);
+                        }
                     }
                     mAdapter.notifyDataSetChanged();
                     if (callBack != null) {
@@ -104,6 +119,43 @@ public class FeedFragment extends Fragment {
                     }
                 } else {
                     Log.i("lol", "kek");
+                }
+            }
+        });
+
+        db.collection("characters").orderBy("date", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    System.err.println("Listen failed: " + error);
+                    return;
+                }
+
+                for (DocumentChange dc : value.getDocumentChanges()) {
+                    if (dc.getType() == DocumentChange.Type.ADDED) {
+                        mCharactersData.clear();
+                        for (QueryDocumentSnapshot document : value) {
+                            String creator = (String) document.get("creator");
+
+                            if (!creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                String date = (String) document.get("date");
+                                String fandom = (String) document.get("fandom");
+                                String name = (String) document.get("name");
+                                String characterName = (String) document.get("characterName");
+                                String characterSurname = (String) document.get("characterSurname");
+                                String content = (String) document.get("content");
+
+                                Boolean isThereImage;
+                                isThereImage = document.getBoolean("thereImage");
+                                if (isThereImage == null) isThereImage = false;
+                                Log.i("eee", characterName + " " + String.valueOf(isThereImage));
+
+                                Characters newCharacter = new Characters(document.getId(), Long.parseLong(date), name, creator, fandom, characterName, characterSurname, content, isThereImage);
+                                mCharactersData.add(newCharacter);
+                                mCharacterAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
                 }
             }
         });
