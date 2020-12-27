@@ -1,6 +1,5 @@
 package com.adzteam.urbook.adapters;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.adzteam.urbook.general.ui.profile.ProfileFragment;
-import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,7 +27,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.MyViewHolder> {
 

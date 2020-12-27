@@ -11,11 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.view.View;
@@ -23,7 +19,6 @@ import android.view.View;
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -76,7 +71,6 @@ public class CreateRoomActivity extends AppCompatActivity {
                 if (GeneralActivity.hasConnection(getApplicationContext())) {
                     if (mRoomNameInput.getText().toString().trim().equals("")) {
                         mRoomNameInput.setError("Add Room name");
-                        //Toast.makeText(getActivity(), "Add Room name please", Toast.LENGTH_SHORT).show();
                     } else {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
                         CollectionReference collectionReference = db.collection("rooms");
@@ -137,26 +131,23 @@ public class CreateRoomActivity extends AppCompatActivity {
                     profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            //You will get donwload URL in uri
                             Log.i("check", "Download URL = "+ uri.toString());
-                            //Adding that URL to Realtime database
                             CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("rooms");
                             DocumentReference docRef = collectionReference.document(id);
                             Log.i("check",  id);
 
-                            // Set the "isCapital" field of the city 'DC'
                             docRef
                                     .update("roomImg", uri.toString())
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Log.d("log", "DocumentSnapshot successfully updated!");
+                                            Log.i("updateImg", "DocumentSnapshot successfully updated!");
                                         }
                                     })
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Log.w("log", "Error updating document", e);
+                                            Log.w("updateImg", "Error updating document", e);
                                         }
                                     });
 

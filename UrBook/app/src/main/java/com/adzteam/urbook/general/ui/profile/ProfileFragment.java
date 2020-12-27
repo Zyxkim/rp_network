@@ -1,17 +1,14 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,15 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.UserPostsAdapter;
-import com.adzteam.urbook.adapters.Room;
-import com.adzteam.urbook.authentification.AuthActivity;
 
-import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
-import com.adzteam.urbook.room.model.Message;
-import com.example.flatdialoglibrary.dialog.FlatDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;

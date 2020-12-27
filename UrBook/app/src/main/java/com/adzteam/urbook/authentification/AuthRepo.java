@@ -183,7 +183,7 @@ public class AuthRepo {
 
     public void catchGoogleResult(@Nullable Intent data) {
         Log.i("www", "CATCH");
-        catchResult(data, mAuth.getValue(), new LoginCallback());
+        catchResult(data, new LoginCallback());
     }
 
     public void resetPassword(String mail) {
@@ -375,7 +375,7 @@ public class AuthRepo {
         return signInIntent;
     }
 
-    public void catchResult(@Nullable Intent data, FirebaseAuth auth, AuthRepo.Callback callback) {
+    public void catchResult(@Nullable Intent data, Callback callback) {
         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);

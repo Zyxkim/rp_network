@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
-import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

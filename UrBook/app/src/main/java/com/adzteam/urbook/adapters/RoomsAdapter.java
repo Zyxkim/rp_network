@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.adzteam.urbook.general.ui.rooms.RoomsFragment;
 import com.adzteam.urbook.room.RoomActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,7 +27,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder> {

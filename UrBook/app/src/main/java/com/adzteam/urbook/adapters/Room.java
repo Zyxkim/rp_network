@@ -1,7 +1,5 @@
 package com.adzteam.urbook.adapters;
 
-import android.net.Uri;
-
 public class Room {
     private String mId;
     private String mName;

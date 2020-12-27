@@ -1,7 +1,6 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -10,23 +9,15 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuView;
 
 import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Post;
-import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.adzteam.urbook.room.RoomActivity;
-import com.adzteam.urbook.room.model.Message;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,7 +27,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -45,10 +35,6 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import androidx.appcompat.view.menu.ActionMenuItemView;
-
-import java.util.Date;
-
-import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
 public class CreatePostActivity extends AppCompatActivity {
 
