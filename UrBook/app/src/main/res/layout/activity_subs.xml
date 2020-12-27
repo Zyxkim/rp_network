@@ -18,10 +18,10 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/friends_bar"
+                android:id="@+id/subs_bar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:menu="@menu/top_friends_app_bar"
+                app:menu="@menu/top_subs_app_bar"
                 app:title="Your Subscribers"
                 app:titleTextColor="@color/colorAccent"
                 android:background="@color/colorPrimary"

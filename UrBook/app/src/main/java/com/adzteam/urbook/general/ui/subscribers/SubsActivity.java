@@ -1,6 +1,7 @@
 package com.adzteam.urbook.general.ui.subscribers;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.adzteam.urbook.R;
 import com.adzteam.urbook.adapters.Friend;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 public class SubsActivity extends AppCompatActivity {
 
     private SubsViewModel mFriendsViewModel;
+    private ActionMenuItemView mBtGoBack;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -47,6 +50,14 @@ public class SubsActivity extends AppCompatActivity {
 
         mFriendsViewModel.getRefreshState().observe(this, new RefreshProgressObserver());
         mFriendsViewModel.getFriends().observe(this, new FriendsDataObserver());
+
+        mBtGoBack = findViewById(R.id.back);
+        mBtGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private class FriendsDataObserver implements Observer<ArrayList<Friend>> {

@@ -233,52 +233,56 @@ public class UserActivity extends AppCompatActivity {
         mAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                if (GeneralActivity.hasConnection(view.getContext())) {
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("id", CURRENT_USER_ID);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", CURRENT_USER_ID);
 
-                db.collection("users")
-                        .document(mAuth.getCurrentUser().getUid())
-                        .collection("subscriptions").document(CURRENT_USER_ID).set(data);
+                    db.collection("users")
+                            .document(mAuth.getCurrentUser().getUid())
+                            .collection("subscriptions").document(CURRENT_USER_ID).set(data);
 
-                data.clear();
-                data.put("id", mAuth.getCurrentUser().getUid());
+                    data.clear();
+                    data.put("id", mAuth.getCurrentUser().getUid());
 
-                db.collection("users")
-                        .document(CURRENT_USER_ID)
-                        .collection("subscribers").document(mAuth.getCurrentUser().getUid()).set(data);
+                    db.collection("users")
+                            .document(CURRENT_USER_ID)
+                            .collection("subscribers").document(mAuth.getCurrentUser().getUid()).set(data);
 
-                DocumentReference docRef = db.collection("users").document(CURRENT_USER_ID);
-                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                Long subs = (Long) document.get("subs");
-                                if (subs == null){
-                                    data.clear();
-                                    data.put("subs", 1);
-                                    db.collection("users").document(CURRENT_USER_ID).update(data);
-                                } else {
-                                    Map<String,Object> updates = new HashMap<>();
-                                    updates.put("subs", FieldValue.delete());
-                                    db.collection("users").document(CURRENT_USER_ID).update(updates);
-                                    data.clear();
-                                    data.put("subs", subs + 1);
-                                    db.collection("users").document(CURRENT_USER_ID).update(data);
+                    DocumentReference docRef = db.collection("users").document(CURRENT_USER_ID);
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    Long subs = (Long) document.get("subs");
+                                    if (subs == null) {
+                                        data.clear();
+                                        data.put("subs", 1);
+                                        db.collection("users").document(CURRENT_USER_ID).update(data);
+                                    } else {
+                                        Map<String, Object> updates = new HashMap<>();
+                                        updates.put("subs", FieldValue.delete());
+                                        db.collection("users").document(CURRENT_USER_ID).update(updates);
+                                        data.clear();
+                                        data.put("subs", subs + 1);
+                                        db.collection("users").document(CURRENT_USER_ID).update(data);
+                                    }
                                 }
+                            } else {
+                                Log.d("Error", "Failed with subs counter!", task.getException());
                             }
-                        } else {
-                            Log.d("Error", "Failed with subs counter!", task.getException());
                         }
-                    }
-                });
+                    });
 
-                Toast.makeText(getApplicationContext(), "Subscription added!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Subscription added!", Toast.LENGTH_SHORT).show();
 
-                mAdd.setVisibility(View.INVISIBLE);
+                    mAdd.setVisibility(View.INVISIBLE);
+                } else {
+                    Toast.makeText(view.getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
