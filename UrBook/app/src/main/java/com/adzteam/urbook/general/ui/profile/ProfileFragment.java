@@ -100,6 +100,7 @@ public class ProfileFragment extends Fragment {
                 if (documentSnapshot != null) {
                     mName.setText(documentSnapshot.getString("name"));
                     mStatus.setText(documentSnapshot.getString("status"));
+                    mSubs.setText(documentSnapshot.get("subs").toString() + " subscribers");
                 }
             }
         });

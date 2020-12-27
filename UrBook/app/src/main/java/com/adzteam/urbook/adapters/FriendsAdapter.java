@@ -18,13 +18,20 @@ import com.adzteam.urbook.R;
 import com.adzteam.urbook.general.GeneralActivity;
 import com.adzteam.urbook.general.ui.friends.FriendsViewModel;
 import com.adzteam.urbook.general.ui.friends.UserActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -75,6 +82,25 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.MyViewHo
                 db.collection("users").document(c.getId()).collection("subscribers").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).delete();
                 Toast.makeText(view.getContext(), "Please, refresh page.", Toast.LENGTH_SHORT).show();
                 mRoomList.remove(position);
+
+                DocumentReference docRef = db.collection("users").document(c.getId());
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Long subs = (Long) document.get("subs");
+                                Map<String,Object> updates = new HashMap<>();
+                                updates.put("subs", FieldValue.delete());
+                                db.collection("users").document(c.getId()).update(updates);
+                                updates.clear();
+                                updates.put("subs", subs - 1);
+                                db.collection("users").document(c.getId()).update(updates);
+                                }
+                            }
+                        }
+                    });
             } else {
                 Toast.makeText(view.getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
             }

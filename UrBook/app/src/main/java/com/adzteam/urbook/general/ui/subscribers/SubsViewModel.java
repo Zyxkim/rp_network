@@ -9,7 +9,6 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
 import com.adzteam.urbook.adapters.Friend;
-import com.adzteam.urbook.general.ui.subscribers.SubsRepo;
 
 import java.util.ArrayList;
 

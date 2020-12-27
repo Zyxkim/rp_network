@@ -42,6 +42,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -247,6 +248,33 @@ public class UserActivity extends AppCompatActivity {
                 db.collection("users")
                         .document(CURRENT_USER_ID)
                         .collection("subscribers").document(mAuth.getCurrentUser().getUid()).set(data);
+
+                DocumentReference docRef = db.collection("users").document(CURRENT_USER_ID);
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Long subs = (Long) document.get("subs");
+                                if (subs == null){
+                                    data.clear();
+                                    data.put("subs", 1);
+                                    db.collection("users").document(CURRENT_USER_ID).update(data);
+                                } else {
+                                    Map<String,Object> updates = new HashMap<>();
+                                    updates.put("subs", FieldValue.delete());
+                                    db.collection("users").document(CURRENT_USER_ID).update(updates);
+                                    data.clear();
+                                    data.put("subs", subs + 1);
+                                    db.collection("users").document(CURRENT_USER_ID).update(data);
+                                }
+                            }
+                        } else {
+                            Log.d("Error", "Failed with subs counter!", task.getException());
+                        }
+                    }
+                });
 
                 Toast.makeText(getApplicationContext(), "Subscription added!", Toast.LENGTH_SHORT).show();
 
