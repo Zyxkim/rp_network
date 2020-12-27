@@ -24,6 +24,7 @@ import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.adapters.UserPostsAdapter;
 
+import com.adzteam.urbook.general.ui.subscribers.SubsActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -92,6 +93,7 @@ public class ProfileFragment extends Fragment {
         DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
         TextView mName = view.findViewById(R.id.profile_name);
         TextView mStatus = view.findViewById(R.id.profile_status);
+        TextView mSubs = view.findViewById(R.id.profile_subs);
         docRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
@@ -107,6 +109,14 @@ public class ProfileFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 intent.putExtra("name", mName.getText().toString());
                 intent.putExtra("status", mStatus.getText().toString());
+                startActivity(intent);
+            }
+        });
+
+        mSubs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), SubsActivity.class);
                 startActivity(intent);
             }
         });
