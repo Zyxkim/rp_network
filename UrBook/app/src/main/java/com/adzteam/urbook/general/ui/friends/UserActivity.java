@@ -52,6 +52,8 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -61,6 +63,7 @@ import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 public class UserActivity extends AppCompatActivity {
 
     private ActionMenuItemView mBtGoBack;
+    private ActionMenuItemView mAdd;
 
     private CircleImageView mProfileImage;
     private StorageReference mStorageReference;
@@ -202,6 +205,34 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
+            }
+        });
+
+        mAdd = findViewById(R.id.subscribe);
+
+        mAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", CURRENT_USER_ID);
+
+                db.collection("users")
+                        .document(mAuth.getCurrentUser().getUid())
+                        .collection("subscriptions").document(CURRENT_USER_ID).set(data);
+
+                data.clear();
+                data.put("id", mAuth.getCurrentUser().getUid());
+
+                db.collection("users")
+                        .document(CURRENT_USER_ID)
+                        .collection("subscribers").document(mAuth.getCurrentUser().getUid()).set(data);
+
+                Toast.makeText(getApplicationContext(), "Subscription added!", Toast.LENGTH_SHORT).show();
+
+                mAdd.setVisibility(View.INVISIBLE);
             }
         });
     }
