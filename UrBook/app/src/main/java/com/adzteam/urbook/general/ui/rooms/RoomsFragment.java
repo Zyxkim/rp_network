@@ -1,5 +1,6 @@
 package com.adzteam.urbook.general.ui.rooms;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,16 +21,21 @@ import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.adapters.RoomsAdapter;
 import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 public class RoomsFragment extends Fragment {
 
+    private static Uri mCachedUri;
     private ActionMenuItemView mNewRoomBtn;
     private RoomsViewModel mRoomsViewModel;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -108,11 +114,11 @@ public class RoomsFragment extends Fragment {
                         String description = (String) document.get("description");
                         String creator = (String) document.get("creator");
                         String date = (String) document.get("date");
-                        Boolean isThereImage;
-                        isThereImage = document.getBoolean("thereImage");
+                        Boolean isThereImage = document.getBoolean("thereImage");
                         if (isThereImage == null) isThereImage =false;
                         Log.i("eee", String.valueOf(isThereImage));
-                        Room newRoom = new Room(document.getId(), name, description, creator, date, isThereImage);
+                        String uri = (String) document.get("roomImg");
+                        Room newRoom = new Room(document.getId(), name, description, creator, date, isThereImage, uri);
                         mRoomsData.add(newRoom);
                         Log.i("aaa", String.valueOf(mRoomsData.size()));
                     }

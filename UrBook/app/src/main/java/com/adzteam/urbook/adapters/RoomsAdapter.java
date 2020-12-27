@@ -43,6 +43,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         public TextView mRoomDescription;
         public ImageView mRoomImg;
         public ImageButton mDeleteBtn;
+        public String mImgUri;
 
         public MyViewHolder(View view) {
             super(view);
@@ -63,6 +64,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         Room c = mRoomList.get(position);
         holder.mRoomName.setText(c.getName());
         holder.mRoomDescription.setText(c.getDescription());
+        holder.mImgUri = c.getRoomImg();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if (c.getCreator().equals(mAuth.getCurrentUser().getUid())) {
@@ -75,6 +77,8 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
             StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
             StorageReference profileRef = mStorageReference.child("rooms/" + c.getId() + "/image.jpg");
             Log.i("rrr", String.valueOf(profileRef.getDownloadUrl()));
+            Picasso.get().load(holder.mImgUri).into(holder.mRoomImg);
+            Log.i("download", String.valueOf(holder.mImgUri));
             profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {

@@ -82,7 +82,7 @@ public class CreateRoomActivity extends AppCompatActivity {
                         CollectionReference collectionReference = db.collection("rooms");
                         FirebaseAuth mAuth = FirebaseAuth.getInstance();
                         DocumentReference docRef = collectionReference.document();
-                        Room newRoom = new Room(docRef.getId(), mRoomNameInput.getText().toString().trim(), mRoomDescriptionInput.getText().toString().trim(), mAuth.getCurrentUser().getUid(), (new Date()).toString(), (mImgUri != null));
+                        Room newRoom = new Room(docRef.getId(), mRoomNameInput.getText().toString().trim(), mRoomDescriptionInput.getText().toString().trim(), mAuth.getCurrentUser().getUid(), (new Date()).toString(), (mImgUri != null), "https://firebasestorage.googleapis.com/v0/b/urbook-43535.appspot.com/o/users%2FIYX73GrBRqOFgLG941ZXFqsKN6v2%2Fprofile.jpg?alt=media&token=b029217c-5a10-4ab4-b41f-7c877174e9ef");
 
                         docRef.set(newRoom);
 
@@ -137,7 +137,29 @@ public class CreateRoomActivity extends AppCompatActivity {
                     profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            //Picasso.get().load(uri).into(mProfileImage);
+                            //You will get donwload URL in uri
+                            Log.i("check", "Download URL = "+ uri.toString());
+                            //Adding that URL to Realtime database
+                            CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("rooms");
+                            DocumentReference docRef = collectionReference.document(id);
+                            Log.i("check",  id);
+
+                            // Set the "isCapital" field of the city 'DC'
+                            docRef
+                                    .update("roomImg", uri.toString())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("log", "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("log", "Error updating document", e);
+                                        }
+                                    });
+
                         }
                     });
                 }
