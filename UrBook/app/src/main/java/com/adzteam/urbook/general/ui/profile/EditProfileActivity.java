@@ -1,9 +1,10 @@
 package com.adzteam.urbook.general.ui.profile;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,54 +12,32 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.adzteam.urbook.R;
-import com.adzteam.urbook.adapters.Room;
 import com.adzteam.urbook.general.GeneralActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditProfileActivity extends AppCompatActivity {
     private static final String TAG = "";
+
+    private EditProfileViewModel mViewModel;
     private CircleImageView mProfileImage, mEditProfileImageBtn;
     private StorageReference mStorageReference;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore mFStore;
     TextInputEditText mEditName, mEditStatus;
     ActionMenuItemView mBackBtn, mSaveBtn;
 
     private static final int RC_SIGN_IN = 1000;
-
-    public boolean isNameValidate() {
-        String sEditName = mEditName.getText().toString();
-        return !sEditName.isEmpty();
-    }
-
-    public boolean isStatusValidate() {
-        String sEditStatus = mEditStatus.getText().toString();
-        return !sEditStatus.isEmpty();
-    }
 
     public void replaceWithGeneralActivity() {
         Intent intent = new Intent(getApplicationContext(), GeneralActivity.class);
@@ -73,7 +52,7 @@ public class EditProfileActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setContentView(R.layout.activity_edit_profile);
-
+        mViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
         Intent userData = getIntent();
         String userName = userData.getStringExtra("name");
         String userStatus = userData.getStringExtra("status");
@@ -88,7 +67,8 @@ public class EditProfileActivity extends AppCompatActivity {
         mSaveBtn = findViewById(R.id.save);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        mFStore = FirebaseFirestore.getInstance();
+
+        mViewModel.getEditStateMediatorLiveData().observe(this, new EditStateObserver());
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -110,21 +90,7 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (GeneralActivity.hasConnection(getApplicationContext())) {
-                    if (isNameValidate()) {
-                        DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
-                        Map<String, Object> edited = new HashMap<>();
-                        String name = mEditName.getText().toString();
-                        edited.put("name", mEditName.getText().toString());
-                        edited.put("status", mEditStatus.getText().toString());
-
-                        docRef.update(edited).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(getApplicationContext(), "profile edited successfully", Toast.LENGTH_SHORT).show();
-                                replaceWithGeneralActivity();
-                            }
-                        });
-                    }
+                    mViewModel.editProfile(mEditName.getText().toString().trim(), mEditStatus.getText().toString().trim());
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
                 }
@@ -145,27 +111,24 @@ public class EditProfileActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == Activity.RESULT_OK) {
                 Uri imgUri = data.getData();
-                uploadImageToFirebase(imgUri);
+                mViewModel.uploadImageToFirebase(imgUri);
             }
         }
     }
-    private void uploadImageToFirebase(Uri imgUri) {
-        StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-        profileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Picasso.get().load(uri).into(mProfileImage);
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+
+    private class EditStateObserver implements Observer<EditProfileViewModel.EditState> {
+
+        @Override
+        public void onChanged(EditProfileViewModel.EditState editState) {
+            if (editState == EditProfileViewModel.EditState.DONE) {
+                Toast.makeText(getApplicationContext(), "profile edited successfully", Toast.LENGTH_SHORT).show();
+                replaceWithGeneralActivity();
+            } else if (editState == EditProfileViewModel.EditState.FAILED) {
                 Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_SHORT).show();
+            } else if (editState == EditProfileViewModel.EditState.EMPTY_NAME) {
+                
             }
-        });
+        }
     }
+
 }
