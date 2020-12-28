@@ -34,7 +34,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".general.GeneralActivity"/>
-        <activity android:name=".authentification.AuthActivity">
+        <activity
+            android:name=".authentification.AuthActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"></action>
                 <category android:name="android.intent.category.DEFAULT"></category>
