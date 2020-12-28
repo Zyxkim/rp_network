@@ -1,9 +1,7 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,19 +23,8 @@ import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.adapters.UserPostsAdapter;
 
-import com.adzteam.urbook.general.ui.feed.FeedViewModel;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.adzteam.urbook.general.ui.subscribers.SubsActivity;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.adzteam.urbook.general.GeneralActivity;
@@ -61,6 +48,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView mName;
     private TextView mStatus;
+    private TextView mSubs;
     
     private final ArrayList<Post> mPostsData = new ArrayList<>();
     private final UserPostsAdapter mPostsAdapter = new UserPostsAdapter(mPostsData);
@@ -85,6 +73,8 @@ public class ProfileFragment extends Fragment {
         mEditProfileBtn = view.findViewById(R.id.edit);
         mName = view.findViewById(R.id.profile_name);
         mStatus = view.findViewById(R.id.profile_status);
+        mSubs = view.findViewById(R.id.profile_subs);
+
         mLogOutBottom.setOnClickListener(v -> {
             mProfileViewModel.signOut();
             ((GeneralActivity) getActivity()).replaceWithAuthActivity();
@@ -92,12 +82,18 @@ public class ProfileFragment extends Fragment {
 
         mProfileViewModel.getNameLiveData().observe(getViewLifecycleOwner(), new NameObserver());
         mProfileViewModel.getStatusLiveData().observe(getViewLifecycleOwner(), new StatusObserver());
+        mProfileViewModel.getSubsLiveData().observe(getViewLifecycleOwner(), new SubsObserver());
         mProfileViewModel.uploadProfileData();
 
         mEditProfileBtn.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             intent.putExtra("name", mName.getText().toString());
             intent.putExtra("status", mStatus.getText().toString());
+            startActivity(intent);
+        });
+
+        mSubs.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SubsActivity.class);
             startActivity(intent);
         });
 
@@ -170,5 +166,12 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    private class SubsObserver implements Observer<String> {
+
+        @Override
+        public void onChanged(String subs) {
+            mSubs.setText(subs);
+        }
+    }
 
 }

@@ -8,9 +8,7 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.adzteam.urbook.adapters.Characters;
 import com.adzteam.urbook.adapters.Post;
-import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.authentification.AuthRepo;
-import com.adzteam.urbook.general.ui.feed.FeedRepo;
 
 import java.util.ArrayList;
 
@@ -33,12 +31,16 @@ public class ProfileViewModel extends AndroidViewModel {
 
     private MediatorLiveData<String> nameLiveData = mRepo.getNameLiveData();
     private MediatorLiveData<String> statusLiveData = mRepo.getStatusLiveData();
+    private MediatorLiveData<String> mSubsLifeData = mRepo.getSubsLiveData();
 
     public MediatorLiveData<String> getNameLiveData() {
         return nameLiveData;
     }
     public MediatorLiveData<String> getStatusLiveData() {
         return statusLiveData;
+    }
+    public MediatorLiveData<String> getSubsLiveData() {
+        return mSubsLifeData;
     }
 
     public ProfileViewModel(@NonNull Application application) {

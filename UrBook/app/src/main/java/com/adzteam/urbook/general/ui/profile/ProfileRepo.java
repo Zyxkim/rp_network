@@ -1,7 +1,5 @@
 package com.adzteam.urbook.general.ui.profile;
 
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MediatorLiveData;
 
@@ -35,12 +33,16 @@ public class ProfileRepo {
 
     private MediatorLiveData<String> nameLiveData = new MediatorLiveData<>();
     private MediatorLiveData<String> statusLiveData = new MediatorLiveData<>();
+    private MediatorLiveData<String> subsLiveData = new MediatorLiveData<>();
 
     public MediatorLiveData<String> getStatusLiveData() {
         return statusLiveData;
     }
     public MediatorLiveData<String> getNameLiveData() {
         return nameLiveData;
+    }
+    public MediatorLiveData<String> getSubsLiveData() {
+        return subsLiveData;
     }
 
     public void uploadProfileData() {
@@ -53,6 +55,9 @@ public class ProfileRepo {
                 if (documentSnapshot != null) {
                     nameLiveData.setValue(documentSnapshot.getString("name"));
                     statusLiveData.setValue(documentSnapshot.getString("status"));
+                    if (documentSnapshot.get("subs") != null) {
+                        subsLiveData.setValue(documentSnapshot.getLong("subs").toString() + " subscribers");
+                    }
                 }
             }
         });
