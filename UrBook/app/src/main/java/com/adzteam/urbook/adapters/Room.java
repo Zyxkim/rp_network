@@ -7,15 +7,16 @@ public class Room {
     private String mCreator;
     private String mDateOfCreating;
     private Boolean mIsThereImage;
-    //private
+    private String mImageUri;
 
-    public Room(String id, String name, String description, String creator, String date, Boolean isThereImage) {
+    public Room(String id, String name, String description, String creator, String date, Boolean isThereImage, String imageUri) {
         mId = id;
         mName = name;
         mDescription = description;
         mCreator = creator;
         mDateOfCreating = date;
         mIsThereImage = isThereImage;
+        mImageUri = imageUri;
     }
 
     public String getName() {
@@ -41,6 +42,8 @@ public class Room {
     public Boolean isThereImage() {
         return mIsThereImage;
     }
+
+    public String getRoomImg() { return mImageUri; }
 
 
 }

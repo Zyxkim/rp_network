@@ -1,7 +1,5 @@
 package com.adzteam.urbook.general.ui.rooms;
 
-import android.util.Log;
-
 import androidx.lifecycle.MediatorLiveData;
 
 import com.adzteam.urbook.adapters.Room;
@@ -38,7 +36,8 @@ public class RoomsRepo {
                     String date = (String) document.get("date");
                     Boolean isThereImage = document.getBoolean("thereImage");
                     if (isThereImage == null) isThereImage = false;
-                    Room newRoom = new Room(document.getId(), name, description, creator, date, isThereImage);
+                    String uri = (String) document.get("roomImg");
+                    Room newRoom = new Room(document.getId(), name, description, creator, date, isThereImage, uri);
                     listOfRooms.add(newRoom);
                 }
                 mRoomsData.setValue(listOfRooms);

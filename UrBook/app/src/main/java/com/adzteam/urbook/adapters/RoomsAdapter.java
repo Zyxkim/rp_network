@@ -39,6 +39,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         public final TextView mRoomDescription;
         public final ImageView mRoomImg;
         public final ImageButton mDeleteBtn;
+        public String mImgUri;
 
         public MyViewHolder(View view) {
             super(view);
@@ -60,6 +61,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         Room c = mRoomList.get(position);
         holder.mRoomName.setText(c.getName());
         holder.mRoomDescription.setText(c.getDescription());
+        holder.mImgUri = c.getRoomImg();
 
         if (mViewModel.isAuthorOf(c)) {
             holder.mDeleteBtn.setVisibility(View.VISIBLE);
@@ -70,6 +72,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.MyViewHolder
         if (c.isThereImage()) {
             StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
             StorageReference profileRef = mStorageReference.child("rooms/" + c.getId() + "/image.jpg");
+            Picasso.get().load(holder.mImgUri).into((holder.mRoomImg));
             profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(holder.mRoomImg));
         }
 
