@@ -4,8 +4,8 @@
     <item
         android:id="@+id/edit"
         android:icon="@drawable/ic_baseline_settings_24"
-        android:title="@string/logout"
-        android:contentDescription="@string/content_description_logout"
+        android:title="Edit Profile"
+        android:contentDescription="Edit Profile"
         app:showAsAction="ifRoom" />
 
     <item
