@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -65,10 +66,8 @@ public class CreateCharacterActivity extends AppCompatActivity {
         mCharactersName = findViewById(R.id.new_character_name_content);
         mCharacterSurname = findViewById(R.id.new_character_surname_content);
         mPostContent = findViewById(R.id.new_post_content);
-        mPostImage = findViewById(R.id.editPostImageBtn);
         mSaveItem = findViewById(R.id.save);
         mBackItem = findViewById(R.id.back);
-        mAddPostCover = findViewById(R.id.editPostImageBtn);
         mPostImg = findViewById(R.id.post_image);
 
         mSaveItem.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +90,7 @@ public class CreateCharacterActivity extends AppCompatActivity {
                                     DocumentSnapshot document = task.getResult();
                                     mUserName = (String) document.get("name");
                                     DocumentReference docRef = collectionReference.document();
-                                    Characters newCharacter = new Characters(docRef.getId(), System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mFandom.getText().toString().trim(), mCharactersName.getText().toString().trim(), mCharacterSurname.getText().toString().trim(), mPostContent.getText().toString().trim(), (mImgUri != null));
+                                    Characters newCharacter = new Characters(docRef.getId(), System.currentTimeMillis(), mUserName, mAuth.getCurrentUser().getUid(), mFandom.getText().toString().trim(), mCharactersName.getText().toString().trim(), mCharacterSurname.getText().toString().trim(), mPostContent.getText().toString().trim(), (mImgUri != null), "https://firebasestorage.googleapis.com/v0/b/urbook-43535.appspot.com/");
 
                                     docRef.set(newCharacter);
                                     uploadImageToFirebase(mImgUri, docRef.getId());
@@ -149,6 +148,27 @@ public class CreateCharacterActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Uri uri) {
                             //Picasso.get().load(uri).into(mPostImg);
+                            Log.i("check", "Download URL = "+ uri.toString());
+                            //Adding that URL to Realtime database
+                            CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("characters");
+                            DocumentReference docRef = collectionReference.document(id);
+                            Log.i("check",  id);
+
+                            // Set the "isCapital" field of the city 'DC'
+                            docRef
+                                    .update("characterImg", uri.toString())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("log", "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("log", "Error updating document", e);
+                                        }
+                                    });
                         }
                     });
                 }

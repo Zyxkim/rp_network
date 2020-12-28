@@ -87,11 +87,11 @@ public class FeedRepo {
                             String characterSurname = (String) document.get("characterSurname");
                             String content = (String) document.get("content");
 
-                            Boolean isThereImage;
-                            isThereImage = document.getBoolean("thereImage");
+                            Boolean isThereImage = document.getBoolean("thereImage");
                             if (isThereImage == null) isThereImage = false;
+                            String uri = (String) document.get("characterImg");
 
-                            Characters newCharacter = new Characters(document.getId(), Long.parseLong(date), name, creator, fandom, characterName, characterSurname, content, isThereImage);
+                            Characters newCharacter = new Characters(document.getId(), Long.parseLong(date), name, creator, fandom, characterName, characterSurname, content, isThereImage, uri);
                             listOfCharacters.add(newCharacter);
                         }
                     }

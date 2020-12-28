@@ -10,8 +10,9 @@ public class Characters {
     protected String mCharacterSurname;
     protected String mContent;
     private Boolean mIsThereImage;
+    private String mImageUri;
 
-    public Characters(String mId, Long mDate, String mName, String mCreator, String mFandom, String mCharacterName, String mCharacterSurname, String mContent, Boolean isThereImage) {
+    public Characters(String mId, Long mDate, String mName, String mCreator, String mFandom, String mCharacterName, String mCharacterSurname, String mContent, Boolean isThereImage, String mImageUri) {
         this.mId = mId;
         this.mDate = mDate;
         this.mCreator = mCreator;
@@ -21,6 +22,7 @@ public class Characters {
         this.mCharacterSurname = mCharacterSurname;
         this.mContent = mContent;
         this.mIsThereImage = isThereImage;
+        this.mImageUri = mImageUri;
     }
 
     public String getDate() {
@@ -58,4 +60,6 @@ public class Characters {
     public Boolean isThereImage() {
         return mIsThereImage;
     }
+
+    public String getCharacterImg() { return mImageUri; }
 }

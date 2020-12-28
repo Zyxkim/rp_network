@@ -37,13 +37,14 @@ public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAd
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mPostName;
-        public ImageView mPostImage;
+        public ImageView mCharacterImage;
         public CardView mCard;
+        public String mImgUri;
 
         public MyViewHolder(View view) {
             super(view);
             mPostName = view.findViewById(R.id.character_post_name);
-            mPostImage = view.findViewById(R.id.character_post_image);
+            mCharacterImage = view.findViewById(R.id.character_post_image);
             mCard = view.findViewById(R.id.cardView);
         }
     }
@@ -58,14 +59,18 @@ public class UserCharactersAdapter extends RecyclerView.Adapter<UserCharactersAd
         System.out.println("Bind ["+holder+"] - Pos ["+position+"]");
         Characters c = mCharactersList.get(position);
 
+        holder.mImgUri = c.getCharacterImg();
+
         if (c.isThereImage()) {
             StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
             StorageReference profileRef = mStorageReference.child("characters/" + c.getId() + "/image.jpg");
             Log.i("rrr", String.valueOf(profileRef.getDownloadUrl()));
+            Picasso.get().load(holder.mImgUri).into(holder.mCharacterImage);
+            Log.i("download", String.valueOf(holder.mImgUri));
             profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    Picasso.get().load(uri).into(holder.mPostImage);
+                    Picasso.get().load(uri).into(holder.mCharacterImage);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
