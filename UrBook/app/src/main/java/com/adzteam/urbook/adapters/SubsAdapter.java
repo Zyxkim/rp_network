@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.adzteam.urbook.adapters.CurrentRoomAdapter.CURRENT_USER_ID;
+import static com.adzteam.urbook.adapters.FriendsAdapter.CURRENT_USER_URI;
 
 public class SubsAdapter extends RecyclerView.Adapter<SubsAdapter.MyViewHolder> {
 
@@ -88,6 +89,7 @@ public class SubsAdapter extends RecyclerView.Adapter<SubsAdapter.MyViewHolder> 
             @Override
             public void onClick(View view) {
                 CURRENT_USER_ID = c.getId();
+                CURRENT_USER_URI = holder.mImgUri;
                 Log.d("ItemClick", CURRENT_USER_ID);
                 Intent intent = new Intent(mContext, UserActivity.class);
                 mContext.startActivity(intent);

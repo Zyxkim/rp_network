@@ -42,6 +42,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.MyViewHo
     private final ArrayList<Friend> mRoomList;
     private Context mContext;
     private final FriendsViewModel mViewModel;
+    public static String CURRENT_USER_URI;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -114,6 +115,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.MyViewHo
             @Override
             public void onClick(View view) {
                 CURRENT_USER_ID = c.getId();
+                CURRENT_USER_URI = holder.mImgUri;
                 Log.d("ItemClick", CURRENT_USER_ID);
                 Intent intent = new Intent(mContext, UserActivity.class);
                 mContext.startActivity(intent);

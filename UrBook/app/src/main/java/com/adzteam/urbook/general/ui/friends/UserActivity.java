@@ -59,6 +59,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.adzteam.urbook.adapters.CurrentRoomAdapter.CURRENT_USER_ID;
+import static com.adzteam.urbook.adapters.FriendsAdapter.CURRENT_USER_URI;
 import static com.adzteam.urbook.adapters.RoomsAdapter.CURRENT_ROOM_ID;
 
 public class UserActivity extends AppCompatActivity {
@@ -124,6 +125,7 @@ public class UserActivity extends AppCompatActivity {
         mStorageReference = FirebaseStorage.getInstance().getReference();
 
         StorageReference profileRef = mStorageReference.child("users/" + CURRENT_USER_ID + "/profile.jpg");
+        Picasso.get().load(CURRENT_USER_URI).into(mProfileImage);
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
