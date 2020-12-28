@@ -51,8 +51,9 @@ public class FriendsRepo {
                                 DocumentSnapshot document = task.getResult();
                                 String name = (String) document.get("name");
                                 String status = (String) document.get("status");
+                                String uri = (String) document.get("profileImg");
 
-                                Friend newFriend = new Friend(id, name, status);
+                                Friend newFriend = new Friend(id, name, status, uri);
                                 listOfFriends.add(newFriend);
 
                                 mFriendsData.setValue(listOfFriends);

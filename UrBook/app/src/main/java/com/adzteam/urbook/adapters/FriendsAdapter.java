@@ -50,6 +50,8 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.MyViewHo
         public final CircleImageView mFriendImage;
         public final ImageButton mDeleteBtn;
 
+        public String mImgUri;
+
         public MyViewHolder(View view) {
             super(view);
             mDeleteBtn = view.findViewById(R.id.button_delete);
@@ -70,9 +72,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.MyViewHo
         Friend c = mRoomList.get(position);
         holder.mFriendName.setText(c.getName());
         holder.mFriendStatus.setText(c.getStatus());
+        holder.mImgUri = c.getFriendImg();
 
         StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
         StorageReference profileRef = mStorageReference.child("users/" + c.getId() + "/profile.jpg");
+        Picasso.get().load(holder.mImgUri).into((holder.mFriendImage));
         profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(holder.mFriendImage));
 
         holder.mDeleteBtn.setOnClickListener(view -> {
