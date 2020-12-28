@@ -48,35 +48,37 @@ public class EditProfileRepo {
         StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-        profileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Log.i("check", "Download URL = " + uri.toString());
-                        CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("users");
-                        DocumentReference docRef = collectionReference.document(mAuth.getCurrentUser().getUid());
-                        Log.i("check", mAuth.getCurrentUser().getUid());
-                        docRef
-                                .update("profileImg", uri.toString())
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("log", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("log", "Error updating document", e);
-                                    }
-                                });
+        if (imgUri != null) {
+            profileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.i("check", "Download URL = " + uri.toString());
+                            CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("users");
+                            DocumentReference docRef = collectionReference.document(mAuth.getCurrentUser().getUid());
+                            Log.i("check", mAuth.getCurrentUser().getUid());
+                            docRef
+                                    .update("profileImg", uri.toString())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("log", "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("log", "Error updating document", e);
+                                        }
+                                    });
 
-                    }
-                });
-            }
-        });
+                        }
+                    });
+                }
+            });
+        }
     }
 
     public enum EditProgress {
