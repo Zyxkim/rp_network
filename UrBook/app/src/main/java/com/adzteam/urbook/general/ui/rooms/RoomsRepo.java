@@ -16,11 +16,9 @@ public class RoomsRepo {
     private final MediatorLiveData<ArrayList<Room>> mRoomsData = new MediatorLiveData<>();
     private final MediatorLiveData<RefreshProgress> mRefreshProgress = new MediatorLiveData<>();
 
-
     public MediatorLiveData<ArrayList<Room>> getRoomsLiveData() {
         return mRoomsData;
     }
-
     public MediatorLiveData<RefreshProgress> getRefreshProgress() {
         return mRefreshProgress;
     }
@@ -45,7 +43,6 @@ public class RoomsRepo {
                 }
                 mRoomsData.setValue(listOfRooms);
                 mRefreshProgress.postValue(RefreshProgress.DONE);
-                Log.i("test", "add");
             }
         });
     }
