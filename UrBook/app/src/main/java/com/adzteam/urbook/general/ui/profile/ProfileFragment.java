@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import com.adzteam.urbook.adapters.Post;
 import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.adapters.UserPostsAdapter;
 
+import com.adzteam.urbook.general.ui.feed.FeedViewModel;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -56,6 +58,9 @@ public class ProfileFragment extends Fragment {
 
     private ImageButton mNewPostBtn;
     private ImageButton mNewCharacterBtn;
+
+    private TextView mName;
+    private TextView mStatus;
     
     private final ArrayList<Post> mPostsData = new ArrayList<>();
     private final UserPostsAdapter mPostsAdapter = new UserPostsAdapter(mPostsData);
@@ -78,37 +83,22 @@ public class ProfileFragment extends Fragment {
 
         mLogOutBottom = view.findViewById(R.id.logout);
         mEditProfileBtn = view.findViewById(R.id.edit);
+        mName = view.findViewById(R.id.profile_name);
+        mStatus = view.findViewById(R.id.profile_status);
+        mLogOutBottom.setOnClickListener(v -> {
+            mProfileViewModel.signOut();
+            ((GeneralActivity) getActivity()).replaceWithAuthActivity();
+        });
 
-        mLogOutBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mProfileViewModel.signOut();
-                Log.i("ggg", "rrr");
-                ((GeneralActivity) getActivity()).replaceWithAuthActivity();
-            }
-        });
-        FirebaseFirestore mFStore = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        DocumentReference docRef = mFStore.collection("users").document(mAuth.getCurrentUser().getUid());
-        TextView mName = view.findViewById(R.id.profile_name);
-        TextView mStatus = view.findViewById(R.id.profile_status);
-        docRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
-                if (documentSnapshot != null) {
-                    mName.setText(documentSnapshot.getString("name"));
-                    mStatus.setText(documentSnapshot.getString("status"));
-                }
-            }
-        });
-        mEditProfileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                intent.putExtra("name", mName.getText().toString());
-                intent.putExtra("status", mStatus.getText().toString());
-                startActivity(intent);
-            }
+        mProfileViewModel.getNameLiveData().observe(getViewLifecycleOwner(), new NameObserver());
+        mProfileViewModel.getStatusLiveData().observe(getViewLifecycleOwner(), new StatusObserver());
+        mProfileViewModel.uploadProfileData();
+
+        mEditProfileBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+            intent.putExtra("name", mName.getText().toString());
+            intent.putExtra("status", mStatus.getText().toString());
+            startActivity(intent);
         });
 
         RecyclerView rv = view.findViewById(R.id.recyclerView);
@@ -122,107 +112,63 @@ public class ProfileFragment extends Fragment {
         rvc.setAdapter(mCharacterAdapter);
 
         mNewPostBtn = view.findViewById(R.id.add_feed);
-        mNewPostBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((GeneralActivity) getActivity()).replaceWithCreatePostActivity();
-            }
-        });
+        mNewPostBtn.setOnClickListener(v -> ((GeneralActivity) getActivity()).replaceWithCreatePostActivity());
 
         mNewCharacterBtn = view.findViewById(R.id.add_character);
-        mNewCharacterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((GeneralActivity) getActivity()).replaceWithCreateCharacterActivity();
-            }
-        });
+        mNewCharacterBtn.setOnClickListener(v -> ((GeneralActivity) getActivity()).replaceWithCreateCharacterActivity());
 
         mProfileImage = view.findViewById(R.id.profile_image);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(mProfileImage);
-            }
-        });
+        profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(mProfileImage));
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = db.collection("posts");
-        collectionReference.orderBy("date", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    System.err.println("Listen failed: " + error);
-                    return;
-                }
-
-                for (DocumentChange dc : value.getDocumentChanges()) {
-                    if (dc.getType() == DocumentChange.Type.ADDED) {
-                        mPostsData.clear();
-                        for (QueryDocumentSnapshot document : value) {
-                            String creator = (String) document.get("creator");
-
-                            if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                String date = (String) document.get("date");
-                                //String id = (String) document.get("id");
-                                String name = (String) document.get("name");
-                                String characterName = (String) document.get("characterName");
-                                String content = (String) document.get("content");
-
-                                Post newPost = new Post(document.getId(), Long.parseLong(date), name, creator, characterName, content);
-                                mPostsData.add(newPost);
-                            }
-                            mPostsAdapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-            }
-        });
-
-
-        db.collection("characters").orderBy("fandom", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    System.err.println("Listen failed: " + error);
-                    return;
-                }
-
-                for (DocumentChange dc : value.getDocumentChanges()) {
-                    if (dc.getType() == DocumentChange.Type.ADDED) {
-                        mCharactersData.clear();
-                        for (QueryDocumentSnapshot document : value) {
-                            String creator = (String) document.get("creator");
-
-                            if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                String date = (String) document.get("date");
-                                String fandom = (String) document.get("fandom");
-                                String name = (String) document.get("name");
-                                String characterName = (String) document.get("characterName");
-                                String characterSurname = (String) document.get("characterSurname");
-                                String content = (String) document.get("content");
-
-                                Boolean isThereImage;
-                                isThereImage = document.getBoolean("thereImage");
-                                if (isThereImage == null) isThereImage =false;
-                                Log.i("eee", characterName +" "+ String.valueOf(isThereImage));
-
-                                Characters newCharacter = new Characters(document.getId(), Long.parseLong(date), name, creator, fandom, characterName, characterSurname, content, isThereImage);
-                                mCharactersData.add(newCharacter);
-                            }
-                            mCharacterAdapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-            }
-        });
+        mProfileViewModel.getPostsData().observe(getViewLifecycleOwner(), new PostsDataObserver());
+        mProfileViewModel.getCharactersData().observe(getViewLifecycleOwner(), new CharactersDataObserver());
+        mProfileViewModel.download();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
+
+    private class PostsDataObserver implements Observer<ArrayList<Post>> {
+
+        @Override
+        public void onChanged(ArrayList<Post> posts) {
+            mPostsData.clear();
+            mPostsData.addAll(posts);
+            mPostsAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class CharactersDataObserver implements Observer<ArrayList<Characters>> {
+
+        @Override
+        public void onChanged(ArrayList<Characters> characters) {
+            mCharactersData.clear();
+            mCharactersData.addAll(characters);
+            mCharacterAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class NameObserver implements Observer<String> {
+
+        @Override
+        public void onChanged(String name) {
+            mName.setText(name);
+        }
+    }
+
+    private class StatusObserver implements Observer<String> {
+
+        @Override
+        public void onChanged(String status) {
+            mStatus.setText(status);
+        }
+    }
+
+
 }

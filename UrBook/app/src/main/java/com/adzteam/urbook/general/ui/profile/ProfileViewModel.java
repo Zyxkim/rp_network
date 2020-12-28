@@ -4,19 +4,56 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MediatorLiveData;
 
+import com.adzteam.urbook.adapters.Characters;
+import com.adzteam.urbook.adapters.Post;
+import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.authentification.AuthRepo;
+import com.adzteam.urbook.general.ui.feed.FeedRepo;
+
+import java.util.ArrayList;
 
 public class ProfileViewModel extends AndroidViewModel {
 
-    private AuthRepo mRepo = new AuthRepo(getApplication());
+    private final ProfileRepo mRepo = new ProfileRepo();
+
+    private final MediatorLiveData<ArrayList<Post>> mPostsData = mRepo.getPostsLiveData();
+    private final MediatorLiveData<ArrayList<Characters>> mCharactersData = mRepo.getCharactersLiveData();
+
+    public MediatorLiveData<ArrayList<Post>> getPostsData() {
+        return mPostsData;
+    }
+
+    public MediatorLiveData<ArrayList<Characters>> getCharactersData() {
+        return mCharactersData;
+    }
+
+    private AuthRepo mAuthRepo = new AuthRepo(getApplication());
+
+    private MediatorLiveData<String> nameLiveData = mRepo.getNameLiveData();
+    private MediatorLiveData<String> statusLiveData = mRepo.getStatusLiveData();
+
+    public MediatorLiveData<String> getNameLiveData() {
+        return nameLiveData;
+    }
+    public MediatorLiveData<String> getStatusLiveData() {
+        return statusLiveData;
+    }
 
     public ProfileViewModel(@NonNull Application application) {
         super(application);
     }
 
     public void signOut() {
-        mRepo.signOut();
+        mAuthRepo.signOut();
+    }
 
+    public void uploadProfileData() {
+        mRepo.uploadProfileData();
+    }
+
+    public void download() {
+        mRepo.donwload();
     }
 }
