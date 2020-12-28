@@ -129,7 +129,9 @@ public class ProfileFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-        Picasso.get().load(mUri).into(mProfileImage);
+        if (mUri != null) {
+            Picasso.get().load(mUri).into(mProfileImage);
+        }
         profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(mProfileImage));
 
         mProfileViewModel.getPostsData().observe(getViewLifecycleOwner(), new PostsDataObserver());
