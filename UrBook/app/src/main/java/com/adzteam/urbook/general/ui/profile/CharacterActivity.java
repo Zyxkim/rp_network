@@ -3,6 +3,7 @@ package com.adzteam.urbook.general.ui.profile;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import androidx.appcompat.view.menu.ActionMenuItemView;
 import com.adzteam.urbook.adapters.UserCharactersAdapter;
 import com.adzteam.urbook.general.GeneralActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -125,13 +127,22 @@ public class CharacterActivity extends AppCompatActivity {
                     String surname = (String) document.get("characterSurname");
                     String fandom = (String) document.get("fandom");
                     String description = (String) document.get("content");
+                    String uri = (String) document.get("characterImg");
 
                     mStorageReference = FirebaseStorage.getInstance().getReference();
                     StorageReference profileRef = mStorageReference.child("characters/" + CURRENT_CHARACTER_ID + "/image.jpg");
+                    Log.i("rrr", String.valueOf(profileRef.getDownloadUrl()));
+                    Picasso.get().load(uri).into(mCharacterImg);
+                    Log.i("download", String.valueOf(uri));
                     profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             Picasso.get().load(uri).into(mCharacterImg);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i("f", "Ooops");
                         }
                     });
 
