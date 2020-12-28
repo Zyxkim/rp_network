@@ -68,6 +68,7 @@ public class CreateCharacterActivity extends AppCompatActivity {
         mPostContent = findViewById(R.id.new_post_content);
         mSaveItem = findViewById(R.id.save);
         mBackItem = findViewById(R.id.back);
+        mAddPostCover = findViewById(R.id.editPostImageBtn);
         mPostImg = findViewById(R.id.post_image);
 
         mSaveItem.setOnClickListener(new View.OnClickListener() {

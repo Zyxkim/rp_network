@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,13 +50,13 @@ public class ProfileFragment extends Fragment {
     private TextView mName;
     private TextView mStatus;
     private TextView mSubs;
-    
+
     private final ArrayList<Post> mPostsData = new ArrayList<>();
     private final UserPostsAdapter mPostsAdapter = new UserPostsAdapter(mPostsData);
 
     private final ArrayList<Characters> mCharactersData = new ArrayList<>();
     private final UserCharactersAdapter mCharacterAdapter = new UserCharactersAdapter(mCharactersData);
-    
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,10 +87,14 @@ public class ProfileFragment extends Fragment {
         mProfileViewModel.uploadProfileData();
 
         mEditProfileBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-            intent.putExtra("name", mName.getText().toString());
-            intent.putExtra("status", mStatus.getText().toString());
-            startActivity(intent);
+            if (GeneralActivity.hasConnection(getContext())) {
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                intent.putExtra("name", mName.getText().toString());
+                intent.putExtra("status", mStatus.getText().toString());
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+            }
         });
 
         mSubs.setOnClickListener(v -> {

@@ -12,6 +12,7 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private CircleImageView mProfileImage, mEditProfileImageBtn;
     private StorageReference mStorageReference;
     private FirebaseAuth mAuth;
+    private Uri mUri;
     TextInputEditText mEditName, mEditStatus;
     ActionMenuItemView mBackBtn, mSaveBtn;
 
@@ -91,6 +93,7 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (GeneralActivity.hasConnection(getApplicationContext())) {
                     mViewModel.editProfile(mEditName.getText().toString().trim(), mEditStatus.getText().toString().trim());
+                    mViewModel.uploadImageToFirebase(mUri);
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
                 }
@@ -110,8 +113,8 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == Activity.RESULT_OK) {
-                Uri imgUri = data.getData();
-                mViewModel.uploadImageToFirebase(imgUri);
+                mUri = data.getData();
+                mProfileImage.setImageURI(mUri);
             }
         }
     }
