@@ -33,6 +33,7 @@ public class ProfileRepo {
 
     private MediatorLiveData<String> nameLiveData = new MediatorLiveData<>();
     private MediatorLiveData<String> statusLiveData = new MediatorLiveData<>();
+    private MediatorLiveData<String> uriLiveData = new MediatorLiveData<>();
     private MediatorLiveData<String> subsLiveData = new MediatorLiveData<>();
 
     public MediatorLiveData<String> getStatusLiveData() {
@@ -40,6 +41,9 @@ public class ProfileRepo {
     }
     public MediatorLiveData<String> getNameLiveData() {
         return nameLiveData;
+    }
+    public MediatorLiveData<String> getUriLiveData() {
+        return uriLiveData;
     }
     public MediatorLiveData<String> getSubsLiveData() {
         return subsLiveData;
@@ -55,6 +59,7 @@ public class ProfileRepo {
                 if (documentSnapshot != null) {
                     nameLiveData.setValue(documentSnapshot.getString("name"));
                     statusLiveData.setValue(documentSnapshot.getString("status"));
+                    uriLiveData.setValue(documentSnapshot.getString("profileImg"));
                     if (documentSnapshot.get("subs") != null) {
                         subsLiveData.setValue(documentSnapshot.getLong("subs").toString() + " subscribers");
                     }
@@ -85,7 +90,6 @@ public class ProfileRepo {
 
                             if (creator.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                 String date = (String) document.get("date");
-                                //String id = (String) document.get("id");
                                 String name = (String) document.get("name");
                                 String characterName = (String) document.get("characterName");
                                 String content = (String) document.get("content");

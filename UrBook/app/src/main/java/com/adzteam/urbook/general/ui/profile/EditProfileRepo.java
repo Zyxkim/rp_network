@@ -58,7 +58,6 @@ public class EditProfileRepo {
                         CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("users");
                         DocumentReference docRef = collectionReference.document(mAuth.getCurrentUser().getUid());
                         Log.i("check", mAuth.getCurrentUser().getUid());
-
                         docRef
                                 .update("profileImg", uri.toString())
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {

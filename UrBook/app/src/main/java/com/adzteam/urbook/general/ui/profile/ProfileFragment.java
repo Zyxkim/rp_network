@@ -1,7 +1,9 @@
 package com.adzteam.urbook.general.ui.profile;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +53,8 @@ public class ProfileFragment extends Fragment {
     private TextView mStatus;
     private TextView mSubs;
 
+    public static String mUri;
+
     private final ArrayList<Post> mPostsData = new ArrayList<>();
     private final UserPostsAdapter mPostsAdapter = new UserPostsAdapter(mPostsData);
 
@@ -85,6 +89,8 @@ public class ProfileFragment extends Fragment {
         mProfileViewModel.getStatusLiveData().observe(getViewLifecycleOwner(), new StatusObserver());
         mProfileViewModel.getSubsLiveData().observe(getViewLifecycleOwner(), new SubsObserver());
         mProfileViewModel.uploadProfileData();
+
+        mProfileViewModel.getUriLiveData().observe(getViewLifecycleOwner(), new UriObserver());
 
         mEditProfileBtn.setOnClickListener(v -> {
             if (GeneralActivity.hasConnection(getContext())) {
@@ -123,6 +129,7 @@ public class ProfileFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
 
         StorageReference profileRef = mStorageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
+        Picasso.get().load(mUri).into(mProfileImage);
         profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(mProfileImage));
 
         mProfileViewModel.getPostsData().observe(getViewLifecycleOwner(), new PostsDataObserver());
@@ -176,6 +183,14 @@ public class ProfileFragment extends Fragment {
         @Override
         public void onChanged(String subs) {
             mSubs.setText(subs);
+        }
+    }
+
+    private class UriObserver implements Observer<String> {
+
+        @Override
+        public void onChanged(String uri) {
+            mUri = uri;
         }
     }
 
