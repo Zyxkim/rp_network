@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".general.ui.profile.CreatePostActivity">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/ic_wave_accent_light" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/ic_wave_accent" />
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/top_add_post_app_bar"
+            app:title="@string/create_new_post"
+            app:titleTextColor="@color/colorAccent"
+            android:background="@color/colorPrimary"
+            style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/post_character_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:boxStrokeWidth="2dp"
+            android:hint="Enter Post Name"
+            app:boxStrokeColor="@color/colorAccent"
+            app:hintAnimationEnabled="true"
+            app:counterEnabled="true"
+            app:counterMaxLength="50"
+            app:hintTextColor="@color/colorAccent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/new_character_name_content"
+                android:background="@color/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="top|start"
+                android:maxLength="50"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/post_content_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            app:boxStrokeWidth="2dp"
+            android:hint="@string/post_content"
+            app:boxStrokeColor="@color/colorAccent"
+            app:hintAnimationEnabled="true"
+            app:counterEnabled="true"
+            app:counterMaxLength="1000"
+            app:hintTextColor="@color/colorAccent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/new_post_content"
+                android:background="@color/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="top|start"
+                android:lines="10"
+                android:maxLines="10"
+                android:minLines="1"
+                android:singleLine="false"
+                android:scrollbars="vertical"
+                android:maxLength="1000"
+                android:inputType="textMultiLine" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

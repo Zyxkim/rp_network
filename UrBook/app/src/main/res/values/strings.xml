@@ -1,0 +1,96 @@
+<resources>
+    <string name="app_name">UrBook</string>
+
+    <string name="title_activity_general">General</string>
+
+    <string name="email_profile_text">E-mail address</string>
+    <string name="password_profile_text">Password</string>
+
+    <string name="email_profile">example@example.com</string>
+    <string name="password_profile">******</string>
+
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="confirmPassword">Confirm Password</string>
+    <string name="otp">OTP</string>
+
+    <string name="status">Your Status</string>
+
+    <string name="register">REGISTER</string>
+    <string name="login">LOG IN</string>
+    <string name="confirm">CONFIRM</string>
+    <string name="resetPassword">RESET PASSWORD</string>
+
+    <string name="or">OR USE</string>
+
+    <string name="textLogIn">Already have an Account? Log In</string>
+    <string name="textRegister">New User? Create Account</string>
+    <string name="textResetPassword">Forgot Password?</string>
+    <string name="textReturnLogIn">Return to Log in</string>
+    <string name="textResendVerification">Resend Verification Code</string>
+
+    <string name="textVerification">Verification code has been sent to</string>
+    <string name="textNewPassword">Enter New Password</string>
+
+    <string name="verificationEmail">example@gmail.com</string>
+
+    <string name="title_feed">News Feed</string>
+    <string name="title_rooms">Rooms</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_friends">Friends</string>
+
+    <string name="profile_name">MsReader</string>
+    <string name="profile_title">Your Profile</string>
+    <string name="profile_edit">Edit Your Profile</string>
+
+    <string name="profile_status">Current status…</string>
+
+    <string name="edit_profile">Edit profile</string>
+    <string name="change_avatar">Change avatar</string>
+    <string name="logout">Exit</string>
+    <string name="content_description_logout">Exit</string>
+
+    <string name="chatrooms">Rooms</string>
+    <string name="chatroom">Room</string>
+    <string name="feed">My Posts</string>
+    <string name="friends">Your Friends</string>
+    <string name="add_room">Add room</string>
+    <string name="content_description_add_room">Add room</string>
+
+    <string name="todo">TODO</string>
+
+    <string name="start_typing_status">Start typing</string>
+    <string name="stop_typing_status">Stop typing</string>
+
+    <string name="home">End Chat</string>
+
+    <string name="post_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+        minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+        sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </string>
+
+    <string name="room_name">Enter New Room Name</string>
+    <string name="room_description">Enter Room Description</string>
+    <string name="room_image">Add Room Cover</string>
+    <string name="create_new_room">Create New Room</string>
+
+    <string name="post_content">Enter Your Text</string>
+    <string name="create_new_post">Create New Post</string>
+
+    <string name="find_room">Find Room</string>
+    <string name="content_description_find_room">Find Room</string>
+
+    <string name="back">Go Back</string>
+    <string name="content_description_back">Go Back</string>
+
+    <string name="save">Save</string>
+    <string name="content_description_save">Save</string>
+
+    <string name="add_to_room">Invite People</string>
+    <string name="content_description_add_to_room">Invite People</string>
+
+</resources>

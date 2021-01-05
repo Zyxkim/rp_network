@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.adzteam.urbook">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".general.ui.subscribers.SubsActivity"/>
+        <activity android:name=".general.ui.friends.UserActivity" />
+        <activity android:name=".general.ui.profile.CharacterActivity" />
+        <activity
+            android:name=".general.ui.profile.CreateCharacterActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".general.ui.profile.CreatePostActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".general.ui.rooms.CreateRoomActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".general.ui.profile.EditProfileActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".room.RoomActivity" />
+        <activity android:name=".SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"></action>
+                <category android:name="android.intent.category.LAUNCHER"></category>
+            </intent-filter>
+        </activity>
+        <activity android:name=".general.GeneralActivity"/>
+        <activity
+            android:name=".authentification.AuthActivity"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
